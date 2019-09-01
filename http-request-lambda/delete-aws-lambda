@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source flags
+
+echo "LAMBDA_NAME: $LAMBDA_NAME"
+echo "REGION: $REGION"
+
+aws lambda delete-function \
+  --region $REGION \
+  --function-name $LAMBDA_NAME

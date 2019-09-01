@@ -1,0 +1,7 @@
+#!/bin/bash
+
+zip \
+  --symlinks \
+  --exclude=*node_modules/aws-sdk* \
+  --recurse-paths lambda.zip \
+  lambda.js index.js package.json node_modules/

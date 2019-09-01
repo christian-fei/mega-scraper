@@ -21,6 +21,7 @@
     "tap": "^14.6.1"
   },
   "dependencies": {
+    "aws-sdk": "^2.521.0",
     "cheerio": "^1.0.0-rc.3",
     "got": "^9.6.0"
   }

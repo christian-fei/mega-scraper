@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source flags
+
+echo "LAMBDA_NAME: $LAMBDA_NAME"
+echo "REGION: $REGION"
+
+aws lambda invoke --region $REGION --function-name $LAMBDA_NAME --payload "{\"url\": \"https://www.amazon.it/s?k=porta+carta+credito\"}" out --log-type Tail --query 'LogResult' --output text | base64 --decode
+
+cat out

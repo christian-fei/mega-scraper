@@ -8,6 +8,6 @@ jobs:
       - name: install
         run: |
           npm install
-      - name: test
-        run: |
-          npm test
+      # - name: test
+      #   run: |
+      #     npm test

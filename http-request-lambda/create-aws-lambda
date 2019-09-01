@@ -1,0 +1,22 @@
+#!/bin/bash
+
+source flags
+
+echo "LAMBDA_NAME: $LAMBDA_NAME"
+echo "ROLE_ARN: $ROLE_ARN"
+echo "REGION: $REGION"
+
+aws lambda create-function \
+  --region $REGION \
+  --function-name $LAMBDA_NAME \
+  --runtime nodejs10.x \
+  --timeout 60 \
+  --memory 128 \
+  --region $REGION \
+  --role $ROLE_ARN \
+  --handler lambda.handler \
+  --zip-file "fileb://lambda.zip"
+
+aws lambda update-function-configuration \
+  --region $REGION \
+  --function-name $LAMBDA_NAME \

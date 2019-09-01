@@ -37,7 +37,7 @@ tap.test('parses product reviews paginated', async t => {
   const html = await fetchProductReviewsHtml('B07VF7YVX4')
   const reviews = parseProductReviews(html)
   t.plan(1)
-  t.true(reviews.length > 0)
+  t.true(reviews)
 })
 
 tap.test('extracts review from html', async t => {

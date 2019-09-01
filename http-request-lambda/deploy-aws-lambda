@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source flags
+
+echo "LAMBDA_NAME: $LAMBDA_NAME"
+echo "REGION: $REGION"
+
+./make-aws-lambda-zip
+
+aws lambda update-function-code \
+  --region $REGION \
+  --function-name $LAMBDA_NAME \
+  --zip-file "fileb://lambda.zip"
