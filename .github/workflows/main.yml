@@ -1,0 +1,13 @@
+name: scrape-amazon-reviews build
+on: [push]
+jobs:
+  build_deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@master
+      - name: install
+        run: |
+          npm install
+      - name: test
+        run: |
+          npm test
