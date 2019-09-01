@@ -1,5 +1,5 @@
 {
-  "name": "amazon-reviews",
+  "name": "scrape-amazon-reviews",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/christian-fei/amazon-reviews.git"
+    "url": "git+https://github.com/christian-fei/scrape-amazon-reviews.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/christian-fei/amazon-reviews/issues"
+    "url": "https://github.com/christian-fei/scrape-amazon-reviews/issues"
   },
-  "homepage": "https://github.com/christian-fei/amazon-reviews#readme",
+  "homepage": "https://github.com/christian-fei/scrape-amazon-reviews#readme",
   "devDependencies": {
     "tap": "^14.6.1"
   }
