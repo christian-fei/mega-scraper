@@ -1,0 +1,23 @@
+{
+  "name": "amazon-reviews",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap index.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christian-fei/amazon-reviews.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/christian-fei/amazon-reviews/issues"
+  },
+  "homepage": "https://github.com/christian-fei/amazon-reviews#readme",
+  "devDependencies": {
+    "tap": "^14.6.1"
+  }
+}
