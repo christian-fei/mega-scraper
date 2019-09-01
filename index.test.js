@@ -43,13 +43,14 @@ tap.test('parses product reviews paginated', async t => {
 })
 
 tap.test('extracts review from html', async t => {
-  t.plan(2)
+  t.plan(3)
 
   const html = await fetchProductReviewsHtml('B07VF7YVX4')
   const reviews = parseProductReviews(html)
   const review = extractReviewFromHtml(reviews[0])
   t.true(review)
   t.true(review.stars > 0 && review.stars <= 5)
+  t.true(review.dateString)
 })
 
 async function fetchSearchHtml (search) {
@@ -68,7 +69,8 @@ function parseProductReviews (html) {
   return $('.review', html)
 }
 function extractReviewFromHtml (html) {
-  const starsContent = $('.a-icon-star', html)
+  const starsContent = $('[data-hook="review-star-rating"]', html)
+  const dateString = $('[data-hook="review-date"]', html).text()
   let stars
   if (starsContent.hasClass('a-star-5')) stars = 5
   if (starsContent.hasClass('a-star-4')) stars = 4
@@ -77,6 +79,7 @@ function extractReviewFromHtml (html) {
   if (starsContent.hasClass('a-star-1')) stars = 1
 
   return {
-    stars
+    stars,
+    dateString
   }
 }
