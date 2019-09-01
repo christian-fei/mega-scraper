@@ -35,10 +35,15 @@ function extractReviewFromHtml (html) {
   const dateString = $('[data-hook="review-date"]', html).text()
   const text = $('[data-hook="review-body"]', html).text()
   let stars
+  /* istanbul ignore next */
   if (!stars && starsContent.hasClass('a-star-5')) stars = 5
+  /* istanbul ignore next */
   if (!stars && starsContent.hasClass('a-star-4')) stars = 4
+  /* istanbul ignore next */
   if (!stars && starsContent.hasClass('a-star-3')) stars = 3
+  /* istanbul ignore next */
   if (!stars && starsContent.hasClass('a-star-2')) stars = 2
+  /* istanbul ignore next */
   if (!stars && starsContent.hasClass('a-star-1')) stars = 1
 
   return {
