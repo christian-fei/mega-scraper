@@ -19,5 +19,8 @@
   "homepage": "https://github.com/christian-fei/scrape-amazon-reviews#readme",
   "devDependencies": {
     "tap": "^14.6.1"
+  },
+  "dependencies": {
+    "got": "^9.6.0"
   }
 }
