@@ -2,11 +2,17 @@ const got = require('got')
 const $ = require('cheerio')
 
 module.exports = {
+  getProductReviews,
   fetchSearchHtml,
   fetchProductDetailsHtml,
   fetchProductReviewsHtml,
   parseProductReviews,
   extractReviewFromHtml
+}
+
+async function getProductReviews (search) {
+  const html = await fetchProductReviewsHtml('B07VF7YVX4')
+  return Array.prototype.map.call(parseProductReviews(html), extractReviewFromHtml)
 }
 
 async function fetchSearchHtml (search) {
