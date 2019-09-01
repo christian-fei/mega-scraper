@@ -14,7 +14,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "got": "^9.6.0"
+    "got": "^9.6.0",
+    "tunnel": "0.0.6"
   },
   "devDependencies": {}
 }
