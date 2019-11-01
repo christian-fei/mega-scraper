@@ -39,7 +39,7 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const { body } = response
 
   const doc = $(body)
-  const text = doc.find('.averageStarRatingNumerical').text() || ''
+  const text = doc.find('[data-hook="top-customer-reviews-title"]').text() || ''
   const num = text.match(/([\d\\.]+)/)
   if (!Array.isArray(num) || !num[0]) {
     // console.error('body', body)
