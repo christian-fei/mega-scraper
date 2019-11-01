@@ -1,5 +1,5 @@
 const $ = require('cheerio')
-const log = require('debug')('parser:amazon')
+const log = require('debug')('sar:parser:amazon')
 const { createHash } = require('crypto')
 
 module.exports = {

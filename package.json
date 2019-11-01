@@ -5,9 +5,9 @@
   "main": "amazon.js",
   "bin": "bin.js",
   "scripts": {
-    "test": "tap **.test.js",
-    "migrate": "mkdir -p migrations; node migrate.js",
-    "bin": "node --max-old-space-size=8192 bin.js"
+    "test": "DEBUG='sar:*' tap **.test.js",
+    "migrate": "mkdir -p migrations; DEBUG='sar:*' node migrate.js",
+    "bin": "DEBUG='sar:*' node --max-old-space-size=8192 bin.js"
   },
   "repository": {
     "type": "git",
@@ -21,10 +21,10 @@
   },
   "homepage": "https://github.com/christian-fei/scrape-amazon-reviews#readme",
   "devDependencies": {
-    "tap": "^14.6.1"
+    "tap": "^14.9.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.521.0",
+    "aws-sdk": "^2.562.0",
     "cheerio": "^1.0.0-rc.3",
     "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.0",
@@ -33,5 +33,8 @@
     "p-queue": "^6.2.0",
     "tunnel": "0.0.6",
     "user-agents": "^1.0.427"
+  },
+  "optionalDependencies": {
+    "puppeteer": "^2.0.0"
   }
 }

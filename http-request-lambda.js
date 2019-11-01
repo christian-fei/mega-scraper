@@ -11,7 +11,7 @@ module.exports = async function ({ url }) {
   return new Promise((resolve, reject) => {
     lambda.invoke(invokeParams, (err, data) => {
       if (err) return reject(err)
-      if (data.StatusCode === 200) return resolve(data.Payload)
+      if (data.StatusCode === 200) return resolve({ body: data.Payload, statusCode: data.StatusCode })
       reject(data)
     })
   })

@@ -1,5 +1,5 @@
 const $ = require('cheerio')
-const log = require('debug')('scraper:amazon')
+const log = require('debug')('sar:scraper:amazon')
 const fs = require('fs')
 const path = require('path')
 
@@ -36,23 +36,19 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}`
   log('getProductReviewsCount url', url)
   const response = await get({ ...options, url })
-  const { body } = response
+  const { body = '' } = response
 
-  if (body.indexOf('Amazon CAPTCHA')) { return log('captcha!', asin) }
+  if (body.indexOf('Amazon CAPTCHA') >= 0) { return log('captcha!', asin, body.substring(body.indexOf('Amazon CAPTCHA') - 20, body.indexOf('Amazon CAPTCHA') + 20)) }
 
   const doc = $(body)
   const text = doc.find('[data-hook="cr-filter-info-review-count"]').text() || ''
-  log('text', text)
-  const num = text.split(' ').map(w => w.replace(',', '').replace('.', '')).map(n => parseInt(n, 10)).filter(Boolean)
-  // const num = text.match(/([\d\\.,]+)/)
-  log('num, text', num, text)
+  const num = text.split(' ').filter(Boolean).map(w => '' + w).map(w => w.replace(',', '').replace('.', '')).map(n => parseInt(n, 10)).filter(Boolean)
   if (!Array.isArray(num) || !num[0]) {
     // console.error('body', body)
     return
   }
   const number = num[num.length - 1]
-  const count = parseInt(number.replace('.', '').replace(',', ''))
-  log('count', count)
+  const count = parseInt(number)
   return count
 }
 async function fetchSearchHtml ({ search } = {}, options = {}) {

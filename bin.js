@@ -9,7 +9,7 @@ const fs = require('fs')
 const path = require('path')
 const limit = pLimit(6)
 const queue = new PQueue({ concurrency: 6, timeout: 30000 })
-const log = require('debug')('bin')
+const log = require('debug')('sar:bin')
 
 if (require.main === module) {
   main(process.argv[2], process.argv[3])

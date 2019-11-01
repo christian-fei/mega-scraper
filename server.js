@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const log = require('debug')('server')
+const log = require('debug')('sar:server')
 const fs = require('fs')
 const http = require('http')
 const path = require('path')
