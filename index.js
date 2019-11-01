@@ -7,26 +7,26 @@ const get = require(process.env.USE_LAMBDA ? './http-request-lambda' : './http')
 module.exports = {
   getProductReviews,
   fetchSearchHtml,
-  fetchProductDetailsHtml,
-  fetchProductReviewsHtml,
+  getProductDetailsHtml,
+  getProductReviewsHtml,
   parseProductReviews,
-  extractReviewFromHtml
+  reviewFromHtml
 }
 
 async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
-  const html = await fetchProductReviewsHtml(asin, pageNumber, options)
+  const html = await getProductReviewsHtml(asin, pageNumber, options)
   fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
-  return parseProductReviews(html).map(extractReviewFromHtml)
+  return parseProductReviews(html).map(reviewFromHtml)
 }
 async function fetchSearchHtml (search, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/s?k=${encodeURIComponent(search)}` })
   return response.body
 }
-async function fetchProductDetailsHtml (asin, options = {}) {
+async function getProductDetailsHtml (asin, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/dp/${asin}` })
   return response.body
 }
-async function fetchProductReviewsHtml (asin, pageNumber = 1, options = {}) {
+async function getProductReviewsHtml (asin, pageNumber = 1, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}` })
   return response.body
 }
@@ -35,7 +35,7 @@ function parseProductReviews (html) {
   const array = reviews.toArray()
   return array
 }
-function extractReviewFromHtml (html) {
+function reviewFromHtml (html) {
   return {
     stars: starsFrom(html),
     dateString: dateFrom(html),
