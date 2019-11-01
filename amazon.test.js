@@ -7,7 +7,7 @@ const {
   getProductReviews,
   parseProductReviews,
   reviewFromHtml
-} = require('.')
+} = require('./amazon')
 
 test('get page html content', async t => {
   const html = await fetchSearchHtml('porta carta credito')
