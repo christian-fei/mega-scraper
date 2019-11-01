@@ -2,9 +2,10 @@
   "name": "scrape-amazon-reviews",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "amazon.js",
+  "bin": "bin.js",
   "scripts": {
-    "test": "tap index.test.js --bail"
+    "test": "tap amazon.test.js --bail"
   },
   "repository": {
     "type": "git",
