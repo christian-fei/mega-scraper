@@ -51,8 +51,18 @@ tap.test('extracts review from html', async t => {
   t.true(review.text)
 })
 
-tap.only('gets reviews from product search', async t => {
+tap.test('gets reviews from product search', async t => {
   const reviews = await getProductReviews('B07JML91PY')
+  const review = reviews[0]
+  t.plan(4)
+  t.true(review)
+  t.true(review.stars > 0 && review.stars <= 5)
+  t.true(review.dateString)
+  t.true(review.text)
+})
+
+tap.test('gets reviews from product search with proxy', async t => {
+  const reviews = await getProductReviews('B07JML91PY', 1, { useProxy: true })
   const review = reviews[0]
   t.plan(4)
   t.true(review)
