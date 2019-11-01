@@ -19,9 +19,15 @@ module.exports = {
 
 async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   const html = await getProductReviewsHtml({ asin, pageNumber }, options)
-  fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
+  try {
+    fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
+  } catch (err) { console.error(err.message, err.stack) }
+
   const json = parseProductReviews(html).map(reviewFromHtml)
-  fs.writeFileSync(path.resolve(__dirname, `json/${asin}-${pageNumber}.json`), JSON.stringify(json), { encoding: 'utf8' })
+  try {
+    fs.writeFileSync(path.resolve(__dirname, `json/${asin}-${pageNumber}.json`), JSON.stringify(json), { encoding: 'utf8' })
+  } catch (err) { console.error(err.message, err.stack) }
+
   return json
 }
 async function getProductReviewsCount ({ asin } = {}, options = {}) {
