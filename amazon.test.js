@@ -18,7 +18,7 @@ test('get page html content', async t => {
 })
 
 test('get product details', async t => {
-  const html = await getProductDetailsHtml('B07JML91PY', { useProxy: true })
+  const html = await getProductDetailsHtml({ asin: 'B07JML91PY' }, { useProxy: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07JML91PY'))

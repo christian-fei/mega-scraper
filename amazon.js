@@ -32,7 +32,7 @@ async function fetchSearchHtml (search, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/s?k=${encodeURIComponent(search)}` })
   return response.body
 }
-async function getProductDetailsHtml (asin, options = {}) {
+async function getProductDetailsHtml ({ asin } = {}, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/dp/${asin}` })
   return response.body
 }
