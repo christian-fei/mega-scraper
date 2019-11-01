@@ -25,7 +25,7 @@ test('get product details', async t => {
 })
 
 test('get product reviews', async t => {
-  const html = await getProductReviewsHtml('B07JML91PY', 1, { useProxy: true })
+  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 1 }, { useProxy: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07JML91PY'))
@@ -38,14 +38,14 @@ test('get product reviews count', async t => {
 })
 
 test('get product reviews paginated', async t => {
-  const html = await getProductReviewsHtml('B07JML91PY', 2, { useProxy: true })
+  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 2 }, { useProxy: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07JML91PY'))
 })
 
 test('parses product reviews paginated', async t => {
-  const html = await getProductReviewsHtml('B07JML91PY', 1, { useProxy: true })
+  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 1 }, { useProxy: true })
   const reviews = parseProductReviews(html)
   t.plan(2)
   t.true(Array.isArray(reviews))
@@ -53,7 +53,7 @@ test('parses product reviews paginated', async t => {
 })
 
 test('extracts review from html', async t => {
-  const html = await getProductReviewsHtml('B07JML91PY', 1, { useProxy: true })
+  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 1 }, { useProxy: true })
   t.plan(6)
   const reviews = parseProductReviews(html)
   t.true(Array.isArray(reviews))

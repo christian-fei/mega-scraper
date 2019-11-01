@@ -15,7 +15,7 @@ module.exports = {
 }
 
 async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
-  const html = await getProductReviewsHtml(asin, pageNumber, options)
+  const html = await getProductReviewsHtml({ asin, pageNumber }, options)
   fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
   return parseProductReviews(html).map(reviewFromHtml)
 }
@@ -36,7 +36,7 @@ async function getProductDetailsHtml ({ asin } = {}, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/dp/${asin}` })
   return response.body
 }
-async function getProductReviewsHtml (asin, pageNumber = 1, options = {}) {
+async function getProductReviewsHtml ({ asin, pageNumber = 1 }, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}` })
   return response.body
 }
