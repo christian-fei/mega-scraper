@@ -1,8 +1,5 @@
 const $ = require('cheerio')
-const http = require('./http')
-const get = process.env.USE_LAMBDA
-  ? require('./http-request-lambda')
-  : http
+const get = require(process.env.USE_LAMBDA ? './http-request-lambda' : './http')
 
 module.exports = {
   getProductReviews,
@@ -14,7 +11,6 @@ module.exports = {
 }
 
 async function getProductReviews (asin, pageNumber = 1, options) {
-  console.log('options', options)
   const html = await fetchProductReviewsHtml(asin, pageNumber, options)
   require('fs').writeFileSync(require('path').resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
   return parseProductReviews(html).map(extractReviewFromHtml)
