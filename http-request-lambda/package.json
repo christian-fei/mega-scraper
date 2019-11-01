@@ -14,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "got": "^9.6.0",
-    "tunnel": "0.0.6"
+    "chrome-aws-lambda": "^1.19.0",
+    "puppeteer-core": "^1.19.0"
   },
   "devDependencies": {}
 }

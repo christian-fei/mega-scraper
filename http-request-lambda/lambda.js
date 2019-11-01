@@ -1,6 +1,6 @@
 'use strict'
 
-const main = require('.')
+const main = require('./index')
 
 exports.handler = function ({ url }, context, cb) {
   main({ url })

@@ -16,32 +16,32 @@ tap.test('get page html content', async t => {
 })
 
 tap.test('get product details', async t => {
-  const html = await fetchProductDetailsHtml('B07VF7YVX4')
+  const html = await fetchProductDetailsHtml('B07JML91PY')
   t.plan(1)
-  t.true(html.indexOf('B07VF7YVX4'))
+  t.true(html.indexOf('B07JML91PY'))
 })
 
 tap.test('get product reviews', async t => {
-  const html = await fetchProductReviewsHtml('B07VF7YVX4')
+  const html = await fetchProductReviewsHtml('B07JML91PY')
   t.plan(1)
-  t.true(html.indexOf('B07VF7YVX4'))
+  t.true(html.indexOf('B07JML91PY'))
 })
 
 tap.test('get product reviews paginated', async t => {
-  const html = await fetchProductReviewsHtml('B07VF7YVX4', 2)
+  const html = await fetchProductReviewsHtml('B07JML91PY', 2)
   t.plan(1)
-  t.true(html.indexOf('B07VF7YVX4'))
+  t.true(html.indexOf('B07JML91PY'))
 })
 
 tap.test('parses product reviews paginated', async t => {
-  const html = await fetchProductReviewsHtml('B07VF7YVX4')
+  const html = await fetchProductReviewsHtml('B07JML91PY')
   const reviews = parseProductReviews(html)
   t.plan(1)
   t.true(reviews)
 })
 
 tap.test('extracts review from html', async t => {
-  const html = await fetchProductReviewsHtml('B07VF7YVX4')
+  const html = await fetchProductReviewsHtml('B07JML91PY')
   const reviews = parseProductReviews(html)
   const review = extractReviewFromHtml(reviews[0])
   t.plan(4)
@@ -51,8 +51,8 @@ tap.test('extracts review from html', async t => {
   t.true(review.text)
 })
 
-tap.test('gets reviews from product search', async t => {
-  const reviews = await getProductReviews('porta carta credito')
+tap.only('gets reviews from product search', async t => {
+  const reviews = await getProductReviews('B07JML91PY')
   const review = reviews[0]
   t.plan(4)
   t.true(review)

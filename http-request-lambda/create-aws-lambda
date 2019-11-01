@@ -9,9 +9,9 @@ echo "REGION: $REGION"
 aws lambda create-function \
   --region $REGION \
   --function-name $LAMBDA_NAME \
-  --runtime nodejs10.x \
-  --timeout 60 \
-  --memory 128 \
+  --runtime nodejs8.10 \
+  --timeout 120 \
+  --memory 2048 \
   --region $REGION \
   --role $ROLE_ARN \
   --handler lambda.handler \
