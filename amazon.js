@@ -31,23 +31,32 @@ async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   return json
 }
 async function getProductReviewsCount ({ asin } = {}, options = {}) {
-  const response = await get({ ...options, url: `https://www.amazon.it/dp/${asin}` })
+  const url = `https://www.amazon.it/dp/${asin}`
+  const response = await get({ ...options, url })
   const { body } = response
 
   const doc = $(body)
   const text = doc.find('.averageStarRatingNumerical').text() || ''
-  const num = text.match(/(\d+)/)
-  return num ? +num[0] : 0
+  const num = text.match(/([\d\\.]+)/)
+  if (!Array.isArray(num) || !num[0]) {
+    // console.error('body', body)
+    return
+  }
+  return parseInt(num[0].replace('.', '').replace(',', ''))
 }
 async function fetchSearchHtml ({ search } = {}, options = {}) {
-  const response = await get({ ...options, url: `https://www.amazon.it/s?k=${encodeURIComponent(search)}` })
+  const url = `https://www.amazon.it/s?k=${encodeURIComponent(search)}`
+  const response = await get({ ...options, url })
   return response.body
 }
 async function getProductDetailsHtml ({ asin } = {}, options = {}) {
-  const response = await get({ ...options, url: `https://www.amazon.it/dp/${asin}` })
+  const url = `https://www.amazon.it/dp/${asin}`
+  const response = await get({ ...options, url })
   return response.body
 }
 async function getProductReviewsHtml ({ asin, pageNumber = 1 }, options = {}) {
-  const response = await get({ ...options, url: `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}` })
+  const url = `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}`
+  console.log('url', url)
+  const response = await get({ ...options, url })
   return response.body
 }
