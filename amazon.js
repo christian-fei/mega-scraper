@@ -6,6 +6,7 @@ const get = require(process.env.USE_LAMBDA ? './http-request-lambda' : './http')
 
 module.exports = {
   getProductReviews,
+  getProductReviewsCount,
   fetchSearchHtml,
   getProductDetailsHtml,
   getProductReviewsHtml,
@@ -17,6 +18,15 @@ async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   const html = await getProductReviewsHtml(asin, pageNumber, options)
   fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
   return parseProductReviews(html).map(reviewFromHtml)
+}
+async function getProductReviewsCount ({ asin } = {}, options = {}) {
+  const response = await get({ ...options, url: `https://www.amazon.it/dp/${asin}` })
+  const { body } = response
+
+  const doc = $(body)
+  const text = doc.find('.averageStarRatingNumerical').text() || ''
+  const num = text.match(/(\d+)/)
+  return num ? +num[0] : 0
 }
 async function fetchSearchHtml (search, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/s?k=${encodeURIComponent(search)}` })
