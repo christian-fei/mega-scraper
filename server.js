@@ -19,14 +19,14 @@ if (require.main === module) {
   module.exports = { server }
 }
 
-async function server ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 } = {}) {
-  let data
+function server ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 } = {}) {
+  let data = {}
   const httpServer = http.createServer()
   httpServer.on('request', requestHandler)
   httpServer.listen(port)
 
   log(`listening on http://localhost:${port}`)
-  return { update: (newData) => { data = newData } }
+  return { update: (newData) => { data = newData }, httpServer }
 
   function requestHandler (req, res) {
     if (req.url === '/') {

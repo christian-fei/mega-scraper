@@ -5,6 +5,7 @@ const { server } = require('./server')
 const amazonParser = require('./parsers/amazon')
 const { default: PQueue } = require('p-queue')
 const pLimit = require('p-limit')
+const pRetry = require('p-retry')
 const fs = require('fs')
 const path = require('path')
 const limit = pLimit(6)
@@ -25,7 +26,7 @@ if (require.main === module) {
 }
 
 async function main (asin, pageNumber = 1) {
-  server()
+  const httpInstance = server()
 
   const stats = {
     count: 0,
@@ -56,7 +57,7 @@ async function main (asin, pageNumber = 1) {
 
   let allReviewsCount = 0
 
-  const allReviews = await Promise.all(tasks.map((pageNumber) => limit(async () => {
+  const allReviews = await Promise.all(tasks.map((pageNumber) => limit(pRetry(() => {
     if (stats.noMoreReviewsPageNumber) {
       log(`Skipping ${pageNumber} / ${pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
@@ -64,10 +65,10 @@ async function main (asin, pageNumber = 1) {
     log(`Processing ${pageNumber} / ${pages}`)
     const task = processJob({ asin, pageNumber })
 
-    server.update(stats)
+    httpInstance.update(stats)
 
     return task.then(processProductReviews)
-  })))
+  }, { retries: 5 }))))
     .then((...results) => results.reduce((acc, curr) => acc.concat(curr), []))
 
   await queue.onIdle()
