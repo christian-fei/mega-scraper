@@ -18,7 +18,6 @@ async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
   return parseProductReviews(html).map(extractReviewFromHtml)
 }
-
 async function fetchSearchHtml (search, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/s?k=${encodeURIComponent(search)}` })
   return response.body
@@ -37,17 +36,18 @@ function parseProductReviews (html) {
   return array
 }
 function extractReviewFromHtml (html) {
-  const dateString = $('[data-hook="review-date"]', html).text()
-  const text = $('[data-hook="review-body"]', html).text()
-  const stars = starsFrom(html)
-
   return {
-    stars,
-    dateString,
-    text
+    stars: starsFrom(html),
+    dateString: dateFrom(html),
+    text: textFrom(html)
   }
 }
-
+function dateFrom (html) {
+  return $('[data-hook="review-date"]', html).text()
+}
+function textFrom (html) {
+  return $('[data-hook="review-body"]', html).text()
+}
 function starsFrom (html) {
   const starsContent = $('[data-hook="review-star-rating"]', html)
   /* istanbul ignore next */
