@@ -27,6 +27,7 @@
     "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.0",
     "got": "^9.6.0",
+    "p-limit": "^2.2.1",
     "p-queue": "^6.2.0",
     "tunnel": "0.0.6"
   }
