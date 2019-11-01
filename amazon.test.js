@@ -5,9 +5,7 @@ const {
   getProductDetailsHtml,
   getProductReviewsHtml,
   getProductReviews,
-  getProductReviewsCount,
-  parseProductReviews,
-  reviewFromHtml
+  getProductReviewsCount
 } = require('./amazon')
 
 test('get page html content', async t => {
@@ -42,27 +40,6 @@ test('get product reviews paginated', async t => {
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07JML91PY'))
-})
-
-test('parses product reviews paginated', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 1 }, { useProxy: true })
-  const reviews = parseProductReviews(html)
-  t.plan(2)
-  t.true(Array.isArray(reviews))
-  t.true(reviews.length > 0)
-})
-
-test('extracts review from html', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 1 }, { useProxy: true })
-  t.plan(6)
-  const reviews = parseProductReviews(html)
-  t.true(Array.isArray(reviews))
-  t.true(reviews.length > 0)
-  const review = reviewFromHtml(reviews[0])
-  t.true(review)
-  t.true(review.stars > 0 && review.stars <= 5)
-  t.true(review.dateString)
-  t.true(review.text)
 })
 
 test('gets reviews from product search', async t => {

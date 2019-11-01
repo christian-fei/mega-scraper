@@ -5,7 +5,7 @@
   "main": "amazon.js",
   "bin": "bin.js",
   "scripts": {
-    "test": "tap amazon.test.js --bail"
+    "test": "tap **.test.js --bail -j 4"
   },
   "repository": {
     "type": "git",
