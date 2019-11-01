@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const amazon = require('./amazon')
+const server = require('./server')
 const amazonParser = require('./parsers/amazon')
 const { default: PQueue } = require('p-queue')
 const pLimit = require('p-limit')
@@ -20,6 +21,8 @@ main(process.argv[2], process.argv[3])
   })
 
 async function main (asin, pageNumber = 1) {
+  server()
+
   const stats = {
     count: 0,
     productReviewsCount: 0,
