@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const log = require('debug')('server')
 const fs = require('fs')
 const http = require('http')
 const path = require('path')
@@ -7,7 +8,7 @@ const path = require('path')
 if (require.main === module) {
   main()
     .then(() => process.exit(0))
-    .catch(err => { console.error(err); process.exit(1) })
+    .catch(err => { log(err); process.exit(1) })
 } else {
   module.exports = main
 }
@@ -16,6 +17,7 @@ async function main ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 
   const httpServer = http.createServer()
   httpServer.on('request', requestHandler)
   httpServer.listen(port)
+  log('server listening on', port)
 }
 
 function read (filepath, defaultValue) {
@@ -28,13 +30,13 @@ function read (filepath, defaultValue) {
 
 function requestHandler (req, res) {
   if (req.url === '/') {
-    console.log('📖  [server] index', req.url)
+    log('📖  [server] index', req.url)
     res.write(index())
     return res.end()
   }
   if (req.url === '/favicon.ico') return res.end()
 
-  console.log('⛔️  [server] unhandled', req.url)
+  log('⛔️  [server] unhandled', req.url)
 
   res.end()
 }
