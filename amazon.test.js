@@ -11,7 +11,7 @@ const {
 } = require('./amazon')
 
 test('get page html content', async t => {
-  const html = await fetchSearchHtml('porta carta credito', { useProxy: true })
+  const html = await fetchSearchHtml({ search: 'porta carta credito' }, { useProxy: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('s-search-results'))

@@ -28,7 +28,7 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const num = text.match(/(\d+)/)
   return num ? +num[0] : 0
 }
-async function fetchSearchHtml (search, options = {}) {
+async function fetchSearchHtml ({ search } = {}, options = {}) {
   const response = await get({ ...options, url: `https://www.amazon.it/s?k=${encodeURIComponent(search)}` })
   return response.body
 }
