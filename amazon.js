@@ -1,4 +1,5 @@
 const $ = require('cheerio')
+const log = require('debug')('scraper:amazon')
 const fs = require('fs')
 const path = require('path')
 /* istanbul ignore next */
@@ -32,6 +33,7 @@ async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
 }
 async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/dp/${asin}`
+  log('getProductReviewsCount url', url)
   const response = await get({ ...options, url })
   const { body } = response
 
@@ -46,17 +48,19 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
 }
 async function fetchSearchHtml ({ search } = {}, options = {}) {
   const url = `https://www.amazon.it/s?k=${encodeURIComponent(search)}`
+  log('fetchSearchHtml url', url)
   const response = await get({ ...options, url })
   return response.body
 }
 async function getProductDetailsHtml ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/dp/${asin}`
+  log('getProductDetailsHtml url', url)
   const response = await get({ ...options, url })
   return response.body
 }
 async function getProductReviewsHtml ({ asin, pageNumber = 1 }, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}`
-  console.log('url', url)
+  log('getProductReviewsHtml url', url)
   const response = await get({ ...options, url })
   return response.body
 }

@@ -24,6 +24,7 @@
   "dependencies": {
     "aws-sdk": "^2.521.0",
     "cheerio": "^1.0.0-rc.3",
+    "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.0",
     "got": "^9.6.0",
     "p-queue": "^6.2.0",

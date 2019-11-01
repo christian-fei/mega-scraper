@@ -1,4 +1,5 @@
 const $ = require('cheerio')
+const log = require('debug')('parser:amazon')
 
 module.exports = {
   parseProductReviews,
