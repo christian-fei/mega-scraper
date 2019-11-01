@@ -17,6 +17,7 @@ async function main ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 
   const httpServer = http.createServer()
   httpServer.on('request', requestHandler)
   httpServer.listen(port)
+
   log('server listening on', port)
 }
 
@@ -32,6 +33,19 @@ function requestHandler (req, res) {
   if (req.url === '/') {
     log('📖  [server] index', req.url)
     res.write(index())
+    return res.end()
+  }
+  if (req.url === '/sse') {
+    log('📖  [server] sse', req.url)
+    res.setHeader('Cache-Control: no-cache')
+    res.setHeader('Content-Type: text/event-stream\n\n')
+
+    const handle = setInterval(() => {
+      res.write('event: ping\n')
+      res.write(`data: ${JSON.stringify({ time: new Date().toISOString() })}\n`)
+    }, 1000)
+
+    // res.write(index())
     return res.end()
   }
   if (req.url === '/favicon.ico') return res.end()

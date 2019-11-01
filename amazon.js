@@ -33,19 +33,27 @@ async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   return json
 }
 async function getProductReviewsCount ({ asin } = {}, options = {}) {
-  const url = `https://www.amazon.it/dp/${asin}`
+  const url = `https://www.amazon.it/product-reviews/${asin}`
   log('getProductReviewsCount url', url)
   const response = await get({ ...options, url })
   const { body } = response
 
+  if (body.indexOf('Amazon CAPTCHA')) { return log('captcha!', asin) }
+
   const doc = $(body)
-  const text = doc.find('[data-hook="top-customer-reviews-title"]').text() || ''
-  const num = text.match(/([\d\\.]+)/)
+  const text = doc.find('[data-hook="cr-filter-info-review-count"]').text() || ''
+  log('text', text)
+  const num = text.split(' ').map(w => w.replace(',', '').replace('.', '')).map(n => parseInt(n, 10)).filter(Boolean)
+  // const num = text.match(/([\d\\.,]+)/)
+  log('num, text', num, text)
   if (!Array.isArray(num) || !num[0]) {
     // console.error('body', body)
     return
   }
-  return parseInt(num[0].replace('.', '').replace(',', ''))
+  const number = num[num.length - 1]
+  const count = parseInt(number.replace('.', '').replace(',', ''))
+  log('count', count)
+  return count
 }
 async function fetchSearchHtml ({ search } = {}, options = {}) {
   const url = `https://www.amazon.it/s?k=${encodeURIComponent(search)}`

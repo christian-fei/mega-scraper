@@ -11,4 +11,15 @@
       scrape-amazon-reviews
     </h1>
   </body>
+
+  <script>
+    if (window.loading) window.loading.style = 'display: none'
+    const eventSource = new EventSource('/sse')
+    window.eventSource = eventSource
+
+    eventSource.onmessage = (message) => {
+      if (!message || !message.data) return console.error('skipping empty message', message)
+      console.log({message})
+    }
+  </script>
 </html>

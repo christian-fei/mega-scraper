@@ -10,7 +10,7 @@ const {
 } = require('../amazon')
 
 test('parses product reviews paginated', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 1 }, { useProxy: true })
+  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 1 })
   const reviews = parseProductReviews(html)
   t.plan(2)
   t.true(Array.isArray(reviews))
@@ -18,7 +18,7 @@ test('parses product reviews paginated', async t => {
 })
 
 test('extracts review from html', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07JML91PY', pageNumber: 1 }, { useProxy: true })
+  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 1 })
   t.plan(6)
   const reviews = parseProductReviews(html)
   t.true(Array.isArray(reviews))

@@ -11,14 +11,18 @@ const limit = pLimit(6)
 const queue = new PQueue({ concurrency: 6, timeout: 30000 })
 const log = require('debug')('bin')
 
-main(process.argv[2], process.argv[3])
-  .then(() => {
-    process.exit(0)
-  })
-  .catch((err) => {
-    log(err)
-    process.exit(1)
-  })
+if (require.main === module) {
+  main(process.argv[2], process.argv[3])
+    .then(() => {
+      process.exit(0)
+    })
+    .catch((err) => {
+      log(err)
+      process.exit(1)
+    })
+} else {
+  module.exports = main
+}
 
 async function main (asin, pageNumber = 1) {
   server()
@@ -35,13 +39,13 @@ async function main (asin, pageNumber = 1) {
     log(`Working on queue item #${++stats.count}.  Size: ${queue.size}  Pending: ${queue.pending}`)
   })
 
-  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber }, { useProxy: true })
+  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber })
   if (!Number.isFinite(productReviewsCount)) {
     throw new Error(`invalid reviews count ${productReviewsCount}`)
   }
   stats.productReviewsCount = productReviewsCount
 
-  const firstPageReviews = await amazon.getProductReviews({ asin, pageNumber }, { useProxy: true })
+  const firstPageReviews = await amazon.getProductReviews({ asin, pageNumber })
 
   stats.pageSize = firstPageReviews.length
   const pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
@@ -76,7 +80,7 @@ async function main (asin, pageNumber = 1) {
     } else {
       task = queue.add(() => {
         log(`Scraping page ${pageNumber} for asin ${asin}`)
-        return amazon.getProductReviews({ asin, pageNumber }, { useProxy: true })
+        return amazon.getProductReviews({ asin, pageNumber })
       })
     }
 
@@ -96,4 +100,5 @@ async function main (asin, pageNumber = 1) {
 
   await queue.onIdle()
   log('All work is done')
+  log(JSON.stringify(stats, null, 2))
 }

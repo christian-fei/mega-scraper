@@ -5,7 +5,8 @@
   "main": "amazon.js",
   "bin": "bin.js",
   "scripts": {
-    "test": "tap **.test.js --bail -j 4",
+    "test": "tap **.test.js",
+    "migrate": "mkdir -p migrations; node migrate.js",
     "bin": "node --max-old-space-size=8192 bin.js"
   },
   "repository": {
@@ -30,6 +31,7 @@
     "got": "^9.6.0",
     "p-limit": "^2.2.1",
     "p-queue": "^6.2.0",
-    "tunnel": "0.0.6"
+    "tunnel": "0.0.6",
+    "user-agents": "^1.0.427"
   }
 }
