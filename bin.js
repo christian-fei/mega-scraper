@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
 const amazon = require('./amazon')
+const amazonParser = require('./parsers/amazon')
 const { default: PQueue } = require('p-queue')
 const pLimit = require('p-limit')
+const fs = require('fs')
+const path = require('path')
 const limit = pLimit(6)
 const queue = new PQueue({ concurrency: 6, timeout: 30000 })
 const log = require('debug')('bin')
@@ -51,14 +54,21 @@ async function main (asin, pageNumber = 1) {
       return []
     }
     log(`Processing ${pageNumber} / ${pages}`)
-    const asinPageNumberExists = require('fs').existsSync(require('path').resolve(__dirname, 'json', `${asin}-${pageNumber}.json`))
+    const asinPageNumberExistsHTML = fs.existsSync(path.resolve(__dirname, 'html', `${asin}-${pageNumber}.html`))
+    const asinPageNumberExistsJSON = fs.existsSync(path.resolve(__dirname, 'json', `${asin}-${pageNumber}.json`))
 
     let task
-    if (asinPageNumberExists && !process.env.NO_CACHE) {
+    if (asinPageNumberExistsJSON && !process.env.NO_CACHE) {
       task = queue.add(() => {
-        log(`Using json/${asin}-${pageNumber}.json`)
-        const content = require('fs').readFileSync(require('path').resolve(__dirname, 'json', `${asin}-${pageNumber}.json`), { encoding: 'utf8' })
+        log(`Using html/${asin}-${pageNumber}.html`)
+        const content = fs.readFileSync(path.resolve(__dirname, 'json', `${asin}-${pageNumber}.json`), { encoding: 'utf8' })
         return JSON.parse(content)
+      })
+    } else if (asinPageNumberExistsHTML && !process.env.NO_CACHE) {
+      task = queue.add(() => {
+        log(`Using html/${asin}-${pageNumber}.html`)
+        const html = fs.readFileSync(path.resolve(__dirname, 'html', `${asin}-${pageNumber}.html`), { encoding: 'utf8' })
+        return amazonParser.parseProductReviews(html)
       })
     } else {
       task = queue.add(() => {

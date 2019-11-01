@@ -5,7 +5,8 @@
   "main": "amazon.js",
   "bin": "bin.js",
   "scripts": {
-    "test": "tap **.test.js --bail -j 4"
+    "test": "tap **.test.js --bail -j 4",
+    "bin": "node --max-old-space-size=8192 bin.js"
   },
   "repository": {
     "type": "git",
