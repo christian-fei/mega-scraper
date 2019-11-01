@@ -86,7 +86,7 @@ async function main (asin, pageNumber = 1) {
 
     return task.then(productReviews => {
       allReviewsCount += productReviews.length
-      if (productReviews.length === 0 && !stats.noMoreReviewsPageNumber) {
+      if (productReviews.length === 0 && stats.noMoreReviewsPageNumber > 0) {
         stats.noMoreReviewsPageNumber = pageNumber
       }
 
