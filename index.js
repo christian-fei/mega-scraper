@@ -1,8 +1,8 @@
 const $ = require('cheerio')
-/* istanbul ignore next */
-const get = require(process.env.USE_LAMBDA ? './http-request-lambda' : './http')
 const fs = require('fs')
 const path = require('path')
+/* istanbul ignore next */
+const get = require(process.env.USE_LAMBDA ? './http-request-lambda' : './http')
 
 module.exports = {
   getProductReviews,
