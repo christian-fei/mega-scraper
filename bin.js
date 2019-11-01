@@ -25,29 +25,34 @@ async function main (asin, pageNumber = 1) {
     throw new Error(`invalid reviews count ${productReviewsCount}`)
   }
 
+  const firstPageReviews = await amazon.getProductReviews({ asin, pageNumber }, { useProxy: true })
+
   let productReviews = []
   const allReviews = []
-  let pageCount = 11
-  log('productReviewsCount', productReviewsCount, 'pageCount', pageCount)
-  for (let i = pageCount; i < productReviewsCount; i += pageCount) {
-    log(`scraping page ${pageNumber} for asin ${asin}`)
+  const pageSize = firstPageReviews.length
+  const pages = parseInt(productReviewsCount / pageSize, 10) + 1
+  log(`scraping ${pageSize} / ${pages}`)
+  let lastPageSize = pageSize
+
+  for (; pageNumber < pages && lastPageSize > 0; pageNumber++) {
     const asinPageNumberExists = require('fs').existsSync(require('path').resolve(__dirname, 'json', `${asin}-${pageNumber}.json`))
     if (asinPageNumberExists && !process.env.NO_CACHE) {
       log(`using json/${asin}-${pageNumber}.json`)
       const content = require('fs').readFileSync(require('path').resolve(__dirname, 'json', `${asin}-${pageNumber}.json`), { encoding: 'utf8' })
       productReviews = JSON.parse(content)
     } else {
+      log(`scraping page ${pageNumber} for asin ${asin}`)
       productReviews = await queue.add(() => amazon.getProductReviews({ asin, pageNumber }, { useProxy: true }))
     }
 
-    log(`found ${productReviews && productReviews.length} product reviews on page ${pageNumber} for asin ${asin}`)
-    pageNumber++
     allReviews.push(...productReviews)
-    pageCount = productReviews.length
-    log(`total reviews ${allReviews.length}`)
-    // productReviews.forEach(p => log(`${p.text.substring(0, 100)}`))
+    log(`found ${productReviews && productReviews.length} product reviews on page ${pageNumber} for asin ${asin}`)
+    log(`accuracy ${((allReviews.length / productReviewsCount) * 100).toFixed(1)}% (${allReviews.length} / ${productReviewsCount})`)
+    pageNumber++
+    lastPageSize = productReviews.length
   }
 
   await queue.onIdle()
   log('All work is done')
+  log(`accuracy ${(allReviews.length / productReviewsCount) * 100}%`)
 }
