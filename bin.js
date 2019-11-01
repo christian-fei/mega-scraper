@@ -61,6 +61,17 @@ async function main (asin, pageNumber = 1) {
       return []
     }
     log(`Processing ${pageNumber} / ${pages}`)
+    const task = processJob({ asin, pageNumber })
+
+    return task.then(processProductReviews)
+  })))
+    .then((...results) => results.reduce((acc, curr) => acc.concat(curr), []))
+
+  await queue.onIdle()
+  log('All work is done')
+  log(JSON.stringify(stats, null, 2))
+
+  async function processJob ({ asin, pageNumber } = {}) {
     const asinPageNumberExistsHTML = fs.existsSync(path.resolve(__dirname, 'html', `${asin}-${pageNumber}.html`))
     const asinPageNumberExistsJSON = fs.existsSync(path.resolve(__dirname, 'json', `${asin}-${pageNumber}.json`))
 
@@ -83,22 +94,18 @@ async function main (asin, pageNumber = 1) {
         return amazon.getProductReviews({ asin, pageNumber })
       })
     }
+    return task
+  }
 
-    return task.then(productReviews => {
-      allReviewsCount += productReviews.length
-      if (productReviews.length === 0 && stats.noMoreReviewsPageNumber > 0) {
-        stats.noMoreReviewsPageNumber = pageNumber
-      }
+  function processProductReviews (productReviews) {
+    allReviewsCount += productReviews.length
+    if (productReviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
+      stats.noMoreReviewsPageNumber = pageNumber
+    }
 
-      log(`Found ${productReviews && productReviews.length} product reviews on page ${pageNumber} / ${pages} for asin ${asin}`)
+    log(`Found ${productReviews && productReviews.length} product reviews on page ${pageNumber} / ${pages} for asin ${asin}`)
 
-      log(`Accuracy ${((allReviewsCount / productReviewsCount) * 100).toFixed(1)}% (${allReviewsCount} / ${productReviewsCount})`)
-      return productReviews
-    })
-  })))
-    .then((...results) => results.reduce((acc, curr) => acc.concat(curr), []))
-
-  await queue.onIdle()
-  log('All work is done')
-  log(JSON.stringify(stats, null, 2))
+    log(`Accuracy ${((allReviewsCount / productReviewsCount) * 100).toFixed(1)}% (${allReviewsCount} / ${productReviewsCount})`)
+    return productReviews
+  }
 }

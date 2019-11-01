@@ -5,7 +5,8 @@
   "main": "amazon.js",
   "bin": "bin.js",
   "scripts": {
-    "test": "DEBUG='sar:*' tap **.test.js",
+    "clean": "rm -f html/* ; rm -f json/*",
+    "test": "rm -f html/B07747FR44* ; rm -f json/B07747FR44* ; DEBUG='sar:*' tap **.test.js --bail",
     "migrate": "mkdir -p migrations; DEBUG='sar:*' node migrate.js",
     "bin": "DEBUG='sar:*' node --max-old-space-size=8192 bin.js"
   },
