@@ -18,6 +18,7 @@ main(process.argv[2], process.argv[3])
 
 async function main (asin, pageNumber = 1) {
   let count = 0
+
   queue.on('active', () => {
     log(`Working on queue item #${++count}.  Size: ${queue.size}  Pending: ${queue.pending}`)
   })
