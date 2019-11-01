@@ -1,4 +1,5 @@
 const $ = require('cheerio')
+/* istanbul ignore next */
 const get = require(process.env.USE_LAMBDA ? './http-request-lambda' : './http')
 
 module.exports = {
