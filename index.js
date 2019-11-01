@@ -13,7 +13,7 @@ module.exports = {
   extractReviewFromHtml
 }
 
-async function getProductReviews (asin, pageNumber = 1, options) {
+async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   const html = await fetchProductReviewsHtml(asin, pageNumber, options)
   fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
   return parseProductReviews(html).map(extractReviewFromHtml)

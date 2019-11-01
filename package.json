@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "tap index.test.js --bail --100"
+    "test": "tap index.test.js --bail"
   },
   "repository": {
     "type": "git",
