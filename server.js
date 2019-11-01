@@ -6,19 +6,60 @@ const http = require('http')
 const path = require('path')
 
 if (require.main === module) {
-  main()
-    .then(() => process.exit(0))
-    .catch(err => { log(err); process.exit(1) })
+  server()
+    .then(() => {
+      log('finished')
+      // process.exit(0)
+    })
+    .catch(err => {
+      log('err', err.message, err.stack)
+      // process.exit(1)
+    })
 } else {
-  module.exports = main
+  module.exports = { server }
 }
 
-async function main ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 } = {}) {
+async function server ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 } = {}) {
+  let data
   const httpServer = http.createServer()
   httpServer.on('request', requestHandler)
   httpServer.listen(port)
 
-  log('server listening on', port)
+  log(`listening on http://localhost:${port}`)
+  return { update: (newData) => { data = newData } }
+
+  function requestHandler (req, res) {
+    if (req.url === '/') {
+      log('index', req.url)
+      res.write(index())
+      return res.end()
+    }
+    if (req.url === '/sse') {
+      log('sse', req.url)
+      res.writeHead(200, {
+        Connection: 'keep-alive',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache'
+      })
+
+      const handle = setInterval(() => {
+        res.write('event: ping\n')
+        res.write(`data: ${JSON.stringify({ time: new Date().toISOString(), data })}\n`)
+        res.write('\n\n')
+      }, 1000)
+
+      return res.on('close', () => {
+        clearInterval(handle)
+        try { res.end() } catch (_) {}
+        log('sse connection closed')
+      })
+    }
+    if (req.url === '/favicon.ico') return res.end()
+
+    log('⛔️  [server] unhandled', req.url)
+
+    res.end()
+  }
 }
 
 function read (filepath, defaultValue) {
@@ -27,32 +68,6 @@ function read (filepath, defaultValue) {
   } catch (err) {
     return defaultValue
   }
-}
-
-function requestHandler (req, res) {
-  if (req.url === '/') {
-    log('📖  [server] index', req.url)
-    res.write(index())
-    return res.end()
-  }
-  if (req.url === '/sse') {
-    log('📖  [server] sse', req.url)
-    res.setHeader('Cache-Control: no-cache')
-    res.setHeader('Content-Type: text/event-stream\n\n')
-
-    const handle = setInterval(() => {
-      res.write('event: ping\n')
-      res.write(`data: ${JSON.stringify({ time: new Date().toISOString() })}\n`)
-    }, 1000)
-
-    // res.write(index())
-    return res.end()
-  }
-  if (req.url === '/favicon.ico') return res.end()
-
-  log('⛔️  [server] unhandled', req.url)
-
-  res.end()
 }
 
 function index () {

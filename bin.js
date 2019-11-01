@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const amazon = require('./amazon')
-const server = require('./server')
+const { server } = require('./server')
 const amazonParser = require('./parsers/amazon')
 const { default: PQueue } = require('p-queue')
 const pLimit = require('p-limit')
@@ -13,13 +13,13 @@ const log = require('debug')('sar:bin')
 
 if (require.main === module) {
   main(process.argv[2], process.argv[3])
-    .then(() => {
-      process.exit(0)
-    })
-    .catch((err) => {
-      log(err)
-      process.exit(1)
-    })
+  // .then(() => {
+  //   process.exit(0)
+  // })
+  // .catch((err) => {
+  //   log(err)
+  //   process.exit(1)
+  // })
 } else {
   module.exports = main
 }
@@ -41,7 +41,8 @@ async function main (asin, pageNumber = 1) {
 
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber })
   if (!Number.isFinite(productReviewsCount)) {
-    throw new Error(`invalid reviews count ${productReviewsCount}`)
+    log(`invalid reviews count ${productReviewsCount}`)
+    return []
   }
   stats.productReviewsCount = productReviewsCount
 
@@ -55,13 +56,15 @@ async function main (asin, pageNumber = 1) {
 
   let allReviewsCount = 0
 
-  await Promise.all(tasks.map((pageNumber) => limit(async () => {
+  const allReviews = await Promise.all(tasks.map((pageNumber) => limit(async () => {
     if (stats.noMoreReviewsPageNumber) {
       log(`Skipping ${pageNumber} / ${pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
     }
     log(`Processing ${pageNumber} / ${pages}`)
     const task = processJob({ asin, pageNumber })
+
+    server.update(stats)
 
     return task.then(processProductReviews)
   })))
@@ -71,21 +74,25 @@ async function main (asin, pageNumber = 1) {
   log('All work is done')
   log(JSON.stringify(stats, null, 2))
 
+  return allReviews
+
   async function processJob ({ asin, pageNumber } = {}) {
-    const asinPageNumberExistsHTML = fs.existsSync(path.resolve(__dirname, 'html', `${asin}-${pageNumber}.html`))
-    const asinPageNumberExistsJSON = fs.existsSync(path.resolve(__dirname, 'json', `${asin}-${pageNumber}.json`))
+    const htmlPath = path.resolve(__dirname, 'html', `${asin}-${pageNumber}.html`)
+    const jsonPath = path.resolve(__dirname, 'json', `${asin}-${pageNumber}.json`)
+    const asinPageNumberExistsHTML = fs.existsSync(htmlPath)
+    const asinPageNumberExistsJSON = fs.existsSync(jsonPath)
 
     let task
     if (asinPageNumberExistsJSON && !process.env.NO_CACHE) {
       task = queue.add(() => {
         log(`Using html/${asin}-${pageNumber}.html`)
-        const content = fs.readFileSync(path.resolve(__dirname, 'json', `${asin}-${pageNumber}.json`), { encoding: 'utf8' })
+        const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
         return JSON.parse(content)
       })
     } else if (asinPageNumberExistsHTML && !process.env.NO_CACHE) {
       task = queue.add(() => {
         log(`Using html/${asin}-${pageNumber}.html`)
-        const html = fs.readFileSync(path.resolve(__dirname, 'html', `${asin}-${pageNumber}.html`), { encoding: 'utf8' })
+        const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
         return amazonParser.parseProductReviews(html)
       })
     } else {
