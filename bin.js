@@ -76,7 +76,7 @@ async function main (asin, pageNumber = 1) {
     log(JSON.stringify(stats, null, 2))
     httpInstance.update(stats)
 
-    return task.then(processProductReviews)
+    return task.then(processProductReviews(pageNumber))
   })))
     .then((...results) => results.reduce((acc, curr) => acc.concat(curr), []))
 
@@ -115,20 +115,22 @@ async function main (asin, pageNumber = 1) {
     return task
   }
 
-  function processProductReviews (productReviews) {
-    allReviewsCount += productReviews.length
-    if (productReviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
-      stats.noMoreReviewsPageNumber = pageNumber
+  function processProductReviews (pageNumber) {
+    return (productReviews) => {
+      allReviewsCount += productReviews.length
+      if (productReviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
+        stats.noMoreReviewsPageNumber = pageNumber
+      }
+
+      stats.lastPageSize = productReviews.length
+      stats.scrapedReviewsCount += productReviews.length
+
+      log(`Found ${productReviews && productReviews.length} product reviews on page ${pageNumber} / ${pages} for asin ${asin}`)
+      const accuracy = (allReviewsCount / productReviewsCount)
+      Object.assign(stats, { accuracy })
+
+      log(`Accuracy ${(accuracy / 100).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
+      return productReviews
     }
-
-    stats.lastPageSize = productReviews.length
-    stats.scrapedReviewsCount += productReviews.length
-
-    log(`Found ${productReviews && productReviews.length} product reviews on page ${pageNumber} / ${pages} for asin ${asin}`)
-    const accuracy = (allReviewsCount / productReviewsCount)
-    Object.assign(stats, { accuracy })
-
-    log(`Accuracy ${(accuracy / 100).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
-    return productReviews
   }
 }
