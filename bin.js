@@ -76,7 +76,7 @@ async function main (asin, pageNumber = 1) {
     log(JSON.stringify(stats, null, 2))
     httpInstance.update(stats)
 
-    return task.then(processProductReviews(pageNumber))
+    return task.then(processProductReviews({ asin, pageNumber }))
   })))
     .then((...results) => results.reduce((acc, curr) => acc.concat(curr), []))
 
@@ -115,7 +115,7 @@ async function main (asin, pageNumber = 1) {
     return task
   }
 
-  function processProductReviews (pageNumber) {
+  function processProductReviews ({ asin, pageNumber } = {}) {
     return (productReviews) => {
       allReviewsCount += productReviews.length
       if (productReviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
