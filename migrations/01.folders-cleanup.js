@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const log = require('debug')('sar:migration:01:html-json-folders')
+const log = require('debug')('sar:migration:01:folders-cleanup')
 const fs = require('fs')
 const cp = require('child_process')
 const path = require('path')
