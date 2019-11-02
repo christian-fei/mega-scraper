@@ -38,9 +38,10 @@ async function get ({ url, headers = {}, useProxy = false || process.env.USE_PRO
 
   await page.goto(url)
 
-  // const screenshot = await page.screenshot({ fullPage: true })
-  log('screenshot', url)
-  await page.screenshot({ path: `screenshots/${url.replace(/\//gi, '|')}.png`, fullPage: true })
+  const normalizedUrl = url.replace(/\//gi, '|')
+  const screenshotPath = `screenshots/${normalizedUrl}.png`
+  log('screenshot', url, screenshotPath)
+  await page.screenshot({ path: screenshotPath, fullPage: true })
 
   const body = await page.content()
   await page.close()

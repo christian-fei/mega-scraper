@@ -43,7 +43,7 @@ function server ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 } = 
       })
 
       const handle = setInterval(() => {
-        res.write('event: ping\n')
+        res.write('event: message\n')
         res.write(`data: ${JSON.stringify({ time: new Date().toISOString(), data })}\n`)
         res.write('\n\n')
       }, 1000)

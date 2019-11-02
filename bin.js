@@ -28,15 +28,21 @@ async function main (asin, pageNumber = 1) {
   const httpInstance = server()
 
   const stats = {
-    count: 0,
+    start: new Date().toISOString(),
+    elapsed: 0,
+    finish: undefined,
     productReviewsCount: 0,
+    scrapedReviewsCount: 0,
+    accuracy: 0,
     pageSize: 0,
+    pageCount: 0,
+    lastPageSize: 0,
     pages: 0,
     noMoreReviewsPageNumber: 0
   }
 
-  queue.on('active', () => {
-    log(`Working on queue item #${++stats.count}.  Size: ${queue.size}  Pending: ${queue.pending}`)
+  queue.on('active', function () {
+    log(`Working on ${stats.pageCount++}. Size: ${queue.size}  Pending: ${queue.pending}`)
   })
 
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber }, { puppeteer: true })
@@ -58,13 +64,16 @@ async function main (asin, pageNumber = 1) {
 
   log(JSON.stringify(stats, null, 2))
   const allReviews = await Promise.all(tasks.map((pageNumber) => limit(() => {
+    Object.assign(stats, { elapsed: Date.now() - +new Date(stats.start) })
+
     if (stats.noMoreReviewsPageNumber) {
       log(`Skipping ${pageNumber} / ${pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
     }
-    log(`Processing ${pageNumber} / ${pages}`)
+    log(`Processing ${pageNumber} / ${pages} (lastPageSize ${stats.lastPageSize})`)
     const task = processJob({ asin, pageNumber })
 
+    log(JSON.stringify(stats, null, 2))
     httpInstance.update(stats)
 
     return task.then(processProductReviews)
@@ -73,6 +82,7 @@ async function main (asin, pageNumber = 1) {
 
   await queue.onIdle()
   log('All work is done')
+  Object.assign(stats, { finish: new Date().toISOString() })
   log(JSON.stringify(stats, null, 2))
 
   return allReviews
@@ -111,9 +121,14 @@ async function main (asin, pageNumber = 1) {
       stats.noMoreReviewsPageNumber = pageNumber
     }
 
-    log(`Found ${productReviews && productReviews.length} product reviews on page ${pageNumber} / ${pages} for asin ${asin}`)
+    stats.lastPageSize = productReviews.length
+    stats.scrapedReviewsCount += productReviews.length
 
-    log(`Accuracy ${((allReviewsCount / productReviewsCount) * 100).toFixed(1)}% (${allReviewsCount} / ${productReviewsCount})`)
+    log(`Found ${productReviews && productReviews.length} product reviews on page ${pageNumber} / ${pages} for asin ${asin}`)
+    const accuracy = (allReviewsCount / productReviewsCount)
+    Object.assign(stats, { accuracy })
+
+    log(`Accuracy ${(accuracy / 100).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
     return productReviews
   }
 }
