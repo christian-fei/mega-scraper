@@ -38,7 +38,10 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const response = await get({ ...options, url })
   const { body = '' } = response
 
-  if (body.indexOf('Amazon CAPTCHA') >= 0) { return log('captcha!', asin, body.substring(body.indexOf('Amazon CAPTCHA') - 20, body.indexOf('Amazon CAPTCHA') + 20)) }
+  if (body.indexOf('Amazon CAPTCHA') >= 0) {
+    log('captcha!', asin, body.substring(body.indexOf('Amazon CAPTCHA') - 20, body.indexOf('Amazon CAPTCHA') + 20))
+    throw new Error('captcha')
+  }
 
   const doc = $(body)
   const text = doc.find('[data-hook="cr-filter-info-review-count"]').text() || ''

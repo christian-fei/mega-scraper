@@ -17,10 +17,10 @@ if (require.main === module) {
   // .then(() => {
   //   process.exit(0)
   // })
-  // .catch((err) => {
-  //   log(err)
-  //   process.exit(1)
-  // })
+    .catch((err) => {
+      log(err)
+    // process.exit(1)
+    })
 } else {
   module.exports = main
 }
@@ -57,7 +57,8 @@ async function main (asin, pageNumber = 1) {
 
   let allReviewsCount = 0
 
-  const allReviews = await Promise.all(tasks.map((pageNumber) => limit(pRetry(() => {
+  log(JSON.stringify(stats, null, 2))
+  const allReviews = await Promise.all(tasks.map((pageNumber) => limit(() => {
     if (stats.noMoreReviewsPageNumber) {
       log(`Skipping ${pageNumber} / ${pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
@@ -68,7 +69,7 @@ async function main (asin, pageNumber = 1) {
     httpInstance.update(stats)
 
     return task.then(processProductReviews)
-  }, { retries: 5 }))))
+  })))
     .then((...results) => results.reduce((acc, curr) => acc.concat(curr), []))
 
   await queue.onIdle()
