@@ -31,7 +31,10 @@ function get (options = {}) {
 async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   const html = await getProductReviewsHtml({ asin, pageNumber }, options)
   try {
-    fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
+    fs.mkdirSync(path.resolve(__dirname, `html/${asin}`))
+  } catch (err) { }
+  try {
+    fs.writeFileSync(path.resolve(__dirname, `html/${asin}/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
   } catch (err) { console.error(err.message, err.stack) }
 
   const json = parseProductReviews(html)
@@ -40,7 +43,10 @@ async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
     .filter(r => r.stars)
     .filter(r => r.dateString)
   try {
-    fs.writeFileSync(path.resolve(__dirname, `json/${asin}-${pageNumber}.json`), JSON.stringify(json), { encoding: 'utf8' })
+    fs.mkdirSync(path.resolve(__dirname, `json/${asin}`))
+  } catch (err) { }
+  try {
+    fs.writeFileSync(path.resolve(__dirname, `json/${asin}/${asin}-${pageNumber}.json`), JSON.stringify(json), { encoding: 'utf8' })
   } catch (err) { console.error(err.message, err.stack) }
 
   return json
