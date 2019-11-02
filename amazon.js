@@ -34,7 +34,11 @@ async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
     fs.writeFileSync(path.resolve(__dirname, `html/${asin}-${pageNumber}.html`), html, { encoding: 'utf8' })
   } catch (err) { console.error(err.message, err.stack) }
 
-  const json = parseProductReviews(html).map(reviewFromHtml)
+  const json = parseProductReviews(html)
+    .map(reviewFromHtml)
+    .filter(r => r.text)
+    .filter(r => r.stars)
+    .filter(r => r.dateString)
   try {
     fs.writeFileSync(path.resolve(__dirname, `json/${asin}-${pageNumber}.json`), JSON.stringify(json), { encoding: 'utf8' })
   } catch (err) { console.error(err.message, err.stack) }
