@@ -30,7 +30,11 @@ async function main () {
 
   for (const filename of migrationFilenames) {
     console.time(`running ${path.resolve(migrationsPath, filename)}`)
-    cp.execFileSync(path.resolve(migrationsPath, filename))
+    try {
+      console.log(cp.execFileSync(path.resolve(migrationsPath, filename)).toString())
+    } catch (err) {
+      console.error(err)
+    }
     console.timeEnd(`running ${path.resolve(migrationsPath, filename)}`)
 
     const date = new Date().toISOString()
@@ -39,5 +43,5 @@ async function main () {
 
   const configPath = path.resolve(migrationsPath, 'config.json')
   console.log(`writing config to ${configPath}\n${JSON.stringify(migrationsConfig, null, 2)}`)
-  // fs.writeFileSync(configPath, JSON.stringify(migrationsConfig, null, 2), { encoding: 'utf8' })
+  fs.writeFileSync(configPath, JSON.stringify(migrationsConfig, null, 2))
 }
