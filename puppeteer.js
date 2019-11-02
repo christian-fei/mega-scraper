@@ -8,7 +8,7 @@ const UA = require('user-agents')
 module.exports = get
 
 async function get ({ url, headers = {}, useProxy = false || process.env.USE_PROXY === 'TRUE' }) {
-  const args = ['--no-sandbox', '--disable-setuid-sandbox']
+  const args = ['--no-sandbox', '--disable-setuid-sandbox', '--no-first-run', '--single-process']
   const browserOptions = {
     args
   }
@@ -33,19 +33,34 @@ async function get ({ url, headers = {}, useProxy = false || process.env.USE_PRO
 
   const browser = await puppeteer.launch(browserOptions)
 
-  const page = await browser.newPage()
+  let page
+  const pages = await browser.pages()
+  if (pages && pages.length > 0) {
+    page = pages[0]
+  } else {
+    page = await browser.newPage()
+  }
   await page.setUserAgent(randomUA())
-
   await page.goto(url)
 
-  const normalizedUrl = url.replace(/\//gi, '|')
-  const screenshotPath = `screenshots/${normalizedUrl}.png`
-  log('screenshot', url, screenshotPath)
-  await page.screenshot({ path: screenshotPath, fullPage: true })
-
   const body = await page.content()
-  await page.close()
-  await browser.close()
+
+  const normalizedUrl = url.replace(/\//gi, '|')
+  const screenshotPath = path.resolve(__dirname, `screenshots/${normalizedUrl}.png`)
+  log('screenshot', url, screenshotPath)
+  try {
+    await page.screenshot({ path: screenshotPath, fullPage: true })
+  } catch (err) {
+    log(`failed to snapshot puppeteer ${err.message}`, err)
+  }
+
+  try {
+    await page.close()
+    await browser.close()
+  } catch (err) {
+    log(`failed to close puppeteer ${err.message}`, err)
+  }
+
   return { body: body }
 }
 

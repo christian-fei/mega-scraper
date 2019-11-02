@@ -9,41 +9,41 @@ const {
 } = require('./amazon')
 
 test('get page html content', async t => {
-  const html = await fetchSearchHtml({ search: 'porta carta credito' })
+  const html = await fetchSearchHtml({ search: 'porta carta credito' }, { puppeteer: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('s-search-results'))
 })
 
 test('get product details', async t => {
-  const html = await getProductDetailsHtml({ asin: 'B07747FR44' })
+  const html = await getProductDetailsHtml({ asin: 'B07747FR44' }, { puppeteer: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07747FR44'))
 })
 
 test('get product reviews', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 1 })
+  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 1 }, { puppeteer: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07747FR44'))
 })
 
 test('get product reviews count', async t => {
-  const count = await getProductReviewsCount({ asin: 'B07747FR44' })
+  const count = await getProductReviewsCount({ asin: 'B07747FR44' }, { puppeteer: true })
   t.plan(1)
   t.true(Number.isFinite(count))
 })
 
 test('get product reviews paginated', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 2 })
+  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07747FR44'))
 })
 
 test('gets reviews from product asin', async t => {
-  const reviews = await getProductReviews({ asin: 'B07747FR44' })
+  const reviews = await getProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
   t.plan(6)
   t.true(Array.isArray(reviews))
   t.true(reviews.length > 0)
@@ -55,7 +55,7 @@ test('gets reviews from product asin', async t => {
 })
 
 test('gets reviews from product asin from page 2', async t => {
-  const reviews = await getProductReviews({ asin: 'B07747FR44', pageNumber: 2 })
+  const reviews = await getProductReviews({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
   t.plan(6)
   t.true(Array.isArray(reviews))
   t.true(reviews.length > 0)
@@ -67,7 +67,7 @@ test('gets reviews from product asin from page 2', async t => {
 })
 
 test('gets reviews from product asin with proxy', async t => {
-  const reviews = await getProductReviews({ asin: 'B07747FR44' })
+  const reviews = await getProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
   t.plan(6)
   t.true(Array.isArray(reviews))
   t.true(reviews.length > 0)
