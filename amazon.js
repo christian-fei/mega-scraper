@@ -4,7 +4,9 @@ const fs = require('fs')
 const path = require('path')
 
 /* istanbul ignore next */
-const get = require(process.env.USE_LAMBDA ? './http-request-lambda' : './http')
+const puppeteer = require('./puppeteer')
+const http = require('./http')
+const lambda = require('./http-request-lambda')
 
 const {
   parseProductReviews,
@@ -17,6 +19,13 @@ module.exports = {
   fetchSearchHtml,
   getProductDetailsHtml,
   getProductReviewsHtml
+}
+
+function get (options = {}) {
+  log(options)
+  if (options.puppeteer) return puppeteer(options, { useProxy: options.useProxy })
+  if (options.lambda) return lambda(options, { useProxy: options.useProxy })
+  return http(options, { useProxy: options.useProxy })
 }
 
 async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {

@@ -6,16 +6,18 @@ const UA = require('user-agents')
 
 module.exports = get
 
-async function get ({ url, headers = {}, useProxy = false || process.env.USE_PROXY === 'TRUE' }) {
+async function get ({ url, headers = {}, useProxy = true || process.env.USE_PROXY === 'TRUE' }) {
   if (useProxy) {
     const proxies = await getFreeHttpsProxy()
     const index = parseInt(Math.random() * proxies.length, 10)
     const proxy = proxies[index]
-    headers.agent = tunnel.httpsOverHttps({ proxy })
-    // headers.agent = tunnel.httpOverHttp({ proxy })
+    // headers.agent = tunnel.httpsOverHttps({ proxy })
+    headers.agent = tunnel.httpOverHttp({ proxy })
     log('using proxy', proxy, index)
   }
-  headers['user-agent'] = randomUA()
+  const ua = randomUA()
+  headers['user-agent'] = ua
+  log('using ua', ua)
 
   return got(url, { headers })
 }

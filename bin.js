@@ -5,21 +5,20 @@ const { server } = require('./server')
 const amazonParser = require('./parsers/amazon')
 const { default: PQueue } = require('p-queue')
 const pLimit = require('p-limit')
-const pRetry = require('p-retry')
 const fs = require('fs')
 const path = require('path')
 const limit = pLimit(6)
-const queue = new PQueue({ concurrency: 6, timeout: 30000 })
+const queue = new PQueue({ concurrency: 2, timeout: 30000 })
 const log = require('debug')('sar:bin')
 
 if (require.main === module) {
   main(process.argv[2], process.argv[3])
-  // .then(() => {
-  //   process.exit(0)
-  // })
+    .then(() => {
+      // process.exit(0)
+    })
     .catch((err) => {
       log(err)
-    // process.exit(1)
+      // process.exit(1)
     })
 } else {
   module.exports = main
@@ -40,14 +39,14 @@ async function main (asin, pageNumber = 1) {
     log(`Working on queue item #${++stats.count}.  Size: ${queue.size}  Pending: ${queue.pending}`)
   })
 
-  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber })
+  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber }, { puppeteer: true })
   if (!Number.isFinite(productReviewsCount)) {
     log(`invalid reviews count ${productReviewsCount}`)
     return []
   }
   stats.productReviewsCount = productReviewsCount
 
-  const firstPageReviews = await amazon.getProductReviews({ asin, pageNumber })
+  const firstPageReviews = await amazon.getProductReviews({ asin, pageNumber }, { puppeteer: true })
 
   stats.pageSize = firstPageReviews.length
   const pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
@@ -100,7 +99,7 @@ async function main (asin, pageNumber = 1) {
     } else {
       task = queue.add(() => {
         log(`Scraping page ${pageNumber} for asin ${asin}`)
-        return amazon.getProductReviews({ asin, pageNumber })
+        return amazon.getProductReviews({ asin, pageNumber }, { puppeteer: true })
       })
     }
     return task
