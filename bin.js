@@ -11,7 +11,7 @@ const limit = pLimit(6)
 const queue = new PQueue({ concurrency: 2, timeout: 30000 })
 const debug = require('debug')
 const log = debug('sar:bin')
-debug.enable('sar:bin')
+debug.enable('sar:*')
 
 if (require.main === module) {
   main(process.argv[2], process.argv[3])
