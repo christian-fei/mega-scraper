@@ -58,10 +58,9 @@ async function main (asin, pageNumber = 1) {
   const firstPageReviews = await amazon.getProductReviews({ asin, pageNumber }, { puppeteer: true })
 
   stats.pageSize = firstPageReviews.length
-  const pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
-  stats.pages = pages
+  stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
 
-  const tasks = Array.from({ length: pages }, (_, i) => i + pageNumber)
+  const tasks = Array.from({ length: stats.pages }, (_, i) => i + pageNumber)
 
   let allReviewsCount = 0
 
@@ -70,10 +69,10 @@ async function main (asin, pageNumber = 1) {
     Object.assign(stats, { elapsed: Date.now() - +new Date(stats.start) })
 
     if (stats.noMoreReviewsPageNumber) {
-      log(`Skipping ${pageNumber} / ${pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
+      log(`Skipping ${pageNumber} / ${stats.pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
     }
-    log(`Processing ${pageNumber} / ${pages} (lastPageSize ${stats.lastPageSize})`)
+    log(`Processing ${pageNumber} / ${stats.pages} (lastPageSize ${stats.lastPageSize})`)
     const task = processJob({ asin, pageNumber })
 
     log(JSON.stringify(stats, null, 2))
