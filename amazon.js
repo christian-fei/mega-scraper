@@ -40,6 +40,7 @@ async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
 
   const json = parseProductReviews(html)
     .map(reviewFromHtml)
+    .map(r => Object.assign(r, { screenshotPath }))
     .filter(r => r.text)
     .filter(r => r.stars)
     .filter(r => r.dateString)
@@ -50,7 +51,7 @@ async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
     fs.writeFileSync(path.resolve(__dirname, `json/${asin}/${asin}-${pageNumber}.json`), JSON.stringify(json), { encoding: 'utf8' })
   } catch (err) { console.error(err.message, err.stack) }
 
-  return json
+  return { reviews: json, screenshotPath }
 }
 async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}`
@@ -68,10 +69,12 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const num = text.split(' ').filter(Boolean).map(w => '' + w).map(w => w.replace(',', '').replace('.', '')).map(n => parseInt(n, 10)).filter(Boolean)
   if (!Array.isArray(num) || !num[0]) {
     // console.error('body', body)
+    log('unable to read productReviewsCount', text)
     return
   }
   const number = num[num.length - 1]
   const count = parseInt(number)
+  log('productReviewsCount', count)
   return count
 }
 async function fetchSearchHtml ({ search } = {}, options = {}) {

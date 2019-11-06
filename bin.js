@@ -11,7 +11,7 @@ const limit = pLimit(6)
 const queue = new PQueue({ concurrency: 2, timeout: 30000 })
 const debug = require('debug')
 const log = debug('sar:bin')
-debug.enable('sar:*')
+debug.enable('sar:bin,sar:scraper:*,sar:server')
 
 if (require.main === module) {
   main(process.argv[2], process.argv[3])
@@ -41,6 +41,7 @@ async function main (asin, pageNumber = 1) {
     lastPageSize: 0,
     pages: 0,
     noMoreReviewsPageNumber: 0,
+    reviews: [],
     screenshots: []
   }
 
@@ -55,7 +56,7 @@ async function main (asin, pageNumber = 1) {
   }
   stats.productReviewsCount = productReviewsCount
 
-  const firstPageReviews = await amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
+  const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
 
   stats.pageSize = firstPageReviews.length
   stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
@@ -111,7 +112,7 @@ async function main (asin, pageNumber = 1) {
         return { reviews }
       })
     } else {
-      task = queue.add(() => {
+      task = queue.add(async () => {
         log(`Scraping page ${pageNumber} for asin ${asin}`)
         return amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
       })
@@ -120,21 +121,23 @@ async function main (asin, pageNumber = 1) {
   }
 
   function processProductReviews ({ asin, pageNumber } = {}) {
-    return (productReviews) => {
-      allReviewsCount += productReviews.length
-      if (productReviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
+    return ({ reviews, screenshotPath }) => {
+      allReviewsCount += reviews.length
+      if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
         stats.noMoreReviewsPageNumber = pageNumber
       }
 
-      stats.lastPageSize = productReviews.length
-      stats.scrapedReviewsCount += productReviews.length
+      stats.lastPageSize = reviews.length
+      stats.scrapedReviewsCount += reviews.length
 
-      log(`Found ${productReviews && productReviews.length} product reviews on page ${pageNumber} / ${pages} for asin ${asin}`)
+      log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.pages} for asin ${asin}`)
       const accuracy = (allReviewsCount / productReviewsCount)
-      Object.assign(stats, { accuracy })
+      stats.accuracy = accuracy
+      stats.reviews = stats.reviews.concat(reviews)
+      stats.screenshots = stats.screenshots.concat([screenshotPath])
 
       log(`Accuracy ${(accuracy / 100).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
-      return productReviews
+      return reviews
     }
   }
 }
