@@ -4,23 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <style>
-      .stat {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1em;
-        width: 25em;
-      }
-      .flex-container {
-        display: flex;
-        flex-direction: column;
-      }
-      .value {
-        font-size: 1.2em;
-      }
-    </style>
+    <title>scrape-amazon-reviews</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
     <h1>
@@ -40,54 +25,84 @@
         const data = JSON.parse(message.data).data
         if (data && Object.keys(data).length > 0) {
           window.main.innerHTML = `
-<div class="flex-container">
-  <div class="stat">
-    <h1 class="title">start</h1>
-    <div class="value">${data.start}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">elapsed</h1>
-    <div class="value">${data.elapsed}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">finish</h1>
-    <div class="value">${data.finish}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">accuracy</h1>
-    <div class="value">${data.accuracy}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">productReviewsCount</h1>
-    <div class="value">${data.productReviewsCount}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">scrapedReviewsCount</h1>
-    <div class="value">${data.scrapedReviewsCount}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">pageSize</h1>
-    <div class="value">${data.pageSize}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">pageCount</h1>
-    <div class="value">${data.pageCount}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">lastPageSize</h1>
-    <div class="value">${data.lastPageSize}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">pages</h1>
-    <div class="value">${data.pages}</div>
-  </div>
-  <div class="stat">
-    <h1 class="title">noMoreReviewsPageNumber</h1>
-    <div class="value">${data.noMoreReviewsPageNumber}</div>
-  </div>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">start</h1>
+        <div class="value">${data.start}</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">elapsed</h1>
+        <div class="value">${data.elapsed}</div>
+      </div>
+    </div>
+    <div class="w-100"></div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">finish</h1>
+        <div class="value">${data.finish}</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">accuracy</h1>
+        <div class="value">${data.accuracy}</div>
+      </div>
+    </div>
+    <div class="w-100"></div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">productReviewsCount</h1>
+        <div class="value">${data.productReviewsCount}</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">scrapedReviewsCount</h1>
+        <div class="value">${data.scrapedReviewsCount}</div>
+      </div>
+    </div>
+    <div class="w-100"></div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">pageSize</h1>
+        <div class="value">${data.pageSize}</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">pageCount</h1>
+        <div class="value">${data.pageCount}</div>
+      </div>
+    </div>
+    <div class="w-100"></div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">lastPageSize</h1>
+        <div class="value">${data.lastPageSize}</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">pages</h1>
+        <div class="value">${data.pages}</div>
+      </div>
+    </div>
+    <div class="w-100"></div>
+    <div class="col">
+      <div class="stat">
+        <h1 class="title">noMoreReviewsPageNumber</h1>
+        <div class="value">${data.noMoreReviewsPageNumber}</div>
+      </div>
+    </div>
+    <div class="col">col</div>
+    </div>
 </div>
-<pre>${JSON.stringify(data, null, 2)}</pre>
-          `
+`
+// <pre>${JSON.stringify(data, null, 2)}</pre>
         } else {
           window.main.innerHTML = `
 <h1 class="title">starting..</h1>
