@@ -3,7 +3,7 @@ const { test } = require('tap')
 const {
   fetchSearchHtml,
   getProductDetailsHtml,
-  getProductReviewsHtml,
+  productReviews,
   getProductReviews,
   getProductReviewsCount
 } = require('./amazon')
@@ -23,7 +23,7 @@ test('get product details', async t => {
 })
 
 test('get product reviews', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 1 }, { puppeteer: true })
+  const { body: html } = await productReviews({ asin: 'B07747FR44', pageNumber: 1 }, { puppeteer: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07747FR44'))
@@ -36,7 +36,7 @@ test('get product reviews count', async t => {
 })
 
 test('get product reviews paginated', async t => {
-  const html = await getProductReviewsHtml({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
+  const { body: html } = await productReviews({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
   t.plan(2)
   t.true(typeof html === 'string')
   t.true(html.indexOf('B07747FR44'))

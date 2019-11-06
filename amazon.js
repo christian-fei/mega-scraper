@@ -18,7 +18,7 @@ module.exports = {
   getProductReviewsCount,
   fetchSearchHtml,
   getProductDetailsHtml,
-  getProductReviewsHtml
+  productReviews
 }
 
 function get (options = {}) {
@@ -29,7 +29,8 @@ function get (options = {}) {
 }
 
 async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
-  const html = await getProductReviewsHtml({ asin, pageNumber }, options)
+  const { body: html, screenshotPath } = await productReviews({ asin, pageNumber }, options)
+  log({ screenshotPath })
   try {
     fs.mkdirSync(path.resolve(__dirname, `html/${asin}`))
   } catch (err) { }
@@ -85,9 +86,9 @@ async function getProductDetailsHtml ({ asin } = {}, options = {}) {
   const response = await get({ ...options, url })
   return response.body
 }
-async function getProductReviewsHtml ({ asin, pageNumber = 1 }, options = {}) {
+async function productReviews ({ asin, pageNumber = 1 }, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}`
-  log('getProductReviewsHtml url', url)
+  log('productReviews url', url)
   const response = await get({ ...options, url })
-  return response.body
+  return response
 }

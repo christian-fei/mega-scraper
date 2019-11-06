@@ -40,7 +40,8 @@ async function main (asin, pageNumber = 1) {
     pageCount: 0,
     lastPageSize: 0,
     pages: 0,
-    noMoreReviewsPageNumber: 0
+    noMoreReviewsPageNumber: 0,
+    screenshots: []
   }
 
   queue.on('active', function () {
