@@ -89,6 +89,5 @@ async function getProductDetailsHtml ({ asin } = {}, options = {}) {
 async function productReviews ({ asin, pageNumber = 1 }, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}`
   log('productReviews url', url)
-  const response = await get({ ...options, url })
-  return response
+  return get({ ...options, url })
 }

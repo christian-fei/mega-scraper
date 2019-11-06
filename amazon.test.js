@@ -43,7 +43,7 @@ test('get product reviews paginated', async t => {
 })
 
 test('gets reviews from product asin', async t => {
-  const reviews = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
+  const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
   t.plan(6)
   t.true(Array.isArray(reviews))
   t.true(reviews.length > 0)
@@ -55,7 +55,7 @@ test('gets reviews from product asin', async t => {
 })
 
 test('gets reviews from product asin from page 2', async t => {
-  const reviews = await scrapeProductReviews({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
+  const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
   t.plan(6)
   t.true(Array.isArray(reviews))
   t.true(reviews.length > 0)
@@ -67,7 +67,7 @@ test('gets reviews from product asin from page 2', async t => {
 })
 
 test('gets reviews from product asin with proxy', async t => {
-  const reviews = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
+  const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
   t.plan(6)
   t.true(Array.isArray(reviews))
   t.true(reviews.length > 0)

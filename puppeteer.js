@@ -61,7 +61,7 @@ async function get ({ url, headers = {}, useProxy = false || process.env.USE_PRO
     log(`failed to close puppeteer ${err.message}`, err)
   }
 
-  return { body: body, screenshotPath }
+  return { body, screenshotPath }
 }
 
 function randomUA () {

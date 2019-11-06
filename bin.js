@@ -100,13 +100,15 @@ async function main (asin, pageNumber = 1) {
       task = queue.add(() => {
         log(`Using html/${asin}-${pageNumber}.html`)
         const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
-        return JSON.parse(content)
+        const reviews = JSON.parse(content)
+        return { reviews }
       })
     } else if (asinPageNumberExistsHTML && !process.env.NO_CACHE) {
-      task = queue.add(() => {
+      task = queue.add(async () => {
         log(`Using html/${asin}-${pageNumber}.html`)
         const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
-        return amazonParser.parseProductReviews(html)
+        const reviews = await amazonParser.parseProductReviews(html)
+        return { reviews }
       })
     } else {
       task = queue.add(() => {
