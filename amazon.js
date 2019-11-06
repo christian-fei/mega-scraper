@@ -14,7 +14,7 @@ const {
 } = require('./parsers/amazon')
 
 module.exports = {
-  getProductReviews,
+  scrapeProductReviews,
   getProductReviewsCount,
   fetchSearchHtml,
   getProductDetailsHtml,
@@ -28,7 +28,7 @@ function get (options = {}) {
   return http(options, { useProxy: options.useProxy })
 }
 
-async function getProductReviews ({ asin, pageNumber = 1 } = {}, options) {
+async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
   const { body: html, screenshotPath } = await productReviews({ asin, pageNumber }, options)
   log({ screenshotPath })
   try {

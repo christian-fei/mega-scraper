@@ -55,7 +55,7 @@ async function main (asin, pageNumber = 1) {
   }
   stats.productReviewsCount = productReviewsCount
 
-  const firstPageReviews = await amazon.getProductReviews({ asin, pageNumber }, { puppeteer: true })
+  const firstPageReviews = await amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
 
   stats.pageSize = firstPageReviews.length
   stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
@@ -111,7 +111,7 @@ async function main (asin, pageNumber = 1) {
     } else {
       task = queue.add(() => {
         log(`Scraping page ${pageNumber} for asin ${asin}`)
-        return amazon.getProductReviews({ asin, pageNumber }, { puppeteer: true })
+        return amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
       })
     }
     return task
