@@ -76,7 +76,6 @@ async function main (asin, pageNumber = 1) {
     log(`Processing ${pageNumber} / ${stats.pages} (lastPageSize ${stats.lastPageSize})`)
     const task = processJob({ asin, pageNumber })
 
-    log(JSON.stringify(stats, null, 2))
     httpInstance.update(stats)
 
     return task.then(processProductReviews({ asin, pageNumber }))
@@ -86,13 +85,12 @@ async function main (asin, pageNumber = 1) {
   await queue.onIdle()
   log('All work is done')
   Object.assign(stats, { finish: new Date().toISOString() })
-  log(JSON.stringify(stats, null, 2))
-
+  log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'pageCount', 'lastPageSize', 'pages', 'noMoreReviewsPageNumber']), null, 2))
   return allReviews
 
   async function processJob ({ asin, pageNumber } = {}) {
-    const htmlPath = path.resolve(__dirname, 'html', `${asin}-${pageNumber}.html`)
-    const jsonPath = path.resolve(__dirname, 'json', `${asin}-${pageNumber}.json`)
+    const htmlPath = path.resolve(__dirname, 'html', `${asin}/${asin}-${pageNumber}.html`)
+    const jsonPath = path.resolve(__dirname, 'json', `${asin}/${asin}-${pageNumber}.json`)
     const asinPageNumberExistsHTML = fs.existsSync(htmlPath)
     const asinPageNumberExistsJSON = fs.existsSync(jsonPath)
 
@@ -135,9 +133,15 @@ async function main (asin, pageNumber = 1) {
       stats.accuracy = accuracy
       stats.reviews = stats.reviews.concat(reviews)
       stats.screenshots = stats.screenshots.concat([screenshotPath])
+      stats.reviews.length = 10
+      stats.screenshots.length = 10
 
       log(`Accuracy ${(accuracy / 100).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
       return reviews
     }
   }
+}
+
+function pick (object, keys) {
+  return keys.reduce((acc, key) => Object.assign(acc, { [key]: object[key] }), {})
 }
