@@ -1,4 +1,4 @@
-const { test } = require('tap')
+const { serial: test } = require('ava')
 
 const {
   fetchSearchHtml,
@@ -10,70 +10,62 @@ const {
 
 test('get page html content', async t => {
   const html = await fetchSearchHtml({ search: 'porta carta credito' }, { puppeteer: true })
-  t.plan(2)
-  t.true(typeof html === 'string')
-  t.true(html.indexOf('s-search-results'))
+  t.truthy(typeof html === 'string')
+  t.truthy(html.indexOf('s-search-results'))
 })
 
 test('get product details', async t => {
   const html = await getProductDetailsHtml({ asin: 'B07747FR44' }, { puppeteer: true })
-  t.plan(2)
-  t.true(typeof html === 'string')
-  t.true(html.indexOf('B07747FR44'))
+  t.truthy(typeof html === 'string')
+  t.truthy(html.indexOf('B07747FR44'))
 })
 
 test('get product reviews', async t => {
   const { body: html } = await productReviews({ asin: 'B07747FR44', pageNumber: 1 }, { puppeteer: true })
-  t.plan(2)
-  t.true(typeof html === 'string')
-  t.true(html.indexOf('B07747FR44'))
+  t.truthy(typeof html === 'string')
+  t.truthy(html.indexOf('B07747FR44'))
 })
 
-test('get product reviews count', async t => {
+test.skip('get product reviews count', async t => {
   const count = await getProductReviewsCount({ asin: 'B07747FR44' }, { puppeteer: true })
-  t.plan(1)
-  t.true(Number.isFinite(count))
+  t.truthy(Number.isFinite(count))
 })
 
 test('get product reviews paginated', async t => {
   const { body: html } = await productReviews({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
-  t.plan(2)
-  t.true(typeof html === 'string')
-  t.true(html.indexOf('B07747FR44'))
+  t.truthy(typeof html === 'string')
+  t.truthy(html.indexOf('B07747FR44'))
 })
 
 test('gets reviews from product asin', async t => {
   const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
-  t.plan(6)
-  t.true(Array.isArray(reviews))
-  t.true(reviews.length > 0)
+  t.truthy(Array.isArray(reviews))
+  t.truthy(reviews.length > 0)
   const review = reviews[0]
-  t.true(!!review)
-  t.true(review.stars > 0 && review.stars <= 5)
-  t.true(review.dateString)
-  t.true(review.text)
+  t.truthy(!!review)
+  t.truthy(review.stars > 0 && review.stars <= 5)
+  t.truthy(review.dateString)
+  t.truthy(review.text)
 })
 
-test('gets reviews from product asin from page 2', async t => {
+test.skip('gets reviews from product asin from page 2', async t => {
   const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
-  t.plan(6)
-  t.true(Array.isArray(reviews))
-  t.true(reviews.length > 0)
+  t.truthy(Array.isArray(reviews))
+  t.truthy(reviews.length > 0)
   const review = reviews[0]
-  t.true(!!review)
-  t.true(review.stars > 0 && review.stars <= 5)
-  t.true(review.dateString)
-  t.true(review.text)
+  t.truthy(!!review)
+  t.truthy(review.stars > 0 && review.stars <= 5)
+  t.truthy(review.dateString)
+  t.truthy(review.text)
 })
 
-test('gets reviews from product asin with proxy', async t => {
-  const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true })
-  t.plan(6)
-  t.true(Array.isArray(reviews))
-  t.true(reviews.length > 0)
+test.skip('gets reviews from product asin with proxy', async t => {
+  const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true, useProxy: true })
+  t.truthy(Array.isArray(reviews))
+  t.truthy(reviews.length > 0)
   const review = reviews[0]
-  t.true(!!review)
-  t.true(review.stars > 0 && review.stars <= 5)
-  t.true(review.dateString)
-  t.true(review.text)
+  t.truthy(!!review)
+  t.truthy(review.stars > 0 && review.stars <= 5)
+  t.truthy(review.dateString)
+  t.truthy(review.text)
 })

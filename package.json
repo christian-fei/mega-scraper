@@ -8,7 +8,7 @@
     "clean": "rm -f html/* ; rm -f json/*; rm -f screenshots/*",
     "init": "mkdir -p html ; mkdir -p json; mkdir -p screenshots",
     "start": "./bin.js",
-    "test": "rm -rf html/B07747FR44* ; rm -rf json/B07747FR44* ; DEBUG='sar:*' tap **.test.js --bail",
+    "test": "rm -rf html/B07747FR44* ; rm -rf json/B07747FR44* ; DEBUG='sar:*' ava **.test.js --bail",
     "migrate": "mkdir -p migrations; DEBUG='sar:*' node migrate.js",
     "bin": "DEBUG='sar:*' node --max-old-space-size=8192 bin.js"
   },
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/christian-fei/scrape-amazon-reviews#readme",
   "devDependencies": {
+    "ava": "^2.4.0",
     "tap": "^14.9.1"
   },
   "dependencies": {

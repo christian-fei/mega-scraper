@@ -35,17 +35,17 @@ function reviewFromHtml (html) {
     dateString,
     text
   }
-  log('reviewFromHtml', review)
+  // log('reviewFromHtml', review)
   return review
 }
 function dateFrom (html) {
   const date = $('[data-hook="review-date"]', html).text()
-  log('dateFrom', date)
+  // log('dateFrom', date)
   return date
 }
 function textFrom (html) {
   const text = $('[data-hook="review-body"]', html).text()
-  log('textFrom', text)
+  // log('textFrom', text)
   return text
 }
 function starsFrom (html) {
@@ -61,6 +61,6 @@ function starsFrom (html) {
   if (starsContent.hasClass('a-star-2')) stars = 2
   /* istanbul ignore next */
   if (starsContent.hasClass('a-star-1')) stars = 1
-  log('starsFrom', stars)
+  // log('starsFrom', stars)
   return stars
 }

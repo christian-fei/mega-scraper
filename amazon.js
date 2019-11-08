@@ -23,9 +23,9 @@ module.exports = {
 
 function get (options = {}) {
   log(options)
-  if (options.puppeteer) return puppeteer(options, { useProxy: options.useProxy })
-  if (options.lambda) return lambda(options, { useProxy: options.useProxy })
-  return http(options, { useProxy: options.useProxy })
+  if (options.puppeteer) return puppeteer(options)
+  if (options.lambda) return lambda(options)
+  return http(options)
 }
 
 async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
@@ -40,6 +40,7 @@ async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
 
   const json = parseProductReviews(html)
     .map(reviewFromHtml)
+    .filter(Boolean)
     .map(r => Object.assign(r, { screenshotPath }))
     .filter(r => r.text)
     .filter(r => r.stars)
