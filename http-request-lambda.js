@@ -5,7 +5,7 @@ const region = 'eu-central-1'
 const apiVersion = 'latest'
 const lambda = new AWS.Lambda({ apiVersion, region })
 
-module.exports = async function ({ url }) {
+module.exports = async function ({ url, asin }) {
   const invokeParams = { FunctionName: 'HttpRequestLambda', Payload: JSON.stringify({ url }) }
 
   return new Promise((resolve, reject) => {

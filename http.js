@@ -6,7 +6,7 @@ const UA = require('user-agents')
 
 module.exports = get
 
-async function get ({ url, headers = {}, useProxy = true || process.env.USE_PROXY === 'TRUE' }) {
+async function get ({ url, asin, headers = {}, useProxy = true || process.env.USE_PROXY === 'TRUE' }) {
   if (useProxy) {
     const proxies = await getFreeHttpsProxy()
     const index = parseInt(Math.random() * proxies.length, 10)

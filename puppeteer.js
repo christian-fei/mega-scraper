@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer')
-const fs = require('fs')
 const path = require('path')
 const log = require('debug')('sar:puppeteer')
 const getFreeHttpsProxy = require('get-free-https-proxy')
@@ -7,7 +6,7 @@ const UA = require('user-agents')
 
 module.exports = get
 
-async function get ({ url, headers = {}, useProxy = false || process.env.USE_PROXY === 'TRUE' }) {
+async function get ({ url, asin, headers = {}, useProxy = false || process.env.USE_PROXY === 'TRUE' }) {
   const args = ['--no-sandbox', '--disable-setuid-sandbox', '--no-first-run']
   const browserOptions = {
     args
@@ -46,7 +45,7 @@ async function get ({ url, headers = {}, useProxy = false || process.env.USE_PRO
   const body = await page.content()
 
   const normalizedUrl = url.replace(/\//gi, '|')
-  const screenshotPath = path.resolve(__dirname, `screenshots/${normalizedUrl}.png`)
+  const screenshotPath = path.resolve(__dirname, `screenshots/${asin ? 'asin/' : ''}${normalizedUrl}.png`)
   log('screenshot', url, screenshotPath)
   try {
     await page.screenshot({ path: screenshotPath, fullPage: true })

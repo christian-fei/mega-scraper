@@ -57,7 +57,7 @@ async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
 async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}`
   log('getProductReviewsCount url', url)
-  const response = await get({ ...options, url })
+  const response = await get({ ...options, asin, url })
   const { body = '' } = response
 
   if (body.indexOf('Amazon CAPTCHA') >= 0) {
@@ -81,17 +81,17 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
 async function fetchSearchHtml ({ search } = {}, options = {}) {
   const url = `https://www.amazon.it/s?k=${encodeURIComponent(search)}`
   log('fetchSearchHtml url', url)
-  const response = await get({ ...options, url })
+  const response = await get({ ...options, search, url })
   return response.body
 }
 async function getProductDetailsHtml ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/dp/${asin}`
   log('getProductDetailsHtml url', url)
-  const response = await get({ ...options, url })
+  const response = await get({ ...options, asin, url })
   return response.body
 }
 async function productReviews ({ asin, pageNumber = 1 }, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}`
   log('productReviews url', url)
-  return get({ ...options, url })
+  return get({ ...options, asin, url })
 }
