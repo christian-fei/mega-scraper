@@ -111,12 +111,12 @@ async function main (asin, startingPageNumber = 1) {
     console.log({ htmlPath, asinPageNumberExistsHTML, jsonPath, asinPageNumberExistsJSON })
 
     if (asinPageNumberExistsJSON && options.cache) {
-      log(`Using json/${asin}-${pageNumber}.json`)
+      log(`Using json/${asin}/${asin}-${pageNumber}.json`)
       const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
       const reviews = JSON.parse(content)
       return { reviews }
     } else if (asinPageNumberExistsHTML && options.cache) {
-      log(`Using html/${asin}-${pageNumber}.html`)
+      log(`Using html/${asin}/${asin}-${pageNumber}.html`)
       const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
       const reviews = await amazonParser.parseProductReviews(html)
       return { reviews }
