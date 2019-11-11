@@ -12,7 +12,7 @@ pages.clean(0, 'delayed')
 pages.clean(0, 'failed')
 const debug = require('debug')
 const log = debug('sar:bin')
-debug.enable('sar:bin,sar:scraper:*,sar:server,sar*')
+debug.enable('sar*')
 
 const scrapingOptions = {
   puppeteer: process.env.USE_PUPPETEER === 'true',
@@ -28,7 +28,7 @@ if (require.main === module) {
     })
     .catch((err) => {
       log(err)
-      // process.exit(1)
+      process.exit(1)
     })
 } else {
   module.exports = main
