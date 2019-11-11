@@ -4,9 +4,7 @@ const fs = require('fs')
 const path = require('path')
 
 /* istanbul ignore next */
-const puppeteer = require('./puppeteer')
-const http = require('./http')
-const lambda = require('./http-request-lambda')
+const getUrl = require('./lib/get-url')
 
 const {
   parseProductReviews,
@@ -19,13 +17,6 @@ module.exports = {
   fetchSearchHtml,
   getProductDetailsHtml,
   productReviews
-}
-
-function get (options = { useProxy: true, puppeteer: false, lambda: false }) {
-  log(options)
-  if (options.puppeteer) return puppeteer(options)
-  if (options.lambda) return lambda(options)
-  return http(options)
 }
 
 async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
@@ -57,7 +48,7 @@ async function scrapeProductReviews ({ asin, pageNumber = 1 } = {}, options) {
 async function getProductReviewsCount ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}`
   log('getProductReviewsCount url', url)
-  const response = await get({ ...options, asin, url })
+  const response = await getUrl({ ...options, asin, url })
   const { body = '' } = response
 
   if (body.indexOf('Amazon CAPTCHA') >= 0) {
@@ -81,17 +72,17 @@ async function getProductReviewsCount ({ asin } = {}, options = {}) {
 async function fetchSearchHtml ({ search } = {}, options = {}) {
   const url = `https://www.amazon.it/s?k=${encodeURIComponent(search)}`
   log('fetchSearchHtml url', url)
-  const response = await get({ ...options, search, url })
+  const response = await getUrl({ ...options, search, url })
   return response.body
 }
 async function getProductDetailsHtml ({ asin } = {}, options = {}) {
   const url = `https://www.amazon.it/dp/${asin}`
   log('getProductDetailsHtml url', url)
-  const response = await get({ ...options, asin, url })
+  const response = await getUrl({ ...options, asin, url })
   return response.body
 }
 async function productReviews ({ asin, pageNumber = 1 }, options = {}) {
   const url = `https://www.amazon.it/product-reviews/${asin}?pageNumber=${pageNumber}`
   log('productReviews url', url)
-  return get({ ...options, asin, url })
+  return getUrl({ ...options, asin, url })
 }
