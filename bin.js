@@ -75,7 +75,6 @@ async function main (asin, startingPageNumber = 1) {
 
   log(JSON.stringify(stats, null, 2))
   pages.process(async (job, done) => {
-    // console.log('job.data', JSON.stringify(job.data))
     if (stats.noMoreReviewsPageNumber) {
       log(`Skipping ${job.data.pageNumber} / ${stats.pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
