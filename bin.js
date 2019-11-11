@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const amazon = require('./lib/scrapers/amazon')
-const { server } = require('./server')
+const { createServer } = require('./server')
 const amazonParser = require('./lib/parsers/amazon')
 const fs = require('fs')
 const path = require('path')
@@ -36,26 +36,8 @@ if (require.main === module) {
 
 async function main (asin, startingPageNumber = 1) {
   log({ asin, startingPageNumber, scrapingOptions })
-  const httpInstance = server()
-
-  const stats = {
-    asin,
-    startingPageNumber,
-    start: new Date().toISOString(),
-    elapsed: 0,
-    finish: undefined,
-    productReviewsCount: 0,
-    scrapedReviewsCount: 0,
-    accuracy: 0,
-    pageSize: 0,
-    scrapedPages: 0,
-    lastPageSize: 0,
-    totalPages: 0,
-    noMoreReviewsPageNumber: 0,
-    reviews: [],
-    screenshots: []
-  }
-  httpInstance.update(stats)
+  const httpInstance = createServer()
+  const stats = createStats()
 
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, scrapingOptions)
   if (!Number.isFinite(productReviewsCount)) {
@@ -70,10 +52,9 @@ async function main (asin, startingPageNumber = 1) {
   stats.pageSize = firstPageReviews.length
   stats.totalPages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
 
-  let allReviewsCount = 0
   httpInstance.update(stats)
-
   log(JSON.stringify(stats, null, 2))
+
   pages.process(async (job, done) => {
     if (stats.noMoreReviewsPageNumber) {
       log(`Skipping ${job.data.pageNumber} / ${stats.totalPages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
@@ -81,7 +62,7 @@ async function main (asin, startingPageNumber = 1) {
     }
     log(`Processing ${job.data.pageNumber} / ${stats.totalPages} (lastPageSize ${stats.lastPageSize})`)
     try {
-      await scrape({ asin, pageNumber: job.data.pageNumber }, scrapingOptions).then(processProductReviews({ asin, pageNumber: job.data.pageNumber }))
+      await scrape({ asin, pageNumber: job.data.pageNumber }, scrapingOptions)
       Object.assign(stats, { scrapedPages: stats.scrapedPages + 1 })
     } catch (err) {
       log(`failed job ${err.message}`, err)
@@ -97,6 +78,30 @@ async function main (asin, startingPageNumber = 1) {
   for (const pageNumber of pageNumbers) {
     log('adding', { pageNumber })
     await pages.add({ pageNumber })
+  }
+
+  function pick (object, keys) {
+    return keys.reduce((acc, key) => Object.assign(acc, { [key]: object[key] }), {})
+  }
+
+  function createStats () {
+    return {
+      asin,
+      startingPageNumber,
+      start: new Date().toISOString(),
+      elapsed: 0,
+      finish: undefined,
+      productReviewsCount: 0,
+      scrapedReviewsCount: 0,
+      accuracy: 0,
+      pageSize: 0,
+      scrapedPages: 0,
+      lastPageSize: 0,
+      totalPages: 0,
+      noMoreReviewsPageNumber: 0,
+      reviews: [],
+      screenshots: []
+    }
   }
 
   async function scrape ({ asin, pageNumber } = {}, options = { cache: true }) {
@@ -124,33 +129,29 @@ async function main (asin, startingPageNumber = 1) {
 
     log(`Scraping page ${pageNumber} for asin ${asin}`)
     return amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
-  }
+      .then(processProductReviews({ asin, pageNumber }))
 
-  function processProductReviews ({ asin, pageNumber } = {}) {
-    return ({ reviews, screenshotPath }) => {
-      allReviewsCount += reviews.length
-      if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
-        stats.noMoreReviewsPageNumber = pageNumber
+    function processProductReviews ({ asin, pageNumber } = {}) {
+      return ({ reviews, screenshotPath }) => {
+        if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
+          stats.noMoreReviewsPageNumber = pageNumber
+        }
+
+        stats.lastPageSize = reviews.length
+        stats.scrapedReviewsCount += reviews.length
+
+        log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
+        const accuracy = (stats.scrapedReviewsCount / productReviewsCount)
+        stats.accuracy = accuracy
+        stats.reviews = stats.reviews.concat(reviews)
+        log({ screenshotPath })
+        stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
+        stats.reviews = stats.reviews.slice(-10)
+        stats.screenshots = stats.screenshots.slice(-10)
+
+        log(`Accuracy ${(accuracy).toFixed(1)} (${stats.scrapedReviewsCount} / ${productReviewsCount})`)
+        return reviews
       }
-
-      stats.lastPageSize = reviews.length
-      stats.scrapedReviewsCount += reviews.length
-
-      log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
-      const accuracy = (allReviewsCount / productReviewsCount)
-      stats.accuracy = accuracy
-      stats.reviews = stats.reviews.concat(reviews)
-      log({ screenshotPath })
-      stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
-      stats.reviews = stats.reviews.slice(-10)
-      stats.screenshots = stats.screenshots.slice(-10)
-
-      log(`Accuracy ${(accuracy).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
-      return reviews
     }
-  }
-
-  function pick (object, keys) {
-    return keys.reduce((acc, key) => Object.assign(acc, { [key]: object[key] }), {})
   }
 }

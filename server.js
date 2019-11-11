@@ -6,7 +6,7 @@ const http = require('http')
 const path = require('path')
 
 if (require.main === module) {
-  server()
+  createServer()
     .then(() => {
       log('finished')
       // process.exit(0)
@@ -16,10 +16,10 @@ if (require.main === module) {
       // process.exit(1)
     })
 } else {
-  module.exports = { server }
+  module.exports = { createServer }
 }
 
-function server ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 } = {}) {
+function createServer ({ port = process.env.PORT || process.env.HTTP_PORT || 4000 } = {}) {
   let data = {}
   const httpServer = http.createServer()
   httpServer.on('request', requestHandler)
