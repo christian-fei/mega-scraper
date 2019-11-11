@@ -48,7 +48,7 @@ async function main (asin, startingPageNumber = 1) {
     scrapedReviewsCount: 0,
     accuracy: 0,
     pageSize: 0,
-    pageCount: 0,
+    scrapedPages: 0,
     lastPageSize: 0,
     pages: 0,
     noMoreReviewsPageNumber: 0,
@@ -82,12 +82,12 @@ async function main (asin, startingPageNumber = 1) {
     log(`Processing ${job.data.pageNumber} / ${stats.pages} (lastPageSize ${stats.lastPageSize})`)
     try {
       await scrape({ asin, pageNumber: job.data.pageNumber }, scrapingOptions).then(processProductReviews({ asin, pageNumber: job.data.pageNumber }))
-      Object.assign(stats, { pageCount: job.data.pageNumber })
+      Object.assign(stats, { scrapedPages: Math.max(job.data.pageNumber, stats.scrapedPages) })
     } catch (err) {
       log(`failed job ${err.message}`, err)
     }
     Object.assign(stats, { elapsed: Date.now() - +new Date(stats.start) })
-    log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'pageCount', 'lastPageSize', 'pages', 'noMoreReviewsPageNumber', 'screenshots']), null, 2))
+    log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'scrapedPages', 'lastPageSize', 'pages', 'noMoreReviewsPageNumber', 'screenshots']), null, 2))
     httpInstance.update(stats)
     done()
   })
