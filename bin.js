@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const amazon = require('./amazon')
+const amazon = require('./lib/scrapers/amazon')
 const { server } = require('./server')
 const amazonParser = require('./parsers/amazon')
 const fs = require('fs')
