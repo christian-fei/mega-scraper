@@ -48,6 +48,7 @@ async function main (asin, startingPageNumber = 1) {
     reviews: [],
     screenshots: []
   }
+  httpInstance.update(stats)
 
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, scrapingOptions)
   if (!Number.isFinite(productReviewsCount)) {
@@ -55,6 +56,7 @@ async function main (asin, startingPageNumber = 1) {
     return []
   }
   stats.productReviewsCount = productReviewsCount
+  httpInstance.update(stats)
 
   const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber: startingPageNumber }, scrapingOptions)
 
