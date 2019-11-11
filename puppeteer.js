@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const path = require('path')
+const fs = require('fs')
 const log = require('debug')('sar:puppeteer')
 const getFreeHttpsProxy = require('get-free-https-proxy')
 const UA = require('user-agents')
@@ -45,7 +46,8 @@ async function get ({ url, asin, headers = {}, useProxy = false || process.env.U
   const body = await page.content()
 
   const normalizedUrl = url.replace(/\//gi, '|')
-  const screenshotPath = path.resolve(__dirname, `screenshots/${asin ? 'asin/' : ''}${normalizedUrl}.png`)
+  try { fs.mkdirSync(path.resolve(__dirname, 'screenshots', asin ? 'asin/' : '')) } catch (err) { }
+  const screenshotPath = path.resolve(__dirname, 'screenshots', asin ? 'asin/' : '', `${normalizedUrl}.png`)
   log('taking screenshot', { url, screenshotPath })
   try {
     await page.screenshot({ path: screenshotPath, fullPage: true })
