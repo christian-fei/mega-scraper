@@ -71,6 +71,57 @@ async function main (asin, startingPageNumber = 1) {
     log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'scrapedPages', 'lastPageSize', 'totalPages', 'noMoreReviewsPageNumber', 'screenshots']), null, 2))
     httpInstance.update(stats)
     done()
+
+    async function scrape ({ asin, pageNumber } = {}, options = { cache: true }) {
+      if (!asin) throw new Error(`missing asin ${asin}`)
+      if (!Number.isFinite(pageNumber)) throw new Error(`missing pageNumber ${pageNumber}`)
+      const htmlPath = path.resolve(__dirname, 'html', `${asin}/${asin}-${pageNumber}.html`)
+      const jsonPath = path.resolve(__dirname, 'json', `${asin}/${asin}-${pageNumber}.json`)
+      const asinPageNumberExistsHTML = fs.existsSync(htmlPath)
+      const asinPageNumberExistsJSON = fs.existsSync(jsonPath)
+
+      console.log({ htmlPath, asinPageNumberExistsHTML, jsonPath, asinPageNumberExistsJSON })
+
+      if (asinPageNumberExistsJSON && options.cache) {
+        log(`Using json/${asin}/${asin}-${pageNumber}.json`)
+        const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
+        const reviews = JSON.parse(content)
+        return { reviews }
+      } else if (asinPageNumberExistsHTML && options.cache) {
+        log(`Using html/${asin}/${asin}
+        -${pageNumber}.html`)
+        const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
+        const reviews = await amazonParser.parseProductReviews(html)
+        return { reviews }
+      }
+
+      log(`Scraping page ${pageNumber} for asin ${asin}`)
+      return amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
+        .then(processProductReviews({ asin, pageNumber }))
+
+      function processProductReviews ({ asin, pageNumber } = {}) {
+        return ({ reviews, screenshotPath }) => {
+          if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
+            stats.noMoreReviewsPageNumber = pageNumber
+          }
+
+          stats.lastPageSize = reviews.length
+          stats.scrapedReviewsCount += reviews.length
+
+          log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
+          const accuracy = (stats.scrapedReviewsCount / productReviewsCount)
+          stats.accuracy = accuracy
+          stats.reviews = stats.reviews.concat(reviews)
+          log({ screenshotPath })
+          stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
+          stats.reviews = stats.reviews.slice(-10)
+          stats.screenshots = stats.screenshots.slice(-10)
+
+          log(`Accuracy ${(accuracy).toFixed(1)} (${stats.scrapedReviewsCount} / ${productReviewsCount})`)
+          return reviews
+        }
+      }
+    }
   })
 
   const pageNumbers = Array.from({ length: stats.totalPages - startingPageNumber + 1 }, (_, i) => i + startingPageNumber)
@@ -101,57 +152,6 @@ async function main (asin, startingPageNumber = 1) {
       noMoreReviewsPageNumber: 0,
       reviews: [],
       screenshots: []
-    }
-  }
-
-  async function scrape ({ asin, pageNumber } = {}, options = { cache: true }) {
-    if (!asin) throw new Error(`missing asin ${asin}`)
-    if (!Number.isFinite(pageNumber)) throw new Error(`missing pageNumber ${pageNumber}`)
-    const htmlPath = path.resolve(__dirname, 'html', `${asin}/${asin}-${pageNumber}.html`)
-    const jsonPath = path.resolve(__dirname, 'json', `${asin}/${asin}-${pageNumber}.json`)
-    const asinPageNumberExistsHTML = fs.existsSync(htmlPath)
-    const asinPageNumberExistsJSON = fs.existsSync(jsonPath)
-
-    console.log({ htmlPath, asinPageNumberExistsHTML, jsonPath, asinPageNumberExistsJSON })
-
-    if (asinPageNumberExistsJSON && options.cache) {
-      log(`Using json/${asin}/${asin}-${pageNumber}.json`)
-      const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
-      const reviews = JSON.parse(content)
-      return { reviews }
-    } else if (asinPageNumberExistsHTML && options.cache) {
-      log(`Using html/${asin}/${asin}
-      -${pageNumber}.html`)
-      const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
-      const reviews = await amazonParser.parseProductReviews(html)
-      return { reviews }
-    }
-
-    log(`Scraping page ${pageNumber} for asin ${asin}`)
-    return amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
-      .then(processProductReviews({ asin, pageNumber }))
-
-    function processProductReviews ({ asin, pageNumber } = {}) {
-      return ({ reviews, screenshotPath }) => {
-        if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
-          stats.noMoreReviewsPageNumber = pageNumber
-        }
-
-        stats.lastPageSize = reviews.length
-        stats.scrapedReviewsCount += reviews.length
-
-        log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
-        const accuracy = (stats.scrapedReviewsCount / productReviewsCount)
-        stats.accuracy = accuracy
-        stats.reviews = stats.reviews.concat(reviews)
-        log({ screenshotPath })
-        stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
-        stats.reviews = stats.reviews.slice(-10)
-        stats.screenshots = stats.screenshots.slice(-10)
-
-        log(`Accuracy ${(accuracy).toFixed(1)} (${stats.scrapedReviewsCount} / ${productReviewsCount})`)
-        return reviews
-      }
     }
   }
 }
