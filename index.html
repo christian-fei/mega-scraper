@@ -75,6 +75,7 @@
         ${(data.scrapedReviewsCount / data.elapsed * 1000).toFixed(1)}
       </h1>
     </div>
+    <div class="w-100"></div>
     <div class="col m-2">
       <h6>
         accuracy
@@ -83,22 +84,12 @@
         ${data.accuracy && data.accuracy.toFixed && (data.accuracy * 100).toFixed(1)}%
       </h1>
     </div>
-    <div class="w-100"></div>
-    <div class="w-100"></div>
     <div class="col m-3">
       <h6>
         pageSize
       </h6>
       <h1>
         ${data.pageSize}
-      </h1>
-    </div>
-    <div class="col m-3">
-      <h6>
-        finish
-      </h6>
-      <h1>
-        ${data.finish}
       </h1>
     </div>
     <div class="col m-3">
@@ -118,7 +109,7 @@
 <strong>text</strong>: ${s.text}</br>
 <strong>asin</strong>: ${s.asin}</br>
 <strong>pageNumber</strong>: ${s.pageNumber}</br>
-<strong>screenshotPath</strong>: <a target="_blank" href="file://${encodeURIComponent(s.screenshotPath)}">${s.screenshotPath}</a></br>
+<strong>screenshotPath</strong>: <span onclick="copy(event)">${s.screenshotPath}</span></br>
 </div>`)}
   </ul>
 </div>
@@ -133,6 +124,17 @@
       } catch (err) {
         console.error(err)
       }
+    }
+
+
+    function copy(event) {
+      const target = event.target
+
+      target.select()
+      target.setSelectionRange(0, 99999) /*For mobile devices*/
+
+      document.execCommand("copy")
+      console.log('copied', target)
     }
 
 
