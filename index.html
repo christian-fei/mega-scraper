@@ -33,7 +33,7 @@
       </h1>
     </div>
     <div class="w-100"></div>
-    <div class="col m-2">
+    <div class="col m-1">
       <h6>
         start
       </h6>
@@ -41,7 +41,8 @@
         ${data.start}
       </h1>
     </div>
-    <div class="col m-2">
+    <div class="w-100"></div>
+    <div class="col m-1">
       <h6>
         elapsed
       </h6>
@@ -60,13 +61,12 @@
     </div>
     <div class="col m-2">
       <h6>
-        accuracy
+        pageCount / pages
       </h6>
       <h1>
-        ${data.accuracy && data.accuracy.toFixed && (data.accuracy * 100).toFixed(1)}%
+        ${data.pageCount} / ${data.pages}
       </h1>
     </div>
-    <div class="w-100"></div>
     <div class="col m-2">
       <h6>
         reviews / s
@@ -77,48 +77,31 @@
     </div>
     <div class="col m-2">
       <h6>
+        accuracy
+      </h6>
+      <h1>
+        ${data.accuracy && data.accuracy.toFixed && (data.accuracy * 100).toFixed(1)}%
+      </h1>
+    </div>
+    <div class="w-100"></div>
+    <div class="w-100"></div>
+    <div class="col m-3">
+      <h6>
+        pageSize
+      </h6>
+      <h1>
+        ${data.pageSize}
+      </h1>
+    </div>
+    <div class="col m-3">
+      <h6>
         finish
       </h6>
       <h1>
         ${data.finish}
       </h1>
     </div>
-    <div class="w-100"></div>
-    <div class="col m-2">
-      <h6>
-        pageSize
-      </h6>
-      <h1>
-        ${data.pageSize}
-      </h1>
-    </div>
-    <div class="col m-2">
-      <h6>
-        pageCount
-      </h6>
-      <h1>
-        ${data.pageCount}
-      </h1>
-    </div>
-    <div class="w-100"></div>
-    <div class="col m-2">
-      <h6>
-        pageSize
-      </h6>
-      <h1>
-        ${data.pageSize}
-      </h1>
-    </div>
-    <div class="col m-2">
-      <h6>
-        pages
-      </h6>
-      <h1>
-        ${data.pages}
-      </h1>
-    </div>
-    <div class="w-100"></div>
-    <div class="col m-2">
+    <div class="col m-3">
       <h6>
         noMoreReviewsPageNumber
       </h6>
@@ -126,7 +109,16 @@
         ${data.noMoreReviewsPageNumber}
       </h1>
     </div>
-    </div>
+  </div>
+  <ul>
+    ${(data.reviews || []).filter(Boolean).map(s => `<div>
+<strong>hash</strong>: ${s.hash}</br>
+<strong>stars</strong>: ${s.stars}</br>
+<strong>dateString</strong>: ${s.dateString}</br>
+<strong>text</strong>: ${s.text}</br>
+<strong>screenshotPath</strong>: <a target="_blank" href="file://${encodeURIComponent(s.screenshotPath)}">${s.screenshotPath}</a></br>
+</div>`)}
+  </ul>
 </div>
 `
 // <pre>${JSON.stringify(data, null, 2)}</pre>

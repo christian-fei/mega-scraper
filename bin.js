@@ -140,9 +140,10 @@ async function main (asin, startingPageNumber = 1) {
       const accuracy = (allReviewsCount / productReviewsCount)
       stats.accuracy = accuracy
       stats.reviews = stats.reviews.concat(reviews)
-      stats.screenshots = stats.screenshots.concat([screenshotPath])
-      stats.reviews.length = 10
-      stats.screenshots.length = 10
+      log({ screenshotPath })
+      stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
+      stats.reviews = stats.reviews.slice(-10)
+      stats.screenshots = stats.screenshots.slice(-10)
 
       log(`Accuracy ${(accuracy).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
       return reviews
