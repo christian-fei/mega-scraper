@@ -29,11 +29,11 @@
   },
   "dependencies": {
     "aws-sdk": "^2.562.0",
+    "bull": "^3.12.0",
     "cheerio": "^1.0.0-rc.3",
     "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.0",
     "got": "^9.6.0",
-    "p-limit": "^2.2.1",
     "p-queue": "^6.2.0",
     "p-retry": "^4.2.0",
     "tunnel": "0.0.6",

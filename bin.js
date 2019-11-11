@@ -4,11 +4,10 @@ const amazon = require('./amazon')
 const { server } = require('./server')
 const amazonParser = require('./parsers/amazon')
 const { default: PQueue } = require('p-queue')
-const pLimit = require('p-limit')
 const fs = require('fs')
 const path = require('path')
-const limit = pLimit(6)
 const queue = new PQueue({ concurrency: 2, timeout: 30000 })
+const pages = require('./lib/create-queue')('pages')
 const debug = require('debug')
 const log = debug('sar:bin')
 debug.enable('sar:bin,sar:scraper:*,sar:server')
@@ -61,34 +60,37 @@ async function main (asin, pageNumber = 1) {
   stats.pageSize = firstPageReviews.length
   stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
 
-  const tasks = Array.from({ length: stats.pages }, (_, i) => i + pageNumber)
-
   let allReviewsCount = 0
 
   log(JSON.stringify(stats, null, 2))
-  const allReviews = await Promise.all(tasks.map((pageNumber) => limit(() => {
-    Object.assign(stats, { elapsed: Date.now() - +new Date(stats.start) })
-
+  pages.process(async (job, done) => {
+    console.log('job.data', JSON.stringify(job.data))
     if (stats.noMoreReviewsPageNumber) {
-      log(`Skipping ${pageNumber} / ${stats.pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
+      log(`Skipping ${job.data.pageNumber} / ${stats.pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
     }
-    log(`Processing ${pageNumber} / ${stats.pages} (lastPageSize ${stats.lastPageSize})`)
-    const task = processJob({ asin, pageNumber })
-
+    log(`Processing ${job.data.pageNumber} / ${stats.pages} (lastPageSize ${stats.lastPageSize})`)
+    try {
+      await scrape({ asin, pageNumber: job.data.pageNumber }).then(processProductReviews({ asin, pageNumber: job.data.pageNumber }))
+    } catch (err) {
+      log(`failed job ${err.message}`, err)
+    }
+    Object.assign(stats, { elapsed: Date.now() - +new Date(stats.start) })
     httpInstance.update(stats)
+    log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'pageCount', 'lastPageSize', 'pages', 'noMoreReviewsPageNumber']), null, 2))
+    done()
+  })
 
-    return task.then(processProductReviews({ asin, pageNumber }))
-  })))
-    .then((...results) => results.reduce((acc, curr) => acc.concat(curr), []))
+  const pageNumbers = Array.from({ length: stats.pages - pageNumber + 1 }, (_, i) => i + pageNumber)
 
-  await queue.onIdle()
-  log('All work is done')
-  Object.assign(stats, { finish: new Date().toISOString() })
-  log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'pageCount', 'lastPageSize', 'pages', 'noMoreReviewsPageNumber']), null, 2))
-  return allReviews
+  for (const pageNumber of pageNumbers) {
+    console.log('pageNumber', pageNumber)
+    await pages.add({ pageNumber })
+  }
 
-  async function processJob ({ asin, pageNumber } = {}) {
+  async function scrape ({ asin, pageNumber } = {}) {
+    if (!asin) throw new Error(`missing asin ${asin}`)
+    if (!Number.isFinite(pageNumber)) throw new Error(`missing pageNumber ${pageNumber}`)
     const htmlPath = path.resolve(__dirname, 'html', `${asin}/${asin}-${pageNumber}.html`)
     const jsonPath = path.resolve(__dirname, 'json', `${asin}/${asin}-${pageNumber}.json`)
     const asinPageNumberExistsHTML = fs.existsSync(htmlPath)
@@ -140,8 +142,8 @@ async function main (asin, pageNumber = 1) {
       return reviews
     }
   }
-}
 
-function pick (object, keys) {
-  return keys.reduce((acc, key) => Object.assign(acc, { [key]: object[key] }), {})
+  function pick (object, keys) {
+    return keys.reduce((acc, key) => Object.assign(acc, { [key]: object[key] }), {})
+  }
 }
