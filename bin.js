@@ -142,7 +142,7 @@ async function main (asin, startingPageNumber = 1) {
       stats.reviews.length = 10
       stats.screenshots.length = 10
 
-      log(`Accuracy ${(accuracy / 100).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
+      log(`Accuracy ${(accuracy).toFixed(1)} (${allReviewsCount} / ${productReviewsCount})`)
       return reviews
     }
   }
