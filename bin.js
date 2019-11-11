@@ -3,10 +3,8 @@
 const amazon = require('./amazon')
 const { server } = require('./server')
 const amazonParser = require('./parsers/amazon')
-const { default: PQueue } = require('p-queue')
 const fs = require('fs')
 const path = require('path')
-const queue = new PQueue({ concurrency: 2, timeout: 30000 })
 const pages = require('./lib/create-queue')('pages')
 const debug = require('debug')
 const log = debug('sar:bin')
@@ -45,10 +43,6 @@ async function main (asin, startingPageNumber = 1) {
     screenshots: []
   }
 
-  queue.on('active', function () {
-    log(`Working on ${stats.pageCount}. Size: ${queue.size}  Pending: ${queue.pending}`)
-  })
-
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, { puppeteer: true })
   if (!Number.isFinite(productReviewsCount)) {
     log(`invalid reviews count ${productReviewsCount}`)
@@ -62,6 +56,7 @@ async function main (asin, startingPageNumber = 1) {
   stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
 
   let allReviewsCount = 0
+  httpInstance.update(stats)
 
   log(JSON.stringify(stats, null, 2))
   pages.process(async (job, done) => {
@@ -78,8 +73,8 @@ async function main (asin, startingPageNumber = 1) {
       log(`failed job ${err.message}`, err)
     }
     Object.assign(stats, { elapsed: Date.now() - +new Date(stats.start) })
-    httpInstance.update(stats)
     log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'pageCount', 'lastPageSize', 'pages', 'noMoreReviewsPageNumber']), null, 2))
+    httpInstance.update(stats)
     done()
   })
 
@@ -100,28 +95,20 @@ async function main (asin, startingPageNumber = 1) {
 
     console.log({ htmlPath, asinPageNumberExistsHTML, jsonPath, asinPageNumberExistsJSON })
 
-    let task
     if (asinPageNumberExistsJSON) {
-      task = queue.add(() => {
-        log(`Using json/${asin}-${pageNumber}.json`)
-        const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
-        const reviews = JSON.parse(content)
-        return { reviews }
-      })
+      log(`Using json/${asin}-${pageNumber}.json`)
+      const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
+      const reviews = JSON.parse(content)
+      return { reviews }
     } else if (asinPageNumberExistsHTML) {
-      task = queue.add(async () => {
-        log(`Using html/${asin}-${pageNumber}.html`)
-        const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
-        const reviews = await amazonParser.parseProductReviews(html)
-        return { reviews }
-      })
-    } else {
-      task = queue.add(async () => {
-        log(`Scraping page ${pageNumber} for asin ${asin}`)
-        return amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
-      })
+      log(`Using html/${asin}-${pageNumber}.html`)
+      const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
+      const reviews = await amazonParser.parseProductReviews(html)
+      return { reviews }
     }
-    return task
+
+    log(`Scraping page ${pageNumber} for asin ${asin}`)
+    return amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
   }
 
   function processProductReviews ({ asin, pageNumber } = {}) {
