@@ -43,14 +43,14 @@ async function main (asin, startingPageNumber = 1) {
     screenshots: []
   }
 
-  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, { puppeteer: true })
+  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber })
   if (!Number.isFinite(productReviewsCount)) {
     log(`invalid reviews count ${productReviewsCount}`)
     return []
   }
   stats.productReviewsCount = productReviewsCount
 
-  const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber: startingPageNumber }, { puppeteer: true })
+  const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber: startingPageNumber })
 
   stats.pageSize = firstPageReviews.length
   stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
@@ -108,7 +108,7 @@ async function main (asin, startingPageNumber = 1) {
     }
 
     log(`Scraping page ${pageNumber} for asin ${asin}`)
-    return amazon.scrapeProductReviews({ asin, pageNumber }, { puppeteer: true })
+    return amazon.scrapeProductReviews({ asin, pageNumber })
   }
 
   function processProductReviews ({ asin, pageNumber } = {}) {
