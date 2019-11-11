@@ -7,7 +7,7 @@ const UA = require('user-agents')
 
 module.exports = get
 
-async function get ({ url, asin, headers = {}, useProxy = false || process.env.USE_PROXY === 'TRUE' }) {
+async function get ({ url, asin, headers = {}, useProxy = false || process.env.USE_PROXY === 'TRUE' } = { useProxy: true }) {
   const args = ['--no-sandbox', '--disable-setuid-sandbox', '--no-first-run']
   const browserOptions = {
     args

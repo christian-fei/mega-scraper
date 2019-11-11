@@ -21,7 +21,7 @@ module.exports = {
   productReviews
 }
 
-function get (options = {}) {
+function get (options = { useProxy: true, puppeteer: false, lambda: false }) {
   log(options)
   if (options.puppeteer) return puppeteer(options)
   if (options.lambda) return lambda(options)

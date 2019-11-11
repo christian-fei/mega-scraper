@@ -17,7 +17,8 @@ debug.enable('sar:bin,sar:scraper:*,sar:server,sar*')
 const scrapingOptions = {
   puppeteer: process.env.USE_PUPPETEER === 'true',
   lambda: process.env.USE_LAMBDA === 'true',
-  cache: process.env.USE_CACHE !== 'false'
+  cache: process.env.USE_CACHE !== 'false',
+  useProxy: process.env.USE_PROXY !== 'false'
 }
 
 if (require.main === module) {
@@ -38,6 +39,8 @@ async function main (asin, startingPageNumber = 1) {
   const httpInstance = server()
 
   const stats = {
+    asin,
+    startingPageNumber,
     start: new Date().toISOString(),
     elapsed: 0,
     finish: undefined,
