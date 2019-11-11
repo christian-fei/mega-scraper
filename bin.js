@@ -2,7 +2,7 @@
 
 const amazon = require('./lib/scrapers/amazon')
 const { server } = require('./server')
-const amazonParser = require('./parsers/amazon')
+const amazonParser = require('./lib/parsers/amazon')
 const fs = require('fs')
 const path = require('path')
 const pages = require('./lib/create-queue')('pages')
