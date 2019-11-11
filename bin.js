@@ -8,7 +8,13 @@ const path = require('path')
 const pages = require('./lib/create-queue')('pages')
 const debug = require('debug')
 const log = debug('sar:bin')
-debug.enable('sar:bin,sar:scraper:*,sar:server')
+debug.enable('sar:bin,sar:scraper:*,sar:server,sar*')
+
+const scrapingOptions = {
+  puppeteer: process.env.USE_PUPPETEER === 'true',
+  lambda: process.env.USE_LAMBDA === 'true',
+  cache: process.env.USE_CACHE !== 'false'
+}
 
 if (require.main === module) {
   main(process.argv[2], process.argv[3])
@@ -24,7 +30,7 @@ if (require.main === module) {
 }
 
 async function main (asin, startingPageNumber = 1) {
-  log({ startingPageNumber })
+  log({ asin, startingPageNumber, scrapingOptions })
   const httpInstance = server()
 
   const stats = {
@@ -43,14 +49,14 @@ async function main (asin, startingPageNumber = 1) {
     screenshots: []
   }
 
-  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber })
+  const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, scrapingOptions)
   if (!Number.isFinite(productReviewsCount)) {
     log(`invalid reviews count ${productReviewsCount}`)
     return []
   }
   stats.productReviewsCount = productReviewsCount
 
-  const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber: startingPageNumber })
+  const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber: startingPageNumber }, scrapingOptions)
 
   stats.pageSize = firstPageReviews.length
   stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
@@ -67,7 +73,7 @@ async function main (asin, startingPageNumber = 1) {
     }
     log(`Processing ${job.data.pageNumber} / ${stats.pages} (lastPageSize ${stats.lastPageSize})`)
     try {
-      await scrape({ asin, pageNumber: job.data.pageNumber }).then(processProductReviews({ asin, pageNumber: job.data.pageNumber }))
+      await scrape({ asin, pageNumber: job.data.pageNumber }, scrapingOptions).then(processProductReviews({ asin, pageNumber: job.data.pageNumber }))
       Object.assign(stats, { pageCount: job.data.pageNumber })
     } catch (err) {
       log(`failed job ${err.message}`, err)
@@ -85,7 +91,7 @@ async function main (asin, startingPageNumber = 1) {
     await pages.add({ pageNumber })
   }
 
-  async function scrape ({ asin, pageNumber } = {}) {
+  async function scrape ({ asin, pageNumber } = {}, options = { cache: true }) {
     if (!asin) throw new Error(`missing asin ${asin}`)
     if (!Number.isFinite(pageNumber)) throw new Error(`missing pageNumber ${pageNumber}`)
     const htmlPath = path.resolve(__dirname, 'html', `${asin}/${asin}-${pageNumber}.html`)
@@ -95,12 +101,12 @@ async function main (asin, startingPageNumber = 1) {
 
     console.log({ htmlPath, asinPageNumberExistsHTML, jsonPath, asinPageNumberExistsJSON })
 
-    if (asinPageNumberExistsJSON) {
+    if (asinPageNumberExistsJSON && options.cache) {
       log(`Using json/${asin}-${pageNumber}.json`)
       const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
       const reviews = JSON.parse(content)
       return { reviews }
-    } else if (asinPageNumberExistsHTML) {
+    } else if (asinPageNumberExistsHTML && options.cache) {
       log(`Using html/${asin}-${pageNumber}.html`)
       const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
       const reviews = await amazonParser.parseProductReviews(html)
@@ -108,7 +114,7 @@ async function main (asin, startingPageNumber = 1) {
     }
 
     log(`Scraping page ${pageNumber} for asin ${asin}`)
-    return amazon.scrapeProductReviews({ asin, pageNumber })
+    return amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
   }
 
   function processProductReviews ({ asin, pageNumber } = {}) {
