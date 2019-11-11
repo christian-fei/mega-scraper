@@ -50,7 +50,7 @@ async function main (asin, startingPageNumber = 1) {
     pageSize: 0,
     scrapedPages: 0,
     lastPageSize: 0,
-    pages: 0,
+    totalPages: 0,
     noMoreReviewsPageNumber: 0,
     reviews: [],
     screenshots: []
@@ -68,7 +68,7 @@ async function main (asin, startingPageNumber = 1) {
   const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber: startingPageNumber }, scrapingOptions)
 
   stats.pageSize = firstPageReviews.length
-  stats.pages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
+  stats.totalPages = parseInt(productReviewsCount / stats.pageSize, 10) + 1
 
   let allReviewsCount = 0
   httpInstance.update(stats)
@@ -76,23 +76,23 @@ async function main (asin, startingPageNumber = 1) {
   log(JSON.stringify(stats, null, 2))
   pages.process(async (job, done) => {
     if (stats.noMoreReviewsPageNumber) {
-      log(`Skipping ${job.data.pageNumber} / ${stats.pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
+      log(`Skipping ${job.data.pageNumber} / ${stats.totalPages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
     }
-    log(`Processing ${job.data.pageNumber} / ${stats.pages} (lastPageSize ${stats.lastPageSize})`)
+    log(`Processing ${job.data.pageNumber} / ${stats.totalPages} (lastPageSize ${stats.lastPageSize})`)
     try {
       await scrape({ asin, pageNumber: job.data.pageNumber }, scrapingOptions).then(processProductReviews({ asin, pageNumber: job.data.pageNumber }))
-      Object.assign(stats, { scrapedPages: Math.max(job.data.pageNumber, stats.scrapedPages) })
+      Object.assign(stats, { scrapedPages: stats.scrapedPages + 1 })
     } catch (err) {
       log(`failed job ${err.message}`, err)
     }
     Object.assign(stats, { elapsed: Date.now() - +new Date(stats.start) })
-    log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'scrapedPages', 'lastPageSize', 'pages', 'noMoreReviewsPageNumber', 'screenshots']), null, 2))
+    log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'scrapedPages', 'lastPageSize', 'totalPages', 'noMoreReviewsPageNumber', 'screenshots']), null, 2))
     httpInstance.update(stats)
     done()
   })
 
-  const pageNumbers = Array.from({ length: stats.pages - startingPageNumber + 1 }, (_, i) => i + startingPageNumber)
+  const pageNumbers = Array.from({ length: stats.totalPages - startingPageNumber + 1 }, (_, i) => i + startingPageNumber)
 
   for (const pageNumber of pageNumbers) {
     log('adding', { pageNumber })
@@ -136,7 +136,7 @@ async function main (asin, startingPageNumber = 1) {
       stats.lastPageSize = reviews.length
       stats.scrapedReviewsCount += reviews.length
 
-      log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.pages} for asin ${asin}`)
+      log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
       const accuracy = (allReviewsCount / productReviewsCount)
       stats.accuracy = accuracy
       stats.reviews = stats.reviews.concat(reviews)
