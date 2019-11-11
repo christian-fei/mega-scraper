@@ -46,19 +46,19 @@ async function get ({ url, asin, headers = {}, useProxy = false || process.env.U
 
   const normalizedUrl = url.replace(/\//gi, '|')
   const screenshotPath = path.resolve(__dirname, `screenshots/${asin ? 'asin/' : ''}${normalizedUrl}.png`)
-  log('taking screenshot', url, screenshotPath)
+  log('taking screenshot', { url, screenshotPath })
   try {
     await page.screenshot({ path: screenshotPath, fullPage: true })
-    log('took screenshot', url, screenshotPath)
+    log('took screenshot', { url, screenshotPath })
   } catch (err) {
-    log(`failed to snapshot ${err.message}`, url, screenshotPath, err)
+    log(`failed to snapshot`, { url, screenshotPath, err })
   }
 
   try {
     await page.close()
     await browser.close()
   } catch (err) {
-    log(`failed to close puppeteer ${err.message}`, url, screenshotPath, werr)
+    log(`failed to close puppeteer`, { url, screenshotPath, err })
   }
 
   return { body, screenshotPath }
