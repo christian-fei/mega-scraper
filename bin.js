@@ -64,7 +64,7 @@ async function main (asin, pageNumber = 1) {
 
   log(JSON.stringify(stats, null, 2))
   pages.process(async (job, done) => {
-    console.log('job.data', JSON.stringify(job.data))
+    // console.log('job.data', JSON.stringify(job.data))
     if (stats.noMoreReviewsPageNumber) {
       log(`Skipping ${job.data.pageNumber} / ${stats.pages} (noMoreReviewsPageNumber ${stats.noMoreReviewsPageNumber})`)
       return []
@@ -84,7 +84,6 @@ async function main (asin, pageNumber = 1) {
   const pageNumbers = Array.from({ length: stats.pages - pageNumber + 1 }, (_, i) => i + pageNumber)
 
   for (const pageNumber of pageNumbers) {
-    console.log('pageNumber', pageNumber)
     await pages.add({ pageNumber })
   }
 
@@ -95,6 +94,8 @@ async function main (asin, pageNumber = 1) {
     const jsonPath = path.resolve(__dirname, 'json', `${asin}/${asin}-${pageNumber}.json`)
     const asinPageNumberExistsHTML = fs.existsSync(htmlPath)
     const asinPageNumberExistsJSON = fs.existsSync(jsonPath)
+
+    console.log({ htmlPath, asinPageNumberExistsHTML, jsonPath, asinPageNumberExistsJSON })
 
     let task
     if (asinPageNumberExistsJSON && !process.env.NO_CACHE) {
