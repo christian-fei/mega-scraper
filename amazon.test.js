@@ -26,7 +26,7 @@ test('get product reviews', async t => {
   t.truthy(html.indexOf('B07747FR44'))
 })
 
-test.skip('get product reviews count', async t => {
+test('get product reviews count', async t => {
   const count = await getProductReviewsCount({ asin: 'B07747FR44' }, { puppeteer: true })
   t.truthy(Number.isFinite(count))
 })
@@ -48,7 +48,7 @@ test('gets reviews from product asin', async t => {
   t.truthy(review.text)
 })
 
-test.skip('gets reviews from product asin from page 2', async t => {
+test('gets reviews from product asin from page 2', async t => {
   const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44', pageNumber: 2 }, { puppeteer: true })
   t.truthy(Array.isArray(reviews))
   t.truthy(reviews.length > 0)
@@ -59,7 +59,7 @@ test.skip('gets reviews from product asin from page 2', async t => {
   t.truthy(review.text)
 })
 
-test.skip('gets reviews from product asin with proxy', async t => {
+test('gets reviews from product asin with proxy', async t => {
   const { reviews } = await scrapeProductReviews({ asin: 'B07747FR44' }, { puppeteer: true, useProxy: true })
   t.truthy(Array.isArray(reviews))
   t.truthy(reviews.length > 0)
