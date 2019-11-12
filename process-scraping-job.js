@@ -4,9 +4,12 @@ const log = debug('sar:process-scraping-job')
 const amazonParser = require('./lib/parsers/amazon')
 const fs = require('fs')
 const path = require('path')
+const statsCache = require('./lib/storage/stats-cache')()
 
 module.exports = async function (job, done) {
-  const { asin, pageNumber, stats, scrapingOptions } = job.data
+  const { asin, pageNumber, scrapingOptions } = job.data
+  let stats = await statsCache.toJSON()
+
   log(`Processing ${pageNumber} / ${stats.totalPages}`)
   let reviews = []
   try {
@@ -14,7 +17,7 @@ module.exports = async function (job, done) {
   } catch (err) {
     log(`failed job ${err.message}`, err)
   }
-  done(reviews)
+  done()
   return reviews
 
   async function scrape ({ asin, pageNumber } = {}, options = { cache: true }) {
@@ -40,25 +43,30 @@ module.exports = async function (job, done) {
     }
 
     log(`Scraping page ${pageNumber} for asin ${asin}`)
-    return amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
+    const reviews = await amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
       .then(processProductReviews({ asin, pageNumber }))
 
+    return { reviews }
+
     function processProductReviews ({ asin, pageNumber } = {}) {
-      return ({ reviews, screenshotPath }) => {
+      return async ({ reviews, screenshotPath }) => {
+        stats = await statsCache.toJSON()
+        log('stats', stats)
         if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
-          stats.noMoreReviewsPageNumber = pageNumber
+          statsCache.set('noMoreReviewsPageNumber', pageNumber)
         }
 
-        stats.scrapedReviewsCount += reviews.length
+        stats.scrapedReviewsCount = stats.scrapedReviewsCount + reviews.length
+        statsCache.set('scrapedReviewsCount', stats.scrapedReviewsCount)
 
         log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
-        const accuracy = (stats.scrapedReviewsCount / stats.productReviewsCount)
-        stats.accuracy = accuracy
-        stats.reviews = stats.reviews.concat(reviews)
+        const accuracy = (parseInt(stats.scrapedReviewsCount) / parseInt(stats.productReviewsCount))
+        statsCache.set('accuracy', accuracy)
+        // stats.reviews = stats.reviews.concat(reviews)
         log({ screenshotPath })
-        stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
-        stats.reviews = stats.reviews.slice(-10)
-        stats.screenshots = stats.screenshots.slice(-10)
+        // stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
+        // stats.reviews = stats.reviews.slice(-10)
+        // stats.screenshots = stats.screenshots.slice(-10)
 
         log(`Accuracy ${(accuracy).toFixed(1)} (${stats.scrapedReviewsCount} / ${stats.productReviewsCount})`)
         return reviews
