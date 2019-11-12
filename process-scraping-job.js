@@ -53,15 +53,15 @@ module.exports = async function (job, done) {
         stats = await statsCache.toJSON()
         log('stats', stats)
         if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
-          statsCache.set('noMoreReviewsPageNumber', pageNumber)
+          statsCache.hset('noMoreReviewsPageNumber', pageNumber)
         }
 
-        stats.scrapedReviewsCount = stats.scrapedReviewsCount + reviews.length
-        statsCache.set('scrapedReviewsCount', stats.scrapedReviewsCount)
+        statsCache.hincrby('scrapedReviewsCount', reviews.length)
+        stats.scrapedReviewsCount += reviews.length
 
         log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
-        const accuracy = (parseInt(stats.scrapedReviewsCount) / parseInt(stats.productReviewsCount))
-        statsCache.set('accuracy', accuracy)
+        const accuracy = (stats.scrapedReviewsCount / stats.productReviewsCount)
+        statsCache.hset('accuracy', accuracy)
         log({ screenshotPath })
         // stats.reviews = stats.reviews.concat(reviews).filter(Boolean)
         // stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)

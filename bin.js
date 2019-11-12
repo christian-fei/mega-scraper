@@ -34,21 +34,22 @@ if (require.main === module) {
 async function main (asin, startingPageNumber = 1) {
   log({ asin, startingPageNumber, scrapingOptions })
   const httpInstance = createServer()
-  statsCache.set('start', +new Date())
-  statsCache.set('asin', asin)
-  statsCache.set('startingPageNumber', startingPageNumber)
-  statsCache.set('totalPages', 0)
-  statsCache.set('scrapedReviewsCount', 0)
-  statsCache.set('accuracy', 0)
-  statsCache.set('scrapedPages', 0)
-  statsCache.set('elapsed', 0)
+  statsCache.hset('start', +new Date())
+  statsCache.hset('asin', asin)
+  statsCache.hset('startingPageNumber', startingPageNumber)
+  statsCache.hset('totalPages', 0)
+  statsCache.hset('scrapedReviewsCount', 0)
+  statsCache.hset('accuracy', 0)
+  statsCache.hset('scrapedPages', 0)
+  statsCache.hset('elapsed', 0)
+  statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
 
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, scrapingOptions)
   if (!Number.isFinite(productReviewsCount)) {
     log(`invalid reviews count ${productReviewsCount}`)
     throw new Error(`invalid reviews count ${productReviewsCount}`)
   }
-  statsCache.set('productReviewsCount', productReviewsCount)
+  statsCache.hset('productReviewsCount', productReviewsCount)
 
   let stats = await statsCache.toJSON()
 
@@ -56,19 +57,18 @@ async function main (asin, startingPageNumber = 1) {
 
   const { reviews: firstPageReviews } = await amazon.scrapeProductReviews({ asin, pageNumber: startingPageNumber }, scrapingOptions)
 
-  statsCache.set('pageSize', firstPageReviews.length)
-  statsCache.set('totalPages', parseInt(productReviewsCount / firstPageReviews.length, 10) + 1)
+  statsCache.hset('pageSize', firstPageReviews.length)
+  statsCache.hset('totalPages', parseInt(productReviewsCount / firstPageReviews.length, 10) + 1)
 
   httpInstance.update(stats)
   log(JSON.stringify(stats, null, 2))
 
   scrapingQueue.on('completed', async (job, result) => {
     log('job result', job.toJSON())
-    statsCache.set('scrapedPages', stats.scrapedPages + 1)
-    statsCache.set('elapsed', Date.now() - +new Date(stats.start))
+    statsCache.hincrby('scrapedPages', 1)
+    statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
 
-    log(JSON.stringify(pick(stats, ['start', 'elapsed', 'productReviewsCount', 'scrapedReviewsCount', 'accuracy', 'pageSize', 'scrapedPages', 'totalPages', 'noMoreReviewsPageNumber', 'screenshots']), null, 2))
     httpInstance.update(stats)
 
     log('completed', result)
@@ -84,8 +84,4 @@ async function main (asin, startingPageNumber = 1) {
     log('adding', { pageNumber })
     scrapingQueue.add({ asin, pageNumber, stats, scrapingOptions })
   }
-}
-
-function pick (object, keys) {
-  return keys.reduce((acc, key) => Object.assign(acc, { [key]: object[key] }), {})
 }
