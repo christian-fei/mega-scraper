@@ -84,25 +84,6 @@ async function main (asin, startingPageNumber = 1) {
     log('adding', { pageNumber })
     scrapingQueue.add({ asin, pageNumber, stats, scrapingOptions })
   }
-
-  // function createStats () {
-  //   return {
-  //     asin,
-  //     startingPageNumber,
-  //     start: new Date().toISOString(),
-  //     elapsed: 0,
-  //     finish: undefined,
-  //     productReviewsCount: 0,
-  //     scrapedReviewsCount: 0,
-  //     accuracy: 0,
-  //     pageSize: 0,
-  //     scrapedPages: 0,
-  //     totalPages: 0,
-  //     noMoreReviewsPageNumber: 0,
-  //     reviews: [],
-  //     screenshots: []
-  //   }
-  // }
 }
 
 function pick (object, keys) {
