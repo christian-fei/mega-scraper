@@ -33,12 +33,17 @@ module.exports = async function (job, done) {
     if (asinPageNumberExistsJSON && options.cache) {
       log(`Using json/${asin}/${asin}-${pageNumber}.json`)
       const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
-      const reviews = JSON.parse(content)
+      const reviews = await processProductReviews({ asin, pageNumber })({ reviews: JSON.parse(content) })
+      statsCache.hincrby('scrapedReviewsCount', reviews.length)
+      statsCache.hincrby('scrapedPages', 1)
       return { reviews }
     } else if (asinPageNumberExistsHTML && options.cache) {
       log(`Using html/${asin}/${asin}-${pageNumber}.html`)
       const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
       const reviews = await amazonParser.parseProductReviews(html)
+        .then(processProductReviews({ asin, pageNumber }))
+      statsCache.hincrby('scrapedReviewsCount', reviews.length)
+      statsCache.hincrby('scrapedPages', 1)
       return { reviews }
     }
 
@@ -62,6 +67,8 @@ module.exports = async function (job, done) {
         log(`Found ${reviews && reviews.length} product reviews on page ${pageNumber} / ${stats.totalPages} for asin ${asin}`)
         const accuracy = (stats.scrapedReviewsCount / stats.productReviewsCount)
         statsCache.hset('accuracy', accuracy)
+        statsCache.hincrby('scrapedPages', 1)
+
         log({ screenshotPath })
         // stats.reviews = stats.reviews.concat(reviews).filter(Boolean)
         // stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)

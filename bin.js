@@ -61,16 +61,12 @@ async function main (asin, startingPageNumber = 1) {
   statsCache.hset('totalPages', parseInt(productReviewsCount / firstPageReviews.length, 10) + 1)
 
   httpInstance.update(stats)
-  log(JSON.stringify(stats, null, 2))
 
   scrapingQueue.on('completed', async (job, result) => {
     log('job result', job.toJSON())
-    statsCache.hincrby('scrapedPages', 1)
     statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
-
     httpInstance.update(stats)
-
     log('completed', result)
   })
 
@@ -78,7 +74,7 @@ async function main (asin, startingPageNumber = 1) {
 
   stats = await statsCache.toJSON()
 
-  const pageNumbers = Array.from({ length: stats.totalPages - startingPageNumber + 1 }, (_, i) => i + startingPageNumber)
+  const pageNumbers = Array.from({ length: stats.totalPages - stats.startingPageNumber + 1 }, (_, i) => i + stats.startingPageNumber)
 
   for (const pageNumber of pageNumbers) {
     log('adding', { pageNumber })
