@@ -34,15 +34,7 @@ if (require.main === module) {
 async function main (asin, startingPageNumber = 1) {
   log({ asin, startingPageNumber, scrapingOptions })
   const httpInstance = createServer()
-  statsCache.hset('start', +new Date())
-  statsCache.hset('asin', asin)
-  statsCache.hset('startingPageNumber', startingPageNumber)
-  statsCache.hset('totalPages', 0)
-  statsCache.hset('scrapedReviewsCount', 0)
-  statsCache.hset('accuracy', 0)
-  statsCache.hset('scrapedPages', 0)
-  statsCache.hset('elapsed', 0)
-  statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
+  initCache({ asin, startingPageNumber, scrapingOptions })
 
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, scrapingOptions)
   if (!Number.isFinite(productReviewsCount)) {
@@ -63,7 +55,6 @@ async function main (asin, startingPageNumber = 1) {
   httpInstance.update(stats)
 
   scrapingQueue.on('completed', async (job, result) => {
-    log('job result', job.toJSON())
     statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
@@ -80,4 +71,20 @@ async function main (asin, startingPageNumber = 1) {
     log('adding', { pageNumber })
     scrapingQueue.add({ asin, pageNumber, stats, scrapingOptions })
   }
+}
+
+function initCache ({ asin, startingPageNumber, scrapingOptions } = {}) {
+  statsCache.hset('start', +new Date())
+  statsCache.hset('asin', asin)
+  statsCache.hset('startingPageNumber', startingPageNumber)
+  statsCache.hset('totalPages', 0)
+  statsCache.hset('scrapedReviewsCount', 0)
+  statsCache.hset('accuracy', 0)
+  statsCache.hset('scrapedPages', 0)
+  statsCache.hset('elapsed', 0)
+  statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
+  statsCache.hset('productReviewsCount', 0)
+  statsCache.hset('pageSize', 0)
+  statsCache.hset('totalPages', 0)
+  statsCache.hset('elapsed', 0)
 }
