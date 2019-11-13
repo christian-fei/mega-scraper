@@ -7,14 +7,14 @@ const path = require('path')
 
 if (require.main === module) {
   createServer()
-    .then(() => {
-      log('finished')
-      // process.exit(0)
-    })
-    .catch(err => {
-      log('err', err.message, err.stack)
-      // process.exit(1)
-    })
+  // .then(() => {
+  //   log('finished')
+  //   // process.exit(0)
+  // })
+  // .catch(err => {
+  //   log('err', err.message, err.stack)
+  //   // process.exit(1)
+  // })
 } else {
   module.exports = { createServer }
 }
@@ -55,6 +55,10 @@ function createServer ({ port = process.env.PORT || process.env.HTTP_PORT || 400
       })
     }
     if (req.url === '/favicon.ico') return res.end()
+    if (/^\/\w+/.test(req.url)) {
+      log('asin url', req.url)
+      return res.end()
+    }
 
     log('⛔️  [server] unhandled', req.url)
 
