@@ -75,7 +75,12 @@ async function main (asin, startingPageNumber = 1) {
     scrapingQueue.add({ asin, pageNumber, stats, scrapingOptions })
   }
 
-  setInterval(async () => {
+  const httpInstanceUpdateHandle = setInterval(async () => {
+    if (stats.scrapedPages >= stats.totalPages) {
+      log(`finished: ${stats.scrapedPages} / ${stats.totalPages}`)
+      clearInterval(httpInstanceUpdateHandle)
+      return
+    }
     statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
@@ -89,7 +94,6 @@ async function main (asin, startingPageNumber = 1) {
     await statsCache.hset('scrapedReviewsCount', 0)
     await statsCache.hset('accuracy', 0)
     await statsCache.hset('scrapedPages', 0)
-    await statsCache.hset('elapsed', 0)
     await statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
     await statsCache.hset('productReviewsCount', 0)
     await statsCache.hset('pageSize', 0)
