@@ -9,7 +9,7 @@
     "init": "mkdir -p html ; mkdir -p json; mkdir -p screenshots",
     "start": "./bin.js",
     "server": "node server.js",
-    "test": "rm -rf html/B07747FR44* ; rm -rf json/B07747FR44* ; DEBUG='sar:*' ava -c 2",
+    "test": "rm -rf html/B07747FR44* ; rm -rf json/B07747FR44* ; DEBUG='sar:*' ava --fail-fast",
     "migrate": "mkdir -p migrations; DEBUG='sar:*' node migrate.js",
     "bin": "DEBUG='sar:*' node --max-old-space-size=8192 bin.js"
   },
