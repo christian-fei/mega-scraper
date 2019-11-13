@@ -3,7 +3,7 @@
 const amazon = require('./lib/scrapers/amazon')
 const { createServer } = require('./server')
 const path = require('path')
-const createStatsCache = require('./lib/storage/stats-cache')
+const cache = require('./lib/storage/cache')
 const scrapingQueue = require('./lib/create-queue')('scraping')
 scrapingQueue.clean(0, 'wait')
 scrapingQueue.clean(0, 'active')
@@ -34,7 +34,7 @@ if (require.main === module) {
 async function main (asin, startingPageNumber = 1) {
   if (!asin) throw new Error(`missing asin ${asin}`)
   if (!Number.isFinite(startingPageNumber)) throw new Error(`missing startingPageNumber ${startingPageNumber}`)
-  const statsCache = createStatsCache(`stats/${asin}`)
+  const statsCache = cache(`stats/${asin}`)
   log({ asin, startingPageNumber, scrapingOptions })
   const httpInstance = createServer()
   await initCache({ asin, startingPageNumber, scrapingOptions })

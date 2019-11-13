@@ -4,11 +4,11 @@ const log = debug('sar:process-scraping-job')
 const amazonParser = require('./lib/parsers/amazon')
 const fs = require('fs')
 const path = require('path')
-const createStatsCache = require('./lib/storage/stats-cache')
+const cache = require('./lib/storage/cache')
 
 module.exports = async function (job, done) {
   const { asin, pageNumber, scrapingOptions } = job.data
-  const statsCache = createStatsCache(`stats/${asin}`)
+  const statsCache = cache(`stats/${asin}`)
   let stats = await statsCache.toJSON()
 
   log(`Processing ${pageNumber} / ${stats.totalPages}`)
