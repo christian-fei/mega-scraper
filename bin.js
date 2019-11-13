@@ -32,6 +32,8 @@ if (require.main === module) {
 }
 
 async function main (asin, startingPageNumber = 1) {
+  if (!asin) throw new Error(`missing asin ${asin}`)
+  if (!Number.isFinite(startingPageNumber)) throw new Error(`missing startingPageNumber ${startingPageNumber}`)
   const statsCache = createStatsCache(`stats:${asin}`)
   log({ asin, startingPageNumber, scrapingOptions })
   const httpInstance = createServer()
