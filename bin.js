@@ -3,7 +3,7 @@
 const amazon = require('./lib/scrapers/amazon')
 const { createServer } = require('./server')
 const path = require('path')
-const statsCache = require('./lib/storage/stats-cache')()
+const createStatsCache = require('./lib/storage/stats-cache')
 const scrapingQueue = require('./lib/create-queue')('scraping')
 scrapingQueue.clean(0, 'wait')
 scrapingQueue.clean(0, 'active')
@@ -32,6 +32,7 @@ if (require.main === module) {
 }
 
 async function main (asin, startingPageNumber = 1) {
+  const statsCache = createStatsCache(`stats:${asin}`)
   log({ asin, startingPageNumber, scrapingOptions })
   const httpInstance = createServer()
   initCache({ asin, startingPageNumber, scrapingOptions })
@@ -77,20 +78,20 @@ async function main (asin, startingPageNumber = 1) {
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
   }, 500)
-}
 
-function initCache ({ asin, startingPageNumber, scrapingOptions } = {}) {
-  statsCache.hset('start', +new Date())
-  statsCache.hset('asin', asin)
-  statsCache.hset('startingPageNumber', startingPageNumber)
-  statsCache.hset('totalPages', 0)
-  statsCache.hset('scrapedReviewsCount', 0)
-  statsCache.hset('accuracy', 0)
-  statsCache.hset('scrapedPages', 0)
-  statsCache.hset('elapsed', 0)
-  statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
-  statsCache.hset('productReviewsCount', 0)
-  statsCache.hset('pageSize', 0)
-  statsCache.hset('totalPages', 0)
-  statsCache.hset('elapsed', 0)
+  function initCache ({ asin, startingPageNumber, scrapingOptions } = {}) {
+    statsCache.hset('start', +new Date())
+    statsCache.hset('asin', asin)
+    statsCache.hset('startingPageNumber', startingPageNumber)
+    statsCache.hset('totalPages', 0)
+    statsCache.hset('scrapedReviewsCount', 0)
+    statsCache.hset('accuracy', 0)
+    statsCache.hset('scrapedPages', 0)
+    statsCache.hset('elapsed', 0)
+    statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
+    statsCache.hset('productReviewsCount', 0)
+    statsCache.hset('pageSize', 0)
+    statsCache.hset('totalPages', 0)
+    statsCache.hset('elapsed', 0)
+  }
 }
