@@ -11,7 +11,7 @@ scrapingQueue.clean(0, 'delayed')
 scrapingQueue.clean(0, 'failed')
 const debug = require('debug')
 const log = debug('sar:bin')
-debug.enable('sar*')
+// debug.enable('sar*')
 
 const scrapingOptions = {
   puppeteer: process.env.USE_PUPPETEER === 'true',
@@ -34,10 +34,10 @@ if (require.main === module) {
 async function main (asin, startingPageNumber = 1) {
   if (!asin) throw new Error(`missing asin ${asin}`)
   if (!Number.isFinite(startingPageNumber)) throw new Error(`missing startingPageNumber ${startingPageNumber}`)
-  const statsCache = createStatsCache(`stats:${asin}`)
+  const statsCache = createStatsCache(`stats/${asin}`)
   log({ asin, startingPageNumber, scrapingOptions })
   const httpInstance = createServer()
-  initCache({ asin, startingPageNumber, scrapingOptions })
+  await initCache({ asin, startingPageNumber, scrapingOptions })
 
   const productReviewsCount = await amazon.getProductReviewsCount({ asin, pageNumber: startingPageNumber }, scrapingOptions)
   if (!Number.isFinite(productReviewsCount)) {
@@ -81,19 +81,19 @@ async function main (asin, startingPageNumber = 1) {
     httpInstance.update(stats)
   }, 500)
 
-  function initCache ({ asin, startingPageNumber, scrapingOptions } = {}) {
-    statsCache.hset('start', +new Date())
-    statsCache.hset('asin', asin)
-    statsCache.hset('startingPageNumber', startingPageNumber)
-    statsCache.hset('totalPages', 0)
-    statsCache.hset('scrapedReviewsCount', 0)
-    statsCache.hset('accuracy', 0)
-    statsCache.hset('scrapedPages', 0)
-    statsCache.hset('elapsed', 0)
-    statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
-    statsCache.hset('productReviewsCount', 0)
-    statsCache.hset('pageSize', 0)
-    statsCache.hset('totalPages', 0)
-    statsCache.hset('elapsed', 0)
+  async function initCache ({ asin, startingPageNumber, scrapingOptions } = {}) {
+    await statsCache.hset('start', +new Date())
+    await statsCache.hset('asin', asin)
+    await statsCache.hset('startingPageNumber', startingPageNumber)
+    await statsCache.hset('totalPages', 0)
+    await statsCache.hset('scrapedReviewsCount', 0)
+    await statsCache.hset('accuracy', 0)
+    await statsCache.hset('scrapedPages', 0)
+    await statsCache.hset('elapsed', 0)
+    await statsCache.hset('scraper', scrapingOptions.puppeteer ? 'puppeteer' : (scrapingOptions.lambda ? 'lambda' : 'url'))
+    await statsCache.hset('productReviewsCount', 0)
+    await statsCache.hset('pageSize', 0)
+    await statsCache.hset('totalPages', 0)
+    await statsCache.hset('elapsed', 0)
   }
 }
