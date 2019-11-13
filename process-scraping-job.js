@@ -1,4 +1,4 @@
-const amazon = require('./lib/scrapers/amazon')
+const amazon = require('./lib/sites/amazon')
 const debug = require('debug')
 const log = debug('sar:process-scraping-job')
 const amazonParser = require('./lib/parsers/amazon')
@@ -53,7 +53,6 @@ module.exports = async function (job, done) {
     function processProductReviews ({ asin, pageNumber } = {}) {
       return async ({ reviews, screenshotPath }) => {
         stats = await statsCache.toJSON()
-        log('stats', stats)
         if (reviews.length === 0 && stats.noMoreReviewsPageNumber === undefined) {
           statsCache.hset('noMoreReviewsPageNumber', pageNumber)
         }
@@ -66,11 +65,7 @@ module.exports = async function (job, done) {
         statsCache.hset('accuracy', accuracy)
         statsCache.hincrby('scrapedPages', 1)
 
-        log({ screenshotPath })
-        // stats.reviews = stats.reviews.concat(reviews).filter(Boolean)
-        // stats.screenshots = stats.screenshots.concat([screenshotPath]).filter(Boolean)
-        // stats.reviews = stats.reviews.slice(-10)
-        // stats.screenshots = stats.screenshots.slice(-10)
+        screenshotPath && log(`Screenshot for "${asin}" page ${pageNumber} saved to ${screenshotPath}`)
 
         log(`Accuracy ${(accuracy).toFixed(1)} (${stats.scrapedReviewsCount} / ${stats.productReviewsCount})`)
         return { reviews, screenshotPath }

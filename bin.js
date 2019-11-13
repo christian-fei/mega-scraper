@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const amazon = require('./lib/scrapers/amazon')
+const amazon = require('./lib/sites/amazon')
 const { createServer } = require('./server')
 const path = require('path')
 const cache = require('./lib/storage/cache')
