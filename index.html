@@ -69,6 +69,15 @@
     </div>
     <div class="col m-2">
       <h6>
+        accuracy
+      </h6>
+      <h1>
+        ${data.accuracy && data.accuracy.toFixed && (data.accuracy * 100).toFixed(1)}%
+      </h1>
+    </div>
+    <div class="w-100"></div>
+    <div class="col m-2">
+      <h6>
         scrapedPages / totalPages
       </h6>
       <h1>
@@ -77,35 +86,27 @@
     </div>
     <div class="col m-2">
       <h6>
-        reviews / s
-      </h6>
-      <h1>
-        ${(data.scrapedReviewsCount / data.elapsed * 1000).toFixed(1)}
-      </h1>
-    </div>
-    <div class="w-100"></div>
-    <div class="col m-2">
-      <h6>
-        accuracy
-      </h6>
-      <h1>
-        ${data.accuracy && data.accuracy.toFixed && (data.accuracy * 100).toFixed(1)}%
-      </h1>
-    </div>
-    <div class="col m-3">
-      <h6>
         pageSize
       </h6>
       <h1>
         ${data.pageSize}
       </h1>
     </div>
-    <div class="col m-3">
+    <div class="w-100"></div>
+    <div class="col m-2">
       <h6>
-        noMoreReviewsPageNumber
+        reviews / s
       </h6>
       <h1>
-        ${data.noMoreReviewsPageNumber}
+        ${(data.scrapedReviewsCount / data.elapsed * 1000).toFixed(1)}
+      </h1>
+    </div>
+    <div class="col m-2">
+      <h6>
+        pages / s
+      </h6>
+      <h1>
+        ${(data.scrapedPages / data.elapsed * 1000).toFixed(1)}
       </h1>
     </div>
   </div>
