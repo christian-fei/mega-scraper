@@ -71,6 +71,12 @@ async function main (asin, startingPageNumber = 1) {
     log('adding', { pageNumber })
     scrapingQueue.add({ asin, pageNumber, stats, scrapingOptions })
   }
+
+  setInterval(async () => {
+    statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
+    stats = await statsCache.toJSON()
+    httpInstance.update(stats)
+  }, 500)
 }
 
 function initCache ({ asin, startingPageNumber, scrapingOptions } = {}) {

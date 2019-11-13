@@ -33,22 +33,18 @@ module.exports = async function (job, done) {
     if (asinPageNumberExistsJSON && options.cache) {
       log(`Using json/${asin}/${asin}-${pageNumber}.json`)
       const content = fs.readFileSync(jsonPath, { encoding: 'utf8' })
-      const reviews = await processProductReviews({ asin, pageNumber })({ reviews: JSON.parse(content) })
-      statsCache.hincrby('scrapedReviewsCount', reviews.length)
-      statsCache.hincrby('scrapedPages', 1)
+      const { reviews } = await processProductReviews({ asin, pageNumber })({ reviews: JSON.parse(content) })
       return { reviews }
     } else if (asinPageNumberExistsHTML && options.cache) {
       log(`Using html/${asin}/${asin}-${pageNumber}.html`)
       const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
-      const reviews = await amazonParser.parseProductReviews(html)
+      const { reviews } = await amazonParser.parseProductReviews(html)
         .then(processProductReviews({ asin, pageNumber }))
-      statsCache.hincrby('scrapedReviewsCount', reviews.length)
-      statsCache.hincrby('scrapedPages', 1)
       return { reviews }
     }
 
     log(`Scraping page ${pageNumber} for asin ${asin}`)
-    const reviews = await amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
+    const { reviews } = await amazon.scrapeProductReviews({ asin, pageNumber }, scrapingOptions)
       .then(processProductReviews({ asin, pageNumber }))
 
     return { reviews }
@@ -76,7 +72,7 @@ module.exports = async function (job, done) {
         // stats.screenshots = stats.screenshots.slice(-10)
 
         log(`Accuracy ${(accuracy).toFixed(1)} (${stats.scrapedReviewsCount} / ${stats.productReviewsCount})`)
-        return reviews
+        return { reviews, screenshotPath }
       }
     }
   }
