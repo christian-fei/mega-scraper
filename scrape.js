@@ -4,6 +4,7 @@ const log = require('debug')('sar:scrape')
 const EventEmitter = require('events')
 const { URL } = require('url')
 const fs = require('fs')
+const argv = require('yargs').argv
 const path = require('path')
 const browser = require('./lib/browser')
 const createQueue = require('./lib/create-queue')
@@ -14,7 +15,7 @@ const scraperFor = {
 }
 
 if (require.main === module) {
-  scrape(process.argv[2])
+  scrape(argv._[0])
 } else {
   module.exports = scrape
 }
@@ -44,6 +45,9 @@ async function scrape (url) {
   })
   events.on('review', (review) => {
     console.log('new review', review)
+  })
+  events.on('content', (content) => {
+    console.log('new review', (content || '').substring(0, 250))
   })
 }
 
@@ -82,7 +86,11 @@ function pageScraper (url) {
 
       await b.instance.close()
 
-      process.nextTick(() => events.emit('done', content))
+      process.nextTick(() => {
+        events.emit('content', content)
+
+        events.emit('done', content)
+      })
 
       return { events }
     }
