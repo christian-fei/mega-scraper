@@ -93,7 +93,7 @@ function amazonItScraper (initialUrl) {
           const reviews = parseProductReviews(content)
             .map(r => Object.assign(r, { asin, pageNumber, url }))
 
-          log(`parsed ${reviews && reviews.length} reviews`)
+          log(`parsed ${reviews && reviews.length} reviews page ${asin} ${pageNumber}`)
           log(`saving json/${asin}/${asin}-${pageNumber}.json`)
           try {
             fs.mkdirSync(path.resolve(__dirname, 'json', asin))
@@ -151,3 +151,11 @@ function extractAsin (url) {
   const match = url.match(/\/dp\/(\w+)/)
   return Array.isArray(match) ? match[1] : null
 }
+
+process.on('unhandledRejection', (err) => {
+  log('unhandled rejection', err.message, err)
+})
+
+process.on('uncaughtException', (err) => {
+  log('uncaught exception', err.message, err)
+})
