@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/christian-fei/scrape-amazon-reviews#readme",
   "devDependencies": {
+    "@types/bull": "^3.10.6",
     "ava": "^2.4.0"
   },
   "dependencies": {
