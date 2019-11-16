@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 const log = require('debug')('sar:scrape')
-const { URL } = require('url')
 const argv = require('yargs').argv
-const extractAsin = require('./lib/extract-asin')
+const getHostname = require('./lib/get-hostname')
+const getQueueId = require('./lib/get-queue-id')
 const createQueue = require('./lib/create-queue')
 const pageScraper = require('./lib/scrapers/page')
 const amazonItScraper = require('./lib/scrapers/amazon.it')
@@ -19,9 +19,8 @@ if (require.main === module) {
 }
 
 async function scrape (url) {
-  log('url', url)
-  const { hostname } = new URL(url)
-  log('hostname', hostname)
+  const hostname = getHostname(url)
+  log({ url, hostname })
   const scraper = scraperFor[hostname] || pageScraper
   if (!scraper) throw new Error('unsupported url')
 
@@ -47,19 +46,6 @@ async function scrape (url) {
   events.on('content', (content) => {
     console.log('new content', (content || '').substring(0, 500))
   })
-}
-
-function getQueueId (url) {
-  const asin = extractAsin(url)
-  if (asin) return `scrape_${asin}`
-  return `scrape_${guid()}`
-}
-
-function guid () {
-  return (s4() + s4() + '-' + s4() + '-4' + s4().substr(0, 3) + '-' + s4() + '-' + s4() + s4() + s4()).toLowerCase()
-  function s4 () {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-  }
 }
 
 process.on('unhandledRejection', (err) => {
