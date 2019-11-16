@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const log = require('debug')('sar:scrape')
+const EventEmitter = require('events')
 const { URL } = require('url')
 const fs = require('fs')
 const path = require('path')
@@ -13,18 +14,12 @@ const scraperFor = {
 }
 
 if (require.main === module) {
-  scrape(process.argv[2], (review) => {
-    if (!review) {
-      console.log('done')
-      process.exit(0)
-    }
-    console.log('new review', review)
-  })
+  scrape(process.argv[2])
 } else {
   module.exports = scrape
 }
 
-async function scrape (url, cb = Function.prototype) {
+async function scrape (url) {
   log('url', url)
   const { hostname } = new URL(url)
   log('hostname', hostname)
@@ -41,7 +36,15 @@ async function scrape (url, cb = Function.prototype) {
 
   log('starting scraping', url)
 
-  return scraper(url).work(queue, cb)
+  const { eventEmitter } = await scraper(url).work(queue)
+
+  eventEmitter.on('done', () => {
+    console.log('done')
+    process.exit(0)
+  })
+  eventEmitter.on('review', (review) => {
+    console.log('new review', review)
+  })
 }
 
 function getQueueId (url) {
@@ -62,13 +65,13 @@ function amazonItScraper (initialUrl) {
   const asin = extractAsin(initialUrl)
 
   return {
-    async work (queue, cb) {
+    async work (queue) {
+      const eventEmitter = new EventEmitter()
       const b = await browser()
       queue.process(async (job, done) => {
         log('processing job', job.id)
         const { asin, pageNumber } = job.data || {}
         const url = productReviewsUrl({ asin, pageNumber })
-        // const normalizedUrl = url.replace(/\//gi, '|')
 
         log('scraping', url)
         const page = await b.newPage(url)
@@ -94,14 +97,13 @@ function amazonItScraper (initialUrl) {
 
         done()
         if (reviews.length > 0) {
-          reviews.map(cb)
+          reviews.map(r => eventEmitter.emit('review', r))
           await queue.add({ asin, pageNumber: pageNumber + 1 })
         } else {
           if (/captcha/gi.test(content)) {
             log('found captcha, requeue-ing', pageNumber)
             return job.retry()
           }
-          // cb(null)
         }
       })
 
@@ -110,7 +112,7 @@ function amazonItScraper (initialUrl) {
       queue.on('drained', async function () {
         log('-- queue drained')
         await b.instance.close()
-        cb(null)
+        eventEmitter.emit('done')
       })
       queue.on('active', function () {
         log('-- queue active')
@@ -122,7 +124,7 @@ function amazonItScraper (initialUrl) {
       log('asin', asin)
       log('hostname', hostname)
 
-      return queue
+      return { queue, eventEmitter }
     }
   }
 
