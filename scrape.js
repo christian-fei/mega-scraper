@@ -13,18 +13,18 @@ const scraperFor = {
 }
 
 if (require.main === module) {
-  scrape(process.argv[2], (reviews) => {
-    console.log('new reviews', reviews)
-  }, () => {
-    process.exit(0)
+  scrape(process.argv[2], (review) => {
+    if (!review) {
+      console.log('done')
+      process.exit(0)
+    }
+    console.log('new review', review)
   })
-    .then(() => {
-    })
 } else {
   module.exports = scrape
 }
 
-async function scrape (url, onNewReviews = Function.prototype, done = Function.prototype) {
+async function scrape (url, cb = Function.prototype) {
   log('url', url)
   const { hostname } = new URL(url)
   log('hostname', hostname)
@@ -41,7 +41,7 @@ async function scrape (url, onNewReviews = Function.prototype, done = Function.p
 
   log('starting scraping', url)
 
-  return scraper(url).work(queue, onNewReviews, done)
+  return scraper(url).work(queue, cb)
 }
 
 function getQueueId (url) {
@@ -62,7 +62,7 @@ function amazonItScraper (initialUrl) {
   const asin = extractAsin(initialUrl)
 
   return {
-    async work (queue, onNewReviews = Function.prototype, done = Function.prototype) {
+    async work (queue, cb) {
       const b = await browser()
       queue.process(async (job, done) => {
         log('processing job', job.id)
@@ -82,7 +82,7 @@ function amazonItScraper (initialUrl) {
 
         const reviews = parseProductReviews(content)
           .map(r => Object.assign(r, { asin, pageNumber, url }))
-        onNewReviews(reviews)
+
         log(`parsed ${reviews && reviews.length} reviews`)
         log(`saving json/${asin}/${asin}-${pageNumber}.json`)
         try {
@@ -92,11 +92,17 @@ function amazonItScraper (initialUrl) {
           fs.writeFileSync(path.resolve(__dirname, 'json', `${asin}/${asin}-${pageNumber}.json`), JSON.stringify(reviews), { encoding: 'utf8' })
         } catch (err) { console.error(err.message, err.stack) }
 
-        // await page.close()
-        if (reviews.length > 0) {
-          await queue.add({ asin, pageNumber: pageNumber + 1 })
-        }
         done()
+        if (reviews.length > 0) {
+          reviews.map(cb)
+          await queue.add({ asin, pageNumber: pageNumber + 1 })
+        } else {
+          if (/captcha/gi.test(content)) {
+            log('found captcha, requeue-ing', pageNumber)
+            return job.retry()
+          }
+          // cb(null)
+        }
       })
 
       queue.add({ asin, pageNumber: 1 })
@@ -104,7 +110,7 @@ function amazonItScraper (initialUrl) {
       queue.on('drained', async function () {
         log('-- queue drained')
         await b.instance.close()
-        done()
+        cb(null)
       })
       queue.on('active', function () {
         log('-- queue active')
