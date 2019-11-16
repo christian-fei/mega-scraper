@@ -23,7 +23,7 @@ async function scrape (url) {
   log('url', url)
   const { hostname } = new URL(url)
   log('hostname', hostname)
-  const scraper = scraperFor[hostname]
+  const scraper = scraperFor[hostname] || pageScraper
   if (!scraper) throw new Error('unsupported url')
 
   const queueId = getQueueId(url)
@@ -36,13 +36,13 @@ async function scrape (url) {
 
   log('starting scraping', url)
 
-  const { eventEmitter } = await scraper(url).work(queue)
+  const { events } = await scraper(url).work(queue)
 
-  eventEmitter.on('done', () => {
+  events.on('done', () => {
     console.log('done')
     process.exit(0)
   })
-  eventEmitter.on('review', (review) => {
+  events.on('review', (review) => {
     console.log('new review', review)
   })
 }
@@ -60,13 +60,42 @@ function guid () {
   }
 }
 
+function pageScraper (url) {
+  return {
+    async work (queue) {
+      const events = new EventEmitter()
+      const b = await browser()
+      log('scraping', url)
+      let content = ''
+      const page = await b.newPage(url)
+
+      content = await page.content()
+      if (content && /captcha/gi.test(content)) {
+        log('found captcha', url)
+        throw new Error('captcha')
+      }
+
+      log(`saving html/${normalizedUrl(url)}.html`)
+      try {
+        fs.writeFileSync(path.resolve(__dirname, 'html', `${normalizedUrl(url)}.html`), content, { encoding: 'utf8' })
+      } catch (err) { console.error(err.message, err.stack) }
+
+      await b.instance.close()
+
+      process.nextTick(() => events.emit('done', content))
+
+      return { events }
+    }
+  }
+}
+
 function amazonItScraper (initialUrl) {
   const hostname = 'amazon.it'
   const asin = extractAsin(initialUrl)
 
   return {
     async work (queue) {
-      const eventEmitter = new EventEmitter()
+      const events = new EventEmitter()
       const b = await browser()
       queue.process(async (job, done) => {
         log('processing job', job.id)
@@ -103,7 +132,7 @@ function amazonItScraper (initialUrl) {
           } catch (err) { console.error(err.message, err.stack) }
 
           if (reviews.length > 0) {
-            reviews.map(r => eventEmitter.emit('review', r))
+            reviews.map(r => events.emit('review', r))
             await queue.add({ asin, pageNumber: pageNumber + 1 })
           }
           done()
@@ -127,7 +156,7 @@ function amazonItScraper (initialUrl) {
       queue.on('drained', async function () {
         log('-- queue drained')
         await b.instance.close()
-        eventEmitter.emit('done')
+        events.emit('done')
       })
       queue.on('active', function () {
         log('-- queue active')
@@ -139,7 +168,7 @@ function amazonItScraper (initialUrl) {
       log('asin', asin)
       log('hostname', hostname)
 
-      return { queue, eventEmitter }
+      return { queue, events }
     }
   }
 
@@ -147,9 +176,14 @@ function amazonItScraper (initialUrl) {
     return `https://www.amazon.it/product-reviews/${asin}/?pageNumber=${pageNumber}`
   }
 }
+
 function extractAsin (url) {
   const match = url.match(/\/dp\/(\w+)/)
   return Array.isArray(match) ? match[1] : null
+}
+
+function normalizedUrl (url) {
+  return (url || '').replace(/\//gi, '!')
 }
 
 process.on('unhandledRejection', (err) => {
