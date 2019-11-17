@@ -21,7 +21,7 @@ if (require.main === module) {
   log({ argv })
   scrape(argv._[0])
 } else {
-  module.exports = scrape
+  module.exports = { scraperFor, getQueueId, createQueue, createServer, cache }
 }
 
 async function scrape (url) {
