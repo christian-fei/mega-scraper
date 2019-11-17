@@ -35,7 +35,7 @@ async function main () {
     unique.forEach(u => {
       const pathname = path.resolve(__dirname, '..', type, u)
       try {
-        fs.mkdirSync(pathname, {recursive: true})
+        fs.mkdirSync(pathname, { recursive: true })
         log(`successfully created ${pathname}`)
       } catch (err) {
         log(`failed to create ${pathname}`, err.message)
