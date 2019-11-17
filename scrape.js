@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const debug = require('debug')
-const {execSync} = require('child_process')
+const { execSync } = require('child_process')
 const log = debug('mega-scraper:scrape')
 debug.enable('mega-scraper:*')
 const argv = require('yargs').argv
