@@ -1,5 +1,10 @@
 name: mega-scraper build
-on: [push]
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*"
 jobs:
   build_deploy:
     runs-on: ubuntu-18.04
@@ -13,3 +18,9 @@ jobs:
       - name: test
         run: |
           npm t
+      - name: publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+          npm publish
