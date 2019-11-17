@@ -5,11 +5,11 @@ const { execSync } = require('child_process')
 const log = debug('mega-scraper:scrape')
 debug.enable('mega-scraper:*')
 const argv = require('yargs').coerce({
-  headless: (v) => v === 'true',
-  useProxy: (v) => v === 'true',
-  noStylesheets: (v) => !!v,
-  noJavascript: (v) => !!v,
-  noImages: (v) => !!v
+  headless: (v) => v !== 'false',
+  proxy: (v) => v !== 'false',
+  stylesheets: (v) => v !== 'false',
+  javascript: (v) => v !== 'false',
+  images: (v) => v !== 'false'
 }).parse()
 const cache = require('./lib/storage/cache')
 const getQueueId = require('./lib/get-queue-id')
