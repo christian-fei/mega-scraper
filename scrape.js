@@ -4,7 +4,11 @@ const debug = require('debug')
 const { execSync } = require('child_process')
 const log = debug('mega-scraper:scrape')
 debug.enable('mega-scraper:*')
-const argv = require('yargs').argv
+// const argv = require('yargs').argv
+const argv = require('yargs').coerce({
+  headless: (v) => v === 'true',
+  useProxy: (v) => v === 'true'
+}).parse()
 const cache = require('./lib/storage/cache')
 const getQueueId = require('./lib/get-queue-id')
 const createQueue = require('./lib/create-queue')
@@ -12,6 +16,7 @@ const createServer = require('./lib/create-server')
 const scraperFor = require('./lib/scraper-for')
 
 if (require.main === module) {
+  log({ argv })
   scrape(argv._[0])
 } else {
   module.exports = scrape
@@ -28,16 +33,18 @@ async function scrape (url) {
   log(`queueId : bull:${queueId}`)
   const queue = createQueue(queueId)
 
-  log('starting scraping', url)
+  log('starting scraping', url, argv)
   const { events } = await scraper({ url, queue, ...argv })
 
   const statsCache = cache(`stats/${queueId}`)
   await initCache({ url })
+  let stats = await statsCache.toJSON()
+
   const httpInstance = createServer()
+
   setTimeout(() => {
     execSync(`open http://localhost:4000`)
   }, 1000)
-  let stats = await statsCache.toJSON()
 
   events.on('done', (err) => { log('done', err); process.exit(err ? 1 : 0) })
   events.on('review', async (review) => {
