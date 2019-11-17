@@ -13,6 +13,7 @@ if (require.main === module) {
 }
 
 async function scrape (url) {
+  log('version', require('./package.json').version)
   const scraper = await scraperFor(url)
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url}`)
