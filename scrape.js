@@ -4,10 +4,12 @@ const debug = require('debug')
 const { execSync } = require('child_process')
 const log = debug('mega-scraper:scrape')
 debug.enable('mega-scraper:*')
-// const argv = require('yargs').argv
 const argv = require('yargs').coerce({
   headless: (v) => v === 'true',
-  useProxy: (v) => v === 'true'
+  useProxy: (v) => v === 'true',
+  noStylesheets: (v) => !!v,
+  noJavascript: (v) => !!v,
+  noImages: (v) => !!v
 }).parse()
 const cache = require('./lib/storage/cache')
 const getQueueId = require('./lib/get-queue-id')
@@ -37,7 +39,7 @@ async function scrape (url) {
   const { events } = await scraper({ url, queue, ...argv })
 
   const statsCache = cache(`stats/${queueId}`)
-  await initCache({ url })
+  await initCache(statsCache, { url })
   let stats = await statsCache.toJSON()
 
   const httpInstance = createServer()
@@ -66,17 +68,17 @@ async function scrape (url) {
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
   }, 500)
+}
 
-  async function initCache ({ url } = {}) {
-    statsCache.hset('start', +new Date())
-    statsCache.hset('url', url)
-    statsCache.hset('totalPages', 0)
-    statsCache.hset('scrapedReviewsCount', 0)
-    statsCache.hset('accuracy', 0)
-    statsCache.hset('scrapedPages', 0)
-    statsCache.hset('productReviewsCount', 0)
-    statsCache.hset('pageSize', 0)
-    statsCache.hset('totalPages', 0)
-    statsCache.hset('elapsed', 0)
-  }
+async function initCache (cache, { url } = {}) {
+  cache.hset('start', +new Date())
+  cache.hset('url', url)
+  cache.hset('totalPages', 0)
+  cache.hset('scrapedReviewsCount', 0)
+  cache.hset('accuracy', 0)
+  cache.hset('scrapedPages', 0)
+  cache.hset('productReviewsCount', 0)
+  cache.hset('pageSize', 0)
+  cache.hset('totalPages', 0)
+  cache.hset('elapsed', 0)
 }
