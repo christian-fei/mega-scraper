@@ -1,5 +1,5 @@
 {
-  "name": "scrape-amazon-reviews",
+  "name": "mega-scraper",
   "version": "1.0.0",
   "description": "",
   "main": "amazon.js",
@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/christian-fei/scrape-amazon-reviews.git"
+    "url": "git+https://github.com/christian-fei/mega-scraper.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/christian-fei/scrape-amazon-reviews/issues"
+    "url": "https://github.com/christian-fei/mega-scraper/issues"
   },
-  "homepage": "https://github.com/christian-fei/scrape-amazon-reviews#readme",
+  "homepage": "https://github.com/christian-fei/mega-scraper#readme",
   "devDependencies": {
     "@types/bull": "^3.10.6",
     "ava": "^2.4.0"
