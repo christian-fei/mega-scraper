@@ -2,9 +2,9 @@
 
 const log = require('debug')('sar:scrape')
 const argv = require('yargs').argv
-const getQueueId = require('lib/get-queue-id')
-const createQueue = require('lib/create-queue')
-const scraperFor = require('lib/scraper-for')
+const getQueueId = require('./lib/get-queue-id')
+const createQueue = require('./lib/create-queue')
+const scraperFor = require('./lib/scraper-for')
 
 if (require.main === module) {
   scrape(argv._[0])
