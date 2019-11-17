@@ -7,9 +7,11 @@ const getQueueId = require('./lib/get-queue-id')
 const createQueue = require('./lib/create-queue')
 const pageScraper = require('./lib/scrapers/page')
 const amazonItScraper = require('./lib/scrapers/amazon.it')
+const amazonComScraper = require('./lib/scrapers/amazon.com')
 
 const scraperFor = {
-  'www.amazon.it': amazonItScraper
+  'amazon.it': amazonItScraper,
+  'amazon.com': amazonComScraper
 }
 
 if (require.main === module) {
@@ -37,14 +39,14 @@ async function scrape (url) {
   const { events } = await scraper(url).work(queue)
 
   events.on('done', () => {
-    console.log('done')
+    log('done')
     process.exit(0)
   })
   events.on('review', (review) => {
-    console.log('new review', review)
+    log('new review', review)
   })
   events.on('content', (content) => {
-    console.log('new content', (content || '').substring(0, 500))
+    log('new content', (content || '').substring(0, 500))
   })
 }
 
