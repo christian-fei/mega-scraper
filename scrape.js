@@ -17,6 +17,7 @@ if (require.main === module) {
 async function scrape (url) {
   log('version', require('./package.json').version)
   const scraper = await scraperFor(url)
+  log(scraper)
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url}`)
 
@@ -25,7 +26,7 @@ async function scrape (url) {
   const queue = createQueue(queueId)
 
   log('starting scraping', url)
-  const { events } = await scraper(url).work(queue)
+  const { events } = await scraper(url, queue)
 
   events.on('done', (err) => { log('done', err); process.exit(err ? 1 : 0) })
   events.on('review', (review) => log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0)))
