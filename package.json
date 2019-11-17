@@ -17,6 +17,9 @@
     "type": "git",
     "url": "git+https://github.com/christian-fei/mega-scraper.git"
   },
+  "directories": {
+    "lib": "./lib"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
