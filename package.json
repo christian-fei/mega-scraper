@@ -2,7 +2,7 @@
   "name": "mega-scraper",
   "version": "5.0.0",
   "description": "",
-  "main": "amazon.js",
+  "main": "scrape.js",
   "bin": "scrape.js",
   "scripts": {
     "clean": "rm -rf html/* ; rm -rf json/*; rm -rf screenshots/*",
