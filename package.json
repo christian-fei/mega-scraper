@@ -3,7 +3,7 @@
   "version": "1.6.0",
   "description": "",
   "main": "amazon.js",
-  "bin": "bin.js",
+  "bin": "scrape.js",
   "scripts": {
     "clean": "rm -rf html/* ; rm -rf json/*; rm -rf screenshots/*",
     "init": "mkdir -p html ; mkdir -p json; mkdir -p screenshots",
