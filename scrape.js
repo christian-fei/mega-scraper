@@ -2,17 +2,9 @@
 
 const log = require('debug')('sar:scrape')
 const argv = require('yargs').argv
-const getHostname = require('./lib/get-hostname')
 const getQueueId = require('./lib/get-queue-id')
 const createQueue = require('./lib/create-queue')
-const pageScraper = require('./lib/scrapers/page')
-const amazonItScraper = require('./lib/scrapers/amazon.it')
-const amazonComScraper = require('./lib/scrapers/amazon.com')
-
-const scraperFor = {
-  'amazon.it': amazonItScraper,
-  'amazon.com': amazonComScraper
-}
+const scraperFor = require('./lib/scraper-for')
 
 if (require.main === module) {
   scrape(argv._[0])
@@ -21,9 +13,8 @@ if (require.main === module) {
 }
 
 async function scrape (url) {
-  const hostname = getHostname(url)
-  log({ url, hostname })
-  const scraper = scraperFor[hostname] || pageScraper
+  log({ url })
+  const scraper = await scraperFor(url)
   if (!scraper) throw new Error('unsupported url')
 
   const queueId = getQueueId(url)
@@ -35,25 +26,27 @@ async function scrape (url) {
   queue.clean(0, 'failed')
 
   log('starting scraping', url)
-
   const { events } = await scraper(url).work(queue)
 
+  log('listening on "done" event', url)
   events.on('done', () => {
     log('done')
     process.exit(0)
   })
+  log('listening on "review" event', url)
   events.on('review', (review) => {
-    log('new review', review)
+    log('scraped review', review)
   })
+  log('listening on "content" event', url)
   events.on('content', (content) => {
-    log('new content', (content || '').substring(0, 500))
+    log('scraped content', (content || '').substring(0, 500))
+  })
+
+  process.on('unhandledRejection', (err) => {
+    log('unhandled rejection', err.message, err)
+  })
+
+  process.on('uncaughtException', (err) => {
+    log('uncaught exception', err.message, err)
   })
 }
-
-process.on('unhandledRejection', (err) => {
-  log('unhandled rejection', err.message, err)
-})
-
-process.on('uncaughtException', (err) => {
-  log('uncaught exception', err.message, err)
-})
