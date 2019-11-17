@@ -24,7 +24,7 @@ async function scrape (url) {
   log('starting scraping', url)
   const { events } = await scraper(url).work(queue)
 
-  events.on('done', () => { log('done'); process.exit(0) })
+  events.on('done', (err) => { log('done', err); process.exit(err ? 1 : 0) })
   events.on('review', (review) => log('scraped review', review))
   events.on('content', (content) => log('scraped content', (content || '').substring(0, 500)))
 
