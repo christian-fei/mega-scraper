@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const log = require('debug')('sar:migration:01:html-json-folders')
+const log = require('debug')('mega-scraper:migration:01:html-json-folders')
 const fs = require('fs')
 const path = require('path')
 const migrationsConfig = require('./migrations/config.json')

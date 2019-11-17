@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const log = require('debug')('sar:scrape')
+const log = require('debug')('mega-scraper:scrape')
 const argv = require('yargs').argv
 const getQueueId = require('./lib/get-queue-id')
 const createQueue = require('./lib/create-queue')

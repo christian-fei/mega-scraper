@@ -10,7 +10,7 @@ scrapingQueue.clean(0, 'active')
 scrapingQueue.clean(0, 'delayed')
 scrapingQueue.clean(0, 'failed')
 const debug = require('debug')
-const log = debug('sar:bin')
+const log = debug('mega-scraper:bin')
 // debug.enable('sar*')
 
 const scrapingOptions = {
