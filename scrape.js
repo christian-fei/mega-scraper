@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const debug = require('debug')
+const {execSync} = require('child_process')
 const log = debug('mega-scraper:scrape')
 debug.enable('mega-scraper:*')
 const argv = require('yargs').argv
@@ -33,41 +34,42 @@ async function scrape (url) {
   const statsCache = cache(`stats/${queueId}`)
   await initCache({ url })
   const httpInstance = createServer()
+  setTimeout(() => {
+    execSync(`open http://localhost:4000`)
+  }, 1000)
   let stats = await statsCache.toJSON()
 
   events.on('done', (err) => { log('done', err); process.exit(err ? 1 : 0) })
   events.on('review', async (review) => {
     log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0))
-    await statsCache.hincrby('scrapedReviewsCount', 1)
+    statsCache.hincrby('scrapedReviewsCount', 1)
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
   })
-  events.on('content', (content) => log('scraped content', (content || '').substring(0, 500)))
+  events.on('content', async (content) => {
+    log('scraped content', (content || '').substring(0, 500))
+    statsCache.hincrby('scrapedPages', 1)
+  })
 
   process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
   process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
 
-  const httpInstanceUpdateHandle = setInterval(async () => {
-    if (stats.scrapedPages >= stats.totalPages) {
-      log(`finished: ${stats.scrapedPages} / ${stats.totalPages}`)
-      clearInterval(httpInstanceUpdateHandle)
-      return
-    }
+  setInterval(async () => {
     statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
   }, 500)
 
   async function initCache ({ url } = {}) {
-    await statsCache.hset('start', +new Date())
-    await statsCache.hset('url', url)
-    await statsCache.hset('totalPages', 0)
-    await statsCache.hset('scrapedReviewsCount', 0)
-    await statsCache.hset('accuracy', 0)
-    await statsCache.hset('scrapedPages', 0)
-    await statsCache.hset('productReviewsCount', 0)
-    await statsCache.hset('pageSize', 0)
-    await statsCache.hset('totalPages', 0)
-    await statsCache.hset('elapsed', 0)
+    statsCache.hset('start', +new Date())
+    statsCache.hset('url', url)
+    statsCache.hset('totalPages', 0)
+    statsCache.hset('scrapedReviewsCount', 0)
+    statsCache.hset('accuracy', 0)
+    statsCache.hset('scrapedPages', 0)
+    statsCache.hset('productReviewsCount', 0)
+    statsCache.hset('pageSize', 0)
+    statsCache.hset('totalPages', 0)
+    statsCache.hset('elapsed', 0)
   }
 }
