@@ -7,14 +7,6 @@ const path = require('path')
 
 if (require.main === module) {
   createServer()
-  // .then(() => {
-  //   log('finished')
-  //   // process.exit(0)
-  // })
-  // .catch(err => {
-  //   log('err', err.message, err.stack)
-  //   // process.exit(1)
-  // })
 } else {
   module.exports = { createServer }
 }
