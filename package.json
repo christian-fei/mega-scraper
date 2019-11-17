@@ -1,6 +1,6 @@
 {
   "name": "mega-scraper",
-  "version": "2.14.2",
+  "version": "3.0.0",
   "description": "",
   "main": "amazon.js",
   "bin": "scrape.js",
