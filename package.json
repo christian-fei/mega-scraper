@@ -36,6 +36,7 @@
     "get-free-https-proxy": "^2.0.0",
     "got": "^9.6.0",
     "ioredis": "^4.14.1",
+    "lib": "file:lib",
     "p-queue": "^6.2.0",
     "p-retry": "^4.2.0",
     "puppeteer-extra": "^2.1.3",

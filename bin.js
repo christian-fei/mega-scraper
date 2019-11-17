@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const amazon = require('./lib/sites/amazon')
-const { createServer } = require('./server')
+const amazon = require('lib/sites/amazon')
+const { createServer } = require('lib/server')
 const path = require('path')
-const cache = require('./lib/storage/cache')
-const scrapingQueue = require('./lib/create-queue')('scraping')
+const cache = require('lib/storage/cache')
+const scrapingQueue = require('lib/create-queue')('scraping')
 scrapingQueue.clean(0, 'wait')
 scrapingQueue.clean(0, 'active')
 scrapingQueue.clean(0, 'delayed')

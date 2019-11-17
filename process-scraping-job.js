@@ -1,10 +1,10 @@
-const amazon = require('./lib/sites/amazon')
+const amazon = require('lib/sites/amazon')
 const debug = require('debug')
 const log = debug('sar:process-scraping-job')
-const amazonParser = require('./lib/parsers/amazon')
+const amazonParser = require('lib/parsers/amazon')
 const fs = require('fs')
 const path = require('path')
-const cache = require('./lib/storage/cache')
+const cache = require('lib/storage/cache')
 
 module.exports = async function (job, done) {
   const { asin, pageNumber, scrapingOptions } = job.data
