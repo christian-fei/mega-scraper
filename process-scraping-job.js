@@ -39,7 +39,7 @@ module.exports = async function (job, done) {
     } else if (asinPageNumberExistsHTML && options.cache) {
       log(`Using html/${asin}/${asin}-${pageNumber}.html`)
       const html = fs.readFileSync(htmlPath, { encoding: 'utf8' })
-      const { reviews } = await amazonParser.parseProductReviews(html)
+      const { reviews } = await amazonParser.reviewsFromHtml(html)
         .then(processProductReviews({ asin, pageNumber }))
       return { reviews }
     }
