@@ -25,7 +25,7 @@ async function scrape (url) {
   const { events } = await scraper(url).work(queue)
 
   events.on('done', (err) => { log('done', err); process.exit(err ? 1 : 0) })
-  events.on('review', (review) => log('scraped review', review))
+  events.on('review', (review) => log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0)))
   events.on('content', (content) => log('scraped content', (content || '').substring(0, 500)))
 
   process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
