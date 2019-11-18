@@ -37,9 +37,10 @@ async function scrape (url) {
   log(`queueId : bull:${queueId}`)
   const events = new EventEmitter()
   const queue = createQueue(queueId)
+  const browser = await createBrowser(argv)
 
   log('starting scraping', url, argv)
-  await scraper({ url, queue, ...argv })
+  await scraper({ url, queue, events, browser })
 
   const statsCache = cache(`stats/${queueId}`)
   await initCache(statsCache, { url })
