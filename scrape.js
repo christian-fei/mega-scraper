@@ -2,6 +2,7 @@
 
 const debug = require('debug')
 const { execSync } = require('child_process')
+const EventEmitter = require('events')
 const log = debug('mega-scraper:scrape')
 debug.enable('mega-scraper:*')
 const argv = require('yargs').coerce({
@@ -34,10 +35,11 @@ async function scrape (url) {
 
   const queueId = getQueueId(url)
   log(`queueId : bull:${queueId}`)
+  const events = new EventEmitter()
   const queue = createQueue(queueId)
 
   log('starting scraping', url, argv)
-  const { events } = await scraper({ url, queue, ...argv })
+  await scraper({ url, queue, ...argv })
 
   const statsCache = cache(`stats/${queueId}`)
   await initCache(statsCache, { url })
