@@ -12,7 +12,7 @@ mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2
 
 ### `--headless` [default: true]
 
-set to `true` to run the scraper in "headful" mode (non-headless)
+set to `false` to run the scraper in "headful" mode (non-headless)
 
 e.g.
 
