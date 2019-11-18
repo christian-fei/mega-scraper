@@ -1,1 +1,6 @@
 *.test.js
+json/*
+html/*
+screenshots/*
+migrations/*
+.nyc_output/*
