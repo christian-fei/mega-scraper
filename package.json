@@ -9,7 +9,7 @@
     "init": "mkdir -p html ; mkdir -p json; mkdir -p screenshots",
     "start": "./bin.js",
     "server": "node server.js",
-    "test": "rm -rf html/B07747FR44* ; rm -rf json/B07747FR44* ; DEBUG='mega-scraper:*' ava --fail-fast -c 1 --serial",
+    "test": "rm -rf html/amazon/B07PHPXHQS* ; rm -rf json/amazon/B07PHPXHQS* ; DEBUG='mega-scraper:*' ava --fail-fast -c 1 --serial",
     "migrate": "mkdir -p migrations; DEBUG='mega-scraper:*' node migrate.js",
     "bin": "DEBUG='mega-scraper:*' node --max-old-space-size=8192 bin.js"
   },
