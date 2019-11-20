@@ -4,7 +4,7 @@ const debug = require('debug')
 const { execSync } = require('child_process')
 const EventEmitter = require('events')
 const log = debug('mega-scraper:scrape')
-debug.enable('mega-scraper:*')
+!process.env.DEBUG && debug.enable('mega-scraper:scrape')
 const argv = require('yargs').coerce({
   headless: (v) => v !== 'false',
   proxy: (v) => v !== 'false',
@@ -55,6 +55,11 @@ async function scrape (url) {
   events.on('review', async (review) => {
     log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0))
     statsCache.hincrby('scrapedReviewsCount', 1)
+    let scrapedReviews = await statsCache.hget('lastTenScrapedReviews') || '[]'
+    try { scrapedReviews = JSON.parse(scrapedReviews) } catch (err) { scrapedReviews = [] }
+    scrapedReviews.push(review)
+    scrapedReviews = scrapedReviews.slice(-10)
+    await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
   })
