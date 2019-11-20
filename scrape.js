@@ -50,7 +50,19 @@ async function scrape (url) {
   await initCache(statsCache, { url })
   let stats = await statsCache.toJSON()
 
-  events.on('done', (err) => { log('done', err); process.exit(err ? 1 : 0) })
+  const updateIntervalHandle = setInterval(async () => {
+    statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
+    stats = await statsCache.toJSON()
+    httpInstance.update(stats)
+  }, 500)
+
+  events.on('done', (err) => {
+    log('done', err)
+    statsCache.hset('finish', +new Date())
+    clearInterval(updateIntervalHandle)
+    // process.exit(err ? 1 : 0)
+  })
+
   events.on('review', async (review) => {
     log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0))
     statsCache.hincrby('scrapedReviewsCount', 1)
@@ -69,12 +81,6 @@ async function scrape (url) {
 
   process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
   process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
-
-  setInterval(async () => {
-    statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
-    stats = await statsCache.toJSON()
-    httpInstance.update(stats)
-  }, 500)
 }
 
 async function initCache (cache, { url } = {}) {

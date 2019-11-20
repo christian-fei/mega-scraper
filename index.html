@@ -41,6 +41,25 @@
       </h1>
     </div>
     <div class="w-100"></div>
+    ${data.finish && `<div class="col m-1">
+      <h6>
+        finish
+      </h6>
+      <h1>
+        ${data.finish}ms
+      </h1>
+    </div>
+    <div class="w-100"></div>
+    `}
+    <div class="col m-1">
+      <h6>
+        url
+      </h6>
+      <h1>
+        ${data.url}
+      </h1>
+    </div>
+    <div class="w-100"></div>
     ${data.scrapedReviewsCount ? `
     <div class="col m-2">
       <h6>
