@@ -15,8 +15,7 @@ const argv = require('yargs').coerce({
   timeout: (v) => Number.isFinite(v) ? v : undefined
 }).parse()
 const cache = require('./lib/storage/cache')
-const getQueueId = require('./lib/get-queue-id')
-const createQueue = require('./lib/create-queue')
+const { createQueue, getQueueId } = require('./lib/queue')
 const createBrowser = require('./lib/create-browser')
 const createServer = require('./lib/create-server')
 const scraperFor = require('./lib/scraper-for')
