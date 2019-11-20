@@ -30,6 +30,16 @@ e.g.
 mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --proxy false
 ```
 
+### `--timeout` [default: 5000]
+
+set the timeout to a desired number in milliseconds (5000 = 5 seconds)
+
+e.g.
+
+```
+mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --timeout 10000
+```
+
 ### `--images` [default: true]
 
 set to `false` to avoid loading images

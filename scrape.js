@@ -10,7 +10,8 @@ const argv = require('yargs').coerce({
   proxy: (v) => v !== 'false',
   stylesheets: (v) => v !== 'false',
   javascript: (v) => v !== 'false',
-  images: (v) => v !== 'false'
+  images: (v) => v !== 'false',
+  timeout: (v) => Number.isFinite(v) ? v : undefined
 }).parse()
 const cache = require('./lib/storage/cache')
 const getQueueId = require('./lib/get-queue-id')
