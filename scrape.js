@@ -11,6 +11,7 @@ const argv = require('yargs').coerce({
   stylesheets: (v) => v !== 'false',
   javascript: (v) => v !== 'false',
   images: (v) => v !== 'false',
+  blocker: (v) => v !== 'false',
   timeout: (v) => Number.isFinite(v) ? v : undefined
 }).parse()
 const cache = require('./lib/storage/cache')
