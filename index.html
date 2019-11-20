@@ -41,29 +41,56 @@
       </h1>
     </div>
     <div class="w-100"></div>
-    ${data.scrapedReviewsCount ? `<div class="col m-2">
+    ${data.scrapedReviewsCount ? `
+    <div class="col m-2">
       <h6>
         reviews
       </h6>
       <h1>
-        ${data.scrapedReviewsCount}${data.productReviewsCount ? ` / ${data.productReviewsCount}` : ''}
+        ${data.scrapedReviewsCount}
       </h1>
+    </div>` : ''}
+    ${data.scrapedReviewsCount ? `
+    <div class="col m-2">
+      <h6>
+        reviews / s
+      </h6>
+      <h1>
+        ${(+data.scrapedReviewsCount / (+data.elapsed / 1000)).toFixed(0)}
+      </h1>
+    </div>` : ''}
+    ${data.lastTenScrapedReviews ? `
+    <div class="col m-2">
+      <h6>
+        reviews
+      </h6>
+      <div class="container">
+        ${JSON.parse(data.lastTenScrapedReviews).map(r => `
+          <div class="row" style="margin: 1em auto;">
+            <div class="col-sm-2">
+              <span class="badge">${r.stars || 0}⭐️</span>
+              <br/>
+              <span class="badge">${r.dateString}</span>
+              <br/>
+              <span class="badge">${r.hash && r.hash.substring(0, 10)}..</span>
+              <br/>
+              ${r.asin && `<span class="badge">asin ${r.asin}</span><br/>`}
+              ${r.pageNumber && `<span class="badge">page ${r.pageNumber}</span><br/>`}
+              ${r.url && `<span class="badge"><a target="_blank" href="${r.url}">url</a></span>`}
+            </div>
+            <div class="col">
+              ${r.text && r.text.substring(0, 500)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <br/>
+      <pre>${JSON.stringify(JSON.parse(data.lastTenScrapedReviews), null, 2)}</pre>
     </div>
   </div>` : ''}
-  <ul>
-    ${(data.reviews || []).filter(Boolean).map(s => `<div>
-<strong>hash</strong>: ${s.hash}</br>
-<strong>stars</strong>: ${s.stars}</br>
-<strong>dateString</strong>: ${s.dateString}</br>
-<strong>text</strong>: ${s.text}</br>
-<strong>asin</strong>: ${s.asin}</br>
-<strong>pageNumber</strong>: ${s.pageNumber}</br>
-<strong>screenshotPath</strong>: <span onclick="copy(event)">${s.screenshotPath}</span></br>
-</div>`)}
-  </ul>
 </div>
 `
-// <pre>${JSON.stringify(data, null, 2)}</pre>
+
         } else {
           window.main.innerHTML = `
 <h1>starting..</h1>
