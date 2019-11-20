@@ -18,10 +18,16 @@
 
     eventSource.onmessage = (message) => {
       console.log(message)
-      try {
-        const data = JSON.parse(message.data).data
-        if (data && Object.keys(data).length > 0) {
-          window.main.innerHTML = `
+      const data = JSON.parse(message.data).data
+
+      if (!data && Object.keys(data).length === 0) {
+        return window.main.innerHTML = `
+          <h1>starting..</h1>
+        `
+      }
+
+
+        window.main.innerHTML = `
 <div class="container">
   <div class="row">
     <div class="col m-1">
@@ -41,16 +47,17 @@
       </h1>
     </div>
     <div class="w-100"></div>
-    ${data.finish && `<div class="col m-1">
+    ${data.finish > 0 ? `
+    <div class="col m-1">
       <h6>
         finish
       </h6>
       <h1>
-        ${data.finish}ms
+        ${data.finish}
       </h1>
     </div>
     <div class="w-100"></div>
-    `}
+    ` :  ''}
     <div class="col m-1">
       <h6>
         url
@@ -104,21 +111,11 @@
         `).join('')}
       </div>
       <br/>
-      <pre>${JSON.stringify(JSON.parse(data.lastTenScrapedReviews), null, 2)}</pre>
+      <pre>${JSON.stringify(data, null, 2)}</pre>
     </div>
   </div>` : ''}
 </div>
 `
-
-        } else {
-          window.main.innerHTML = `
-<h1>starting..</h1>
-          `
-
-        }
-      } catch (err) {
-        console.error(err)
-      }
     }
 
 

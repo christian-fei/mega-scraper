@@ -12,6 +12,7 @@ const argv = require('yargs').coerce({
   javascript: (v) => v !== 'false',
   images: (v) => v !== 'false',
   blocker: (v) => v !== 'false',
+  exit: (v) => v === 'true',
   timeout: (v) => Number.isFinite(v) ? v : undefined
 }).parse()
 const cache = require('./lib/storage/cache')
@@ -51,21 +52,21 @@ async function scrape (url) {
   let stats = await statsCache.toJSON()
 
   const updateIntervalHandle = setInterval(async () => {
-    statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
+    await statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
   }, 500)
 
-  events.on('done', (err) => {
+  events.on('done', async (err) => {
     log('done', err)
-    statsCache.hset('finish', +new Date())
+    await statsCache.hset('finish', +new Date())
     clearInterval(updateIntervalHandle)
-    // process.exit(err ? 1 : 0)
+    argv.exit && process.exit(err ? 1 : 0)
   })
 
   events.on('review', async (review) => {
     log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0))
-    statsCache.hincrby('scrapedReviewsCount', 1)
+    await statsCache.hincrby('scrapedReviewsCount', 1)
     let scrapedReviews = await statsCache.hget('lastTenScrapedReviews') || '[]'
     try { scrapedReviews = JSON.parse(scrapedReviews) } catch (err) { scrapedReviews = [] }
     scrapedReviews.push(review)
@@ -94,4 +95,5 @@ async function initCache (cache, { url } = {}) {
   cache.hset('pageSize', 0)
   cache.hset('totalPages', 0)
   cache.hset('elapsed', 0)
+  cache.hset('finish', 0)
 }
