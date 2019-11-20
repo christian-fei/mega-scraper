@@ -34,6 +34,12 @@ async function scrape (url) {
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url}`)
 
+  const httpInstance = createServer()
+
+  setTimeout(() => {
+    execSync(`open http://localhost:4000`)
+  }, 1000)
+
   const queueId = getQueueId(url)
   log(`queueId : bull:${queueId}`)
   const events = new EventEmitter()
@@ -46,12 +52,6 @@ async function scrape (url) {
   const statsCache = cache(`stats/${queueId}`)
   await initCache(statsCache, { url })
   let stats = await statsCache.toJSON()
-
-  const httpInstance = createServer()
-
-  setTimeout(() => {
-    execSync(`open http://localhost:4000`)
-  }, 1000)
 
   events.on('done', (err) => { log('done', err); process.exit(err ? 1 : 0) })
   events.on('review', async (review) => {
