@@ -35,11 +35,7 @@ async function scrape (url) {
   log(`scraping ${url}`)
 
   const httpInstance = createServer()
-
-  try {
-    log('opening http://localhost:4000')
-    execSync(`open http://localhost:4000`)
-  } catch (err) { log(err.message) }
+  try { execSync(`open http://localhost:4000`) } catch (err) { log(err.message) }
 
   const queueId = getQueueId(url)
   log(`queueId : bull:${queueId}`)
