@@ -2,6 +2,8 @@
 
 scrape a website's content.
 
+> built-in support for amazon product reviews.
+
 ```
 npm i -g mega-scraper
 
@@ -68,4 +70,15 @@ e.g.
 
 ```
 mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --javascript false
+```
+
+
+### `--blocker` [default: true]
+
+set to `false` to avoid blocking requests like images, stylesheets, javascript, fonts, etc.
+
+e.g.
+
+```
+mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --blocker false
 ```
