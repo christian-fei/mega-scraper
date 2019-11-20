@@ -10,6 +10,10 @@ npm i -g mega-scraper
 mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/
 ```
 
+## requirements
+
+- running redis instance on host 0.0.0.0 port 6379 (or with `$REDIS_HOST` and `$REDIS_PORT`) or spin it up with docker
+
 ## options
 
 ### `--headless` [default: true]
