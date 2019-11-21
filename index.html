@@ -117,18 +117,5 @@
 </div>
 `
     }
-
-
-    function copy(event) {
-      const target = event.target
-
-      target.select()
-      target.setSelectionRange(0, 99999) /*For mobile devices*/
-
-      document.execCommand("copy")
-      console.log('copied', target)
-    }
-
-
   </script>
 </html>
