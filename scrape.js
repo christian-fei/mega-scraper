@@ -55,7 +55,7 @@ async function scrape (url) {
     await statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
-  }, 500)
+  }, 250)
 
   events.on('done', async (err) => {
     log('done', err)
