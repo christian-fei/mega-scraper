@@ -5,16 +5,19 @@ const { execSync } = require('child_process')
 const EventEmitter = require('events')
 const log = debug('mega-scraper:scrape')
 !process.env.DEBUG && debug.enable('mega-scraper:scrape')
-const argv = require('yargs').coerce({
-  headless: (v) => v !== 'false',
-  proxy: (v) => v !== 'false',
-  stylesheets: (v) => v !== 'false',
-  javascript: (v) => v !== 'false',
-  images: (v) => v !== 'false',
-  blocker: (v) => v !== 'false',
-  exit: (v) => v === 'true',
-  timeout: (v) => Number.isFinite(v) ? v : undefined
-}).parse()
+const argv = require('yargs')
+  .boolean('headless')
+  .boolean('proxy')
+  .number('timeout')
+  .default('timeout', 5000)
+  .boolean('images')
+  .boolean('stylesheets')
+  .boolean('javascript')
+  .boolean('blocker')
+  .boolean('exit')
+  .default('exit', false)
+  .argv
+
 const cache = require('./lib/storage/cache')
 const { createQueue, getQueueId } = require('./lib/queue')
 const createBrowser = require('./lib/create-browser')
