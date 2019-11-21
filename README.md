@@ -28,7 +28,7 @@ mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2
 
 ### `--proxy` [default: true]
 
-set to `false` to avoid proxying each request through a free proxy service
+set to `false` to avoid proxying each request through a free proxy service (currently the module [`get-free-https-proxy`](https://www.npmjs.com/package/get-free-https-proxy) is used)
 
 e.g.
 
