@@ -90,6 +90,7 @@ async function scrape (url, options = {}) {
 async function initCache (cache, { url } = {}) {
   cache.hset('start', +new Date())
   cache.hset('url', url)
+  cache.hset('lastTenScrapedReviews', '[]')
   cache.hset('totalPages', 0)
   cache.hset('scrapedReviewsCount', 0)
   cache.hset('accuracy', 0)
