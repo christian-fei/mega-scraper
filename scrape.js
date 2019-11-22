@@ -79,8 +79,9 @@ async function scrape (url, options = {}) {
     await statsCache.hincrby('scrapedReviewsCount', 1)
     let scrapedReviews = await statsCache.hget('lastTenScrapedReviews') || '[]'
     try { scrapedReviews = JSON.parse(scrapedReviews) } catch (err) { scrapedReviews = [] }
-    scrapedReviews.push(review)
-    scrapedReviews = scrapedReviews.filter((_, i) => i > scrapedReviews.length - 10)
+    scrapedReviews = [review].concat(scrapedReviews)
+    scrapedReviews.length = 10
+    scrapedReviews = scrapedReviews.filter(Boolean)
     await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
     // stats = await statsCache.toJSON()
     // httpInstance.update(stats)
