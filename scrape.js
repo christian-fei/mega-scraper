@@ -21,6 +21,7 @@ if (require.main === module) {
     .boolean('javascript')
     .boolean('blocker')
     .boolean('exit').default('exit', false)
+    .string('cookie')
     .argv
   scrape(options._[0], options)
 } else {

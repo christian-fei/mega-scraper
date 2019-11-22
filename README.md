@@ -97,3 +97,13 @@ e.g.
 ```
 mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --exit
 ```
+
+### `--cookie` [default: none]
+
+set to a desired cookie to further prevent detection
+
+e.g.
+
+```
+mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --cookie 'my=cookie'
+```
