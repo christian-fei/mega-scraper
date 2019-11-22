@@ -119,7 +119,7 @@
         screenshots
       </h6>
       <div class="container" style="max-height: 30em; overflow-y: scroll;">
-        <div class="row" style="margin: 1em auto;">
+        <div class="row" style="margin: 1em auto; flex-wrap: nowrap;">
         ${JSON.parse(data.lastTenScreenshots).map(screenshot => `
           <div class="col">
             <a href="/screenshots/${screenshot}" target="_blank">
