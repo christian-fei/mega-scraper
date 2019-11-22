@@ -21,7 +21,7 @@ if (require.main === module) {
     .boolean('javascript').default('javascript', true)
     .boolean('blocker').default('blocker', true)
     .boolean('cluster').default('cluster', false)
-    .boolean('exit').default('exit', false)
+    .boolean('exit').default('exit', true)
     .string('cookie')
     .argv
   scrape(options._[0], options)
@@ -71,6 +71,8 @@ async function scrape (url, options = {}) {
     log('done', err, result)
     await statsCache.hset('finish', +new Date())
     clearInterval(updateIntervalHandle)
+    stats = await statsCache.toJSON()
+    httpInstance.update(stats)
     clearInterval(updateLogIntervalHandle)
     options.exit && process.exit(err ? 1 : 0)
   })
@@ -88,7 +90,7 @@ async function scrape (url, options = {}) {
   })
   events.on('content', async (content) => {
     log('scraped content', (content || '').substring(0, 500))
-    statsCache.hincrby('scrapedPages', 1)
+    await statsCache.hincrby('scrapedPages', 1)
   })
 
   process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))

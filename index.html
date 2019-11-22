@@ -47,13 +47,13 @@
       </h1>
     </div>
     <div class="w-100"></div>
-    ${data.finish ? `
+    ${data.finish > 0 ? `
     <div class="col m-1">
       <h6>
         finish
       </h6>
       <h1>
-        ${data.finish}
+        ${new Date(data.finish).toISOString()}
       </h1>
     </div>
     <div class="w-100"></div>
@@ -82,15 +82,36 @@
         reviews / s
       </h6>
       <h1>
-        ${(+data.scrapedReviewsCount / (+data.elapsed / 1000)).toFixed(0)}
+        ${(+data.scrapedReviewsCount / (+data.elapsed / 1000)).toFixed(1)}
       </h1>
     </div>` : ''}
+    <div class="w-100"></div>
+    ${data.scrapedPages ? `
+    <div class="col m-2">
+      <h6>
+        scraped pages
+      </h6>
+      <h1>
+        ${data.scrapedPages}
+      </h1>
+    </div>` : ''}
+    ${data.scrapedPages ? `
+    <div class="col m-2">
+      <h6>
+        pages / s
+      </h6>
+      <h1>
+        ${(+data.scrapedPages / (+data.elapsed / 1000)).toFixed(1)}
+      </h1>
+    </div>` : ''}
+
+    <div class="w-100"></div>
     ${data.lastTenScrapedReviews ? `
     <div class="col m-2">
       <h6>
         reviews
       </h6>
-      <div class="container">
+      <div class="container" style="max-height: 30em; overflow-y: scroll;">
         ${JSON.parse(data.lastTenScrapedReviews).map(r => `
           <div class="row" style="margin: 1em auto;">
             <div class="col-sm-2">
