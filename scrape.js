@@ -93,6 +93,16 @@ async function scrape (url, options = {}) {
     await statsCache.hincrby('scrapedPages', 1)
   })
 
+  events.on('screenshot', async (screenshot) => {
+    log('received screenshot', screenshot)
+    let lastTenScreenshots = await statsCache.hget('lastTenScreenshots') || '[]'
+    try { lastTenScreenshots = JSON.parse(lastTenScreenshots) } catch (err) { lastTenScreenshots = [] }
+    lastTenScreenshots = [screenshot].concat(lastTenScreenshots)
+    lastTenScreenshots.length = 10
+    lastTenScreenshots = lastTenScreenshots.filter(Boolean)
+    await statsCache.hset('lastTenScreenshots', JSON.stringify(lastTenScreenshots))
+  })
+
   process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
   process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
 }
@@ -101,6 +111,7 @@ async function initCache (cache, { url } = {}) {
   cache.hset('start', +new Date())
   cache.hset('url', url)
   cache.hset('lastTenScrapedReviews', '[]')
+  cache.hset('lastTenScreenshots', '[]')
   cache.hset('totalPages', 0)
   cache.hset('scrapedReviewsCount', 0)
   cache.hset('accuracy', 0)

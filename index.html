@@ -112,7 +112,7 @@
       </h1>
     </div>` : ''}
 
-    ${data.screenshots ? `
+    ${data.lastTenScreenshots ? `
     <div class="w-100"></div>
     <div class="col m-2">
       <h6>
@@ -120,9 +120,11 @@
       </h6>
       <div class="container" style="max-height: 30em; overflow-y: scroll;">
         <div class="row" style="margin: 1em auto;">
-        ${JSON.parse(data.screenshots).map(screenshot => `
+        ${JSON.parse(data.lastTenScreenshots).map(screenshot => `
           <div class="col">
-            <img src="${screenshot}" />
+            <a href="/screenshots/${screenshot}" target="_blank">
+            <img width="250px" src="/screenshots/${screenshot}" />
+            </a>
           </div>
         `).join('')}
         </div>

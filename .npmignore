@@ -2,6 +2,7 @@
 json/*
 html/*
 screenshots/*
+screenshot/*
 migrations/*
 .nyc_output/*
 lib/parsers/product-reviews-B07747FR44-1.html

@@ -4,5 +4,6 @@ package-lock.json
 html/
 json/
 screenshots/
+screenshot/
 .npmrc
 !.npmrc.sample
