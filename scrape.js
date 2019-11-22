@@ -13,13 +13,14 @@ const scraperFor = require('./lib/scraper-for')
 
 if (require.main === module) {
   const options = require('yargs')
-    .boolean('headless')
-    .boolean('proxy')
+    .boolean('headless').default('headless', true)
+    .boolean('proxy').default('proxy', true)
     .number('timeout').default('timeout', 5000)
-    .boolean('images')
-    .boolean('stylesheets')
-    .boolean('javascript')
-    .boolean('blocker')
+    .boolean('images').default('images', true)
+    .boolean('stylesheets').default('stylesheets', true)
+    .boolean('javascript').default('javascript', true)
+    .boolean('blocker').default('blocker', true)
+    .boolean('cluster').default('cluster', false)
     .boolean('exit').default('exit', false)
     .string('cookie')
     .argv
@@ -30,7 +31,7 @@ if (require.main === module) {
 
 async function scrape (url, options = {}) {
   log('version', require('./package.json').version, 'options', JSON.stringify(options))
-  const scraper = await scraperFor(url)
+  const scraper = await scraperFor(url, options)
   log(scraper)
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url}`)
@@ -60,11 +61,17 @@ async function scrape (url, options = {}) {
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
   }, 250)
+  const updateLogIntervalHandle = setInterval(async () => {
+    stats = await statsCache.toJSON()
+    delete stats.lastTenScrapedReviews
+    log({ stats })
+  }, 3000)
 
   events.on('done', async (err, result) => {
     log('done', err, result)
     await statsCache.hset('finish', +new Date())
     clearInterval(updateIntervalHandle)
+    clearInterval(updateLogIntervalHandle)
     options.exit && process.exit(err ? 1 : 0)
   })
   events.on('review', async (review) => {
@@ -73,10 +80,10 @@ async function scrape (url, options = {}) {
     let scrapedReviews = await statsCache.hget('lastTenScrapedReviews') || '[]'
     try { scrapedReviews = JSON.parse(scrapedReviews) } catch (err) { scrapedReviews = [] }
     scrapedReviews.push(review)
-    scrapedReviews = scrapedReviews.slice(-10)
+    scrapedReviews = scrapedReviews.filter((_, i) => i > scrapedReviews.length - 10)
     await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
-    stats = await statsCache.toJSON()
-    httpInstance.update(stats)
+    // stats = await statsCache.toJSON()
+    // httpInstance.update(stats)
   })
   events.on('content', async (content) => {
     log('scraped content', (content || '').substring(0, 500))

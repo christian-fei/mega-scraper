@@ -88,7 +88,17 @@ mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2
 ```
 
 
-### `--blocker` [default: default]
+### `--blocker` [default: true]
+
+set to `false` to avoid blocking useless resources
+
+e.g.
+
+```
+mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --blocker false
+```
+
+### `--exit` [default: false]
 
 set to `true` to exit the program with success or failure status code once done scraping.
 
