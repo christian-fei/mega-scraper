@@ -42,8 +42,8 @@ async function scrape (url, options = {}) {
   try { log(`opening ${address}`); execSync(`open ${address}`) } catch (err) { log(err.message) }
 
   const events = new EventEmitter()
-  const queue = createQueue(url)
-  const queueName = queue.name
+  const queueName = getQueueName(url)
+  const queue = createQueue(queueName)
   const browser = await createBrowser(options)
 
   log('starting scraping', url, options)
