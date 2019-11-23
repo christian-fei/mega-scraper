@@ -53,6 +53,11 @@ async function scrape (url, options = {}) {
 
   scraper({ url, queue, events, browser, ...options })
 
+  events.on('nextUrl', async nextUrl => {
+    log({ nextUrl })
+    if (nextUrl) await queue.add({ url: nextUrl }, { priority: 1 })
+  })
+
   const updateIntervalHandle = setInterval(async () => {
     await statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
@@ -86,11 +91,6 @@ async function scrape (url, options = {}) {
     scrapedReviews = scrapedReviews.filter(Boolean)
     await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
   })
-  events.on('nextUrl', async nextUrl => {
-    log({ nextUrl })
-    if (nextUrl) await queue.add({ url: nextUrl }, { priority: 1 })
-  })
-
   events.on('captcha', async ({ url }) => {
     log('found captcha', url)
   })
