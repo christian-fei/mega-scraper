@@ -45,16 +45,13 @@ async function scrape (url, options = {}) {
   const queueName = getQueueName(url)
   const queue = createQueue(queueName)
   const browser = await createBrowser(options)
-
-  log('starting scraping', url, options)
-
-  scraper({ url, queue, events, browser, ...options })
-
   const statsCacheName = `stats/${queueName}`
   const statsCache = cache(statsCacheName)
   await initCache(statsCache, { url })
   let stats = await statsCache.toJSON()
   log(`created stats ${statsCacheName} ${JSON.stringify(stats, null, 2)}`)
+
+  scraper({ url, queue, events, browser, ...options })
 
   const updateIntervalHandle = setInterval(async () => {
     await statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
@@ -88,6 +85,14 @@ async function scrape (url, options = {}) {
     scrapedReviews.length = 10
     scrapedReviews = scrapedReviews.filter(Boolean)
     await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
+  })
+  events.on('nextUrl', async nextUrl => {
+    log({ nextUrl })
+    if (nextUrl) await queue.add({ url: nextUrl }, { priority: 1 })
+  })
+
+  events.on('captcha', async ({ url }) => {
+    log('found captcha', url)
   })
   events.on('content', handleContent(statsCache))
   events.on('screenshot', handleScreenshot(statsCache))
@@ -125,7 +130,7 @@ function handleScreenshot (statsCache) {
 }
 
 function handleContent (statsCache) {
-  return async (content) => {
+  return async ({ content }) => {
     log('scraped content', (content || '').substring(0, 500))
     await statsCache.hincrby('scrapedPages', 1)
   }
