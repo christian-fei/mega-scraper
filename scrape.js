@@ -6,7 +6,7 @@ const log = debug('mega-scraper:scrape')
 !process.env.DEBUG && debug.enable('mega-scraper:scrape')
 
 const cache = require('./lib/storage/cache')
-const { createQueue, getQueueId } = require('./lib/queue')
+const { createQueue, getQueueName } = require('./lib/queue')
 const createBrowser = require('./lib/create-browser')
 const createServer = require('./lib/create-server')
 const scraperFor = require('./lib/scraper-for')
@@ -27,7 +27,7 @@ if (require.main === module) {
     .argv
   scrape(options._[0], options)
 } else {
-  module.exports = { scraperFor, getQueueId, createQueue, createBrowser, createServer, cache }
+  module.exports = { scraperFor, getQueueName, createQueue, createBrowser, createServer, cache }
 }
 
 async function scrape (url, options = {}) {
@@ -42,15 +42,15 @@ async function scrape (url, options = {}) {
   try { log(`opening ${address}`); execSync(`open ${address}`) } catch (err) { log(err.message) }
 
   const events = new EventEmitter()
-  const queueId = getQueueId(url)
-  const queue = createQueue(queueId)
+  const queue = createQueue(url)
+  const queueName = queue.name
   const browser = await createBrowser(options)
 
   log('starting scraping', url, options)
 
   scraper({ url, queue, events, browser, ...options })
 
-  const statsCacheName = `stats/${queueId}`
+  const statsCacheName = `stats/${queueName}`
   const statsCache = cache(statsCacheName)
   await initCache(statsCache, { url })
   let stats = await statsCache.toJSON()
