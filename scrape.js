@@ -33,7 +33,7 @@ if (require.main === module) {
 async function scrape (url, options = {}) {
   log('version', require('./package.json').version, 'options', JSON.stringify(options))
   const scraper = await scraperFor(url, options)
-  log(scraper)
+  log({ scraper })
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url}`)
 
@@ -41,14 +41,12 @@ async function scrape (url, options = {}) {
   try { execSync(`open http://localhost:4000`) } catch (err) { log(err.message) }
 
   const events = new EventEmitter()
-  log('created events')
   const queueId = getQueueId(url)
   const queue = createQueue(queueId)
-  log(`created queue bull:${queueId}`)
   const browser = await createBrowser(options)
-  log('created browser', JSON.stringify(options, null, 2))
 
   log('starting scraping', url, options)
+
   scraper({ url, queue, events, browser, ...options })
 
   const statsCacheName = `stats/${queueId}`
@@ -61,7 +59,7 @@ async function scrape (url, options = {}) {
     await statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
-  }, 250)
+  }, 1000)
   const updateLogIntervalHandle = setInterval(async () => {
     stats = await statsCache.toJSON()
     delete stats.lastTenScrapedReviews
@@ -72,11 +70,13 @@ async function scrape (url, options = {}) {
     log('done', err, result)
     await statsCache.hset('finish', +new Date())
     clearInterval(updateIntervalHandle)
-    stats = await statsCache.toJSON()
-    httpInstance.update(stats)
     clearInterval(updateLogIntervalHandle)
     await browser.instance.close()
-    options.exit && process.exit(err ? 1 : 0)
+    stats = await statsCache.toJSON()
+    httpInstance.update(stats)
+    setTimeout(() => {
+      options.exit && process.exit(err ? 1 : 0)
+    }, 5000)
   })
   events.on('review', async (review) => {
     log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0))
