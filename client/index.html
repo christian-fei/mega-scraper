@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>bull-dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="app.css">
+  </head>
+  <body>
+    <main id="main">
+      <h1 id="loading">loading dashboard...</h1>
+    </main>
+    <script type="module">
+      import * as preact from '/preact.js'
+      import App from '/components/App.js'
+
+      if (window.loading) window.loading.style = 'display: none'
+      const eventSource = new EventSource('/sse')
+      window.eventSource = eventSource
+
+      eventSource.onmessage = (message) => {
+        console.log(message)
+        const data = JSON.parse(message.data)
+
+        if (!data && Object.keys(data).length === 0) {
+          return `
+            <h1>starting..</h1>
+          `
+        }
+      }
+
+      preact.render(preact.h(App), document.getElementById('main'))
+    </script>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+{
+  "name": "tickers",
+  "active": [],
+  "completed": [
+    {
+      "id": "3",
+      "name": "__default__",
+      "data": {},
+      "opts": {
+        "attempts": 1,
+        "delay": 0,
+        "timestamp": 1568237886937
+      },
+      "progress": 100,
+      "delay": 0,
+      "timestamp": 1568237886937,
+      "attemptsMade": 0,
+      "stacktrace": [],
+      "returnvalue": null,
+      "finishedOn": 1568237889601,
+      "processedOn": 1568237886937
+    },
+    {
+      "id": "2",
+      "name": "__default__",
+      "data": {},
+      "opts": {
+        "attempts": 1,
+        "delay": 0,
+        "timestamp": 1568237856937
+      },
+      "progress": 100,
+      "delay": 0,
+      "timestamp": 1568237856937,
+      "attemptsMade": 0,
+      "stacktrace": [],
+      "returnvalue": null,
+      "finishedOn": 1568237859624,
+      "processedOn": 1568237856940
+    },
+    {
+      "id": "1",
+      "name": "__default__",
+      "data": {},
+      "opts": {
+        "attempts": 1,
+        "delay": 0,
+        "timestamp": 1568237826933
+      },
+      "progress": 100,
+      "delay": 0,
+      "timestamp": 1568237826933,
+      "attemptsMade": 0,
+      "stacktrace": [],
+      "returnvalue": null,
+      "finishedOn": 1568237829593,
+      "processedOn": 1568237826935
+    }
+  ],
+  "failed": [],
+  "waiting": [],
+  "delayed": []
+}
