@@ -14,6 +14,7 @@ const scraperFor = require('./lib/scraper-for')
 if (require.main === module) {
   const options = require('yargs')
     .boolean('headless').default('headless', true)
+    .boolean('screenshot').default('screenshot', true)
     .boolean('proxy').default('proxy', true)
     .number('timeout').default('timeout', 5000)
     .boolean('images').default('images', true)
@@ -48,7 +49,7 @@ async function scrape (url, options = {}) {
   log('created browser', JSON.stringify(options, null, 2))
 
   log('starting scraping', url, options)
-  scraper({ url, queue, events, browser })
+  scraper({ url, queue, events, browser, ...options })
 
   const statsCacheName = `stats/${queueId}`
   const statsCache = cache(statsCacheName)
