@@ -75,6 +75,7 @@ async function scrape (url, options = {}) {
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
     clearInterval(updateLogIntervalHandle)
+    await browser.instance.close()
     options.exit && process.exit(err ? 1 : 0)
   })
   events.on('review', async (review) => {
