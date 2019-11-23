@@ -7,7 +7,7 @@ const log = debug('mega-scraper:scrape')
 
 const cache = require('./lib/storage/cache')
 const { createQueue, getQueueName } = require('./lib/queue')
-const createBrowser = require('./lib/create-browser')
+const createBrowser = require('./lib/browser/create-browser')
 const createServer = require('./lib/create-server')
 const scraperFor = require('./lib/scraper-for')
 
