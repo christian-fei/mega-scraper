@@ -67,10 +67,6 @@ async function scrape (url, options = {}) {
     log({ stats })
   }, 3000)
 
-  events.on('nextUrl', async (err, nextUrl) => {
-    log({ err, nextUrl })
-    await queue.add({ url: nextUrl }, { priority: 1 })
-  })
   events.on('done', async (err, result) => {
     log('done', err, result)
     await statsCache.hset('finish', +new Date())
