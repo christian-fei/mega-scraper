@@ -10,21 +10,9 @@ const { createQueue, getQueueName } = require('./lib/queue')
 const createBrowser = require('./lib/browser/create-browser')
 const createServer = require('./lib/create-server')
 const scraperFor = require('./lib/scraper-for')
+const options = require('./parse-options')
 
 if (require.main === module) {
-  const options = require('yargs')
-    .boolean('headless').default('headless', true)
-    .boolean('screenshot').default('screenshot', true)
-    .boolean('proxy').default('proxy', true)
-    .number('timeout').default('timeout', 5000)
-    .boolean('images').default('images', true)
-    .boolean('stylesheets').default('stylesheets', true)
-    .boolean('javascript').default('javascript', true)
-    .boolean('blocker').default('blocker', true)
-    .boolean('cluster').default('cluster', false)
-    .boolean('exit').default('exit', true)
-    .string('cookie')
-    .argv
   scrape(options._[0], options)
 } else {
   module.exports = { scraperFor, getQueueName, createQueue, createBrowser, createServer, cache }
@@ -47,7 +35,7 @@ async function scrape (url, options = {}) {
   const browser = await createBrowser(options)
   const statsCacheName = `stats/${queueName}`
   const statsCache = cache(statsCacheName)
-  await initCache(statsCache, { url })
+  await initCache(statsCache, { url, ...options })
   let stats = await statsCache.toJSON()
   log(`created stats ${statsCacheName} ${JSON.stringify(stats, null, 2)}`)
 
@@ -101,7 +89,7 @@ async function scrape (url, options = {}) {
   process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
 }
 
-async function initCache (cache, { url } = {}) {
+async function initCache (cache, { url, ...options } = {}) {
   cache.hset('start', +new Date())
   cache.hset('url', url)
   cache.hset('lastTenScrapedReviews', '[]')
@@ -115,6 +103,16 @@ async function initCache (cache, { url } = {}) {
   cache.hset('totalPages', 0)
   cache.hset('elapsed', 0)
   cache.hset('finish', 0)
+  options.timeout && cache.hset('timeout', options.timeout)
+  options.headless && cache.hset('headless', options.headless)
+  options.screenshot && cache.hset('screenshot', options.screenshot)
+  options.proxy && cache.hset('proxy', options.proxy)
+  options.images && cache.hset('images', options.images)
+  options.stylesheets && cache.hset('stylesheets', options.stylesheets)
+  options.javascript && cache.hset('javascript', options.javascript)
+  options.blocker && cache.hset('blocker', options.blocker)
+  options.exit && cache.hset('exit', options.exit)
+  options.cookie && cache.hset('cookie', options.cookie)
 }
 
 function handleScreenshot (statsCache) {
