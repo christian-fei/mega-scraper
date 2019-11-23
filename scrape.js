@@ -38,7 +38,9 @@ async function scrape (url, options = {}) {
   log(`scraping ${url}`)
 
   const httpInstance = await createServer()
-  try { execSync(`open http://localhost:4000`) } catch (err) { log(err.message) }
+  const address = await httpInstance.address()
+  log(`opening ${address}`)
+  try { execSync(`open ${address}`) } catch (err) { log(err.message) }
 
   const events = new EventEmitter()
   const queueId = getQueueId(url)
