@@ -36,6 +36,7 @@
     "cheerio": "^1.0.0-rc.3",
     "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.2",
+    "get-port": "^5.0.0",
     "got": "^9.6.0",
     "ioredis": "^4.14.1",
     "puppeteer-cluster": "^0.17.0",

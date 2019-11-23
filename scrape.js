@@ -37,7 +37,7 @@ async function scrape (url, options = {}) {
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url}`)
 
-  const httpInstance = createServer()
+  const httpInstance = await createServer()
   try { execSync(`open http://localhost:4000`) } catch (err) { log(err.message) }
 
   const events = new EventEmitter()
@@ -87,23 +87,9 @@ async function scrape (url, options = {}) {
     scrapedReviews.length = 10
     scrapedReviews = scrapedReviews.filter(Boolean)
     await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
-    // stats = await statsCache.toJSON()
-    // httpInstance.update(stats)
   })
-  events.on('content', async (content) => {
-    log('scraped content', (content || '').substring(0, 500))
-    await statsCache.hincrby('scrapedPages', 1)
-  })
-
-  events.on('screenshot', async (screenshot) => {
-    log('received screenshot', screenshot)
-    let lastTenScreenshots = await statsCache.hget('lastTenScreenshots') || '[]'
-    try { lastTenScreenshots = JSON.parse(lastTenScreenshots) } catch (err) { lastTenScreenshots = [] }
-    lastTenScreenshots = [screenshot].concat(lastTenScreenshots)
-    lastTenScreenshots.length = 10
-    lastTenScreenshots = lastTenScreenshots.filter(Boolean)
-    await statsCache.hset('lastTenScreenshots', JSON.stringify(lastTenScreenshots))
-  })
+  events.on('content', handleContent(statsCache))
+  events.on('screenshot', handleScreenshot(statsCache))
 
   process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
   process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
@@ -123,4 +109,23 @@ async function initCache (cache, { url } = {}) {
   cache.hset('totalPages', 0)
   cache.hset('elapsed', 0)
   cache.hset('finish', 0)
+}
+
+function handleScreenshot (statsCache) {
+  return async (screenshot) => {
+    log('received screenshot', screenshot)
+    let lastTenScreenshots = await statsCache.hget('lastTenScreenshots') || '[]'
+    try { lastTenScreenshots = JSON.parse(lastTenScreenshots) } catch (err) { lastTenScreenshots = [] }
+    lastTenScreenshots = [screenshot].concat(lastTenScreenshots)
+    lastTenScreenshots.length = 10
+    lastTenScreenshots = lastTenScreenshots.filter(Boolean)
+    await statsCache.hset('lastTenScreenshots', JSON.stringify(lastTenScreenshots))
+  }
+}
+
+function handleContent (statsCache) {
+  return async (content) => {
+    log('scraped content', (content || '').substring(0, 500))
+    await statsCache.hincrby('scrapedPages', 1)
+  }
 }
