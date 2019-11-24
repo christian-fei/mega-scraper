@@ -9,11 +9,10 @@ scrape(options._[0], options)
 
 async function scrape (url, options = {}) {
   !process.env.DEBUG && debug.enable('mega-scraper:scrape')
-  log('version', require('./package.json').version, 'options', JSON.stringify(options))
+  log(' ⚡️  version', require('./package.json').version, 'options', JSON.stringify(options))
   const scraper = await scraperFor(url, options)
-  log({ scraper })
   if (!scraper) throw new Error('unsupported url')
-  log(`scraping ${url}`)
+  log(`scraping ${url} using`, scraper)
 
   const httpInstance = await createServer()
   const address = await httpInstance.address()
