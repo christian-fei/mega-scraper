@@ -8,6 +8,7 @@ module.exports = require('yargs')
   .boolean('javascript').default('javascript', true)
   .boolean('blocker').default('blocker', true)
   .boolean('cluster').default('cluster', false)
+  .boolean('monitor').default('monitor', true)
   .boolean('exit').default('exit', false)
   .string('cookie')
   .argv

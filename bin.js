@@ -14,9 +14,12 @@ async function scrape (url, options = {}) {
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url} using`, scraper)
 
-  const httpInstance = await createServer()
-  const address = await httpInstance.address()
-  try { log(`opening ${address}`); execSync(`open ${address}`) } catch (err) { log(err.message) }
+  let httpInstance
+  if (options.monitor) {
+    httpInstance = await createServer()
+    const address = await httpInstance.address()
+    try { log(`opening ${address}`); execSync(`open ${address}`) } catch (err) { log(err.message) }
+  }
 
   const events = new EventEmitter()
   const queueName = getQueueName(url)
@@ -38,7 +41,7 @@ async function scrape (url, options = {}) {
   const updateIntervalHandle = setInterval(async () => {
     await statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
-    httpInstance.update(stats)
+    httpInstance && httpInstance.update(stats)
   }, 250)
   const updateLogIntervalHandle = setInterval(async () => {
     stats = await statsCache.toJSON()
@@ -53,7 +56,7 @@ async function scrape (url, options = {}) {
     clearInterval(updateLogIntervalHandle)
     await browser.instance.close()
     stats = await statsCache.toJSON()
-    httpInstance.update(stats)
+    httpInstance && httpInstance.update(stats)
     setTimeout(() => {
       options.exit && process.exit(err ? 1 : 0)
     }, 5000)
