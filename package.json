@@ -2,16 +2,16 @@
   "name": "mega-scraper",
   "version": "10.1.2",
   "description": "",
-  "main": "scrape.js",
-  "bin": "scrape.js",
+  "main": "index.js",
+  "bin": "bin.js",
   "scripts": {
     "clean": "rm -rf html/* ; rm -rf json/*; rm -rf screenshot/*",
     "init": "mkdir -p html ; mkdir -p json; mkdir -p screenshot",
-    "start": "./bin.js",
+    "start": "node --max-old-space-size=8192 ./bin.js",
     "server": "node server.js",
     "test": "rm -rf html/amazon/B07PHPXHQS* ; rm -rf json/amazon/B07PHPXHQS* ; rm -rf screenshot/amazon/B07PHPXHQS* ; DEBUG='mega-scraper:*' ava --fail-fast -c 1 -v",
     "migrate": "mkdir -p migrations; DEBUG='mega-scraper:*' node migrate.js",
-    "bin": "DEBUG='mega-scraper:*' node --max-old-space-size=8192 bin.js"
+    "bin": "node --max-old-space-size=8192 bin.js"
   },
   "repository": {
     "type": "git",

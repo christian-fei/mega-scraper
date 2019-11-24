@@ -1,24 +1,14 @@
 #!/usr/bin/env node
 const debug = require('debug')
-const { execSync } = require('child_process')
-const EventEmitter = require('events')
 const log = debug('mega-scraper:scrape')
-!process.env.DEBUG && debug.enable('mega-scraper:scrape')
+const EventEmitter = require('events')
+const { execSync } = require('child_process')
+const { cache, createQueue, getQueueName, createBrowser, createServer, scraperFor, options } = require('./')
 
-const cache = require('./lib/storage/cache')
-const { createQueue, getQueueName } = require('./lib/queue')
-const createBrowser = require('./lib/browser/create-browser')
-const createServer = require('./lib/create-server')
-const scraperFor = require('./lib/scraper-for')
-const options = require('./parse-options')
-
-if (require.main === module) {
-  scrape(options._[0], options)
-} else {
-  module.exports = { scraperFor, getQueueName, createQueue, createBrowser, createServer, cache }
-}
+scrape(options._[0], options)
 
 async function scrape (url, options = {}) {
+  !process.env.DEBUG && debug.enable('mega-scraper:scrape')
   log('version', require('./package.json').version, 'options', JSON.stringify(options))
   const scraper = await scraperFor(url, options)
   log({ scraper })
