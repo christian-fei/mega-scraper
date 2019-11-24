@@ -69,9 +69,7 @@ async function scrape (url, options = {}) {
     scrapedReviews = scrapedReviews.filter(Boolean)
     await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
   })
-  events.on('captcha', async ({ url }) => {
-    log('found captcha', url)
-  })
+  events.on('captcha', async ({ url }) => log('found captcha', url))
   events.on('content', handleContent(statsCache))
   events.on('screenshot', handleScreenshot(statsCache))
 
