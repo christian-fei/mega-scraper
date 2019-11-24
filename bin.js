@@ -49,6 +49,10 @@ async function scrape (url, options = {}) {
     log({ stats })
   }, 3000)
 
+  events.on('captcha', ({ url }) => log('found captcha', url))
+  events.on('review', handleReview(statsCache))
+  events.on('content', handleContent(statsCache))
+  events.on('screenshot', handleScreenshot(statsCache))
   events.on('done', async (err, result) => {
     log('done', err, result)
     await statsCache.hset('finish', +new Date())
@@ -61,7 +65,13 @@ async function scrape (url, options = {}) {
       options.exit && process.exit(err ? 1 : 0)
     }, 5000)
   })
-  events.on('review', async (review) => {
+
+  process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
+  process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
+}
+
+function handleReview (statsCache) {
+  return async (review) => {
     log('scraped review', review.hash, (review.text || '').substring(0, 80), review.dateString, '⭐️'.repeat(review.stars || 0))
     await statsCache.hincrby('scrapedReviewsCount', 1)
     let scrapedReviews = await statsCache.hget('lastTenScrapedReviews') || '[]'
@@ -70,15 +80,8 @@ async function scrape (url, options = {}) {
     scrapedReviews.length = 10
     scrapedReviews = scrapedReviews.filter(Boolean)
     await statsCache.hset('lastTenScrapedReviews', JSON.stringify(scrapedReviews))
-  })
-  events.on('captcha', async ({ url }) => log('found captcha', url))
-  events.on('content', handleContent(statsCache))
-  events.on('screenshot', handleScreenshot(statsCache))
-
-  process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
-  process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
+  }
 }
-
 function handleScreenshot (statsCache) {
   return async (screenshot) => {
     log('received screenshot', screenshot)
@@ -90,7 +93,6 @@ function handleScreenshot (statsCache) {
     await statsCache.hset('lastTenScreenshots', JSON.stringify(lastTenScreenshots))
   }
 }
-
 function handleContent (statsCache) {
   return async ({ content }) => {
     log('scraped content', (content || '').substring(0, 500))
