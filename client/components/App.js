@@ -107,11 +107,11 @@ export default class App extends Component {
           )
         ]) : null,
         h('div', { className: 'w-100' }, []),
-        lastTenScreenshots.length > 0 ? h('div', { className: 'row' }, [
+        lastTenScreenshots.length > 0 ? h('div', { className: 'container1' }, [
           h('h6', null, 'screenshots'),
-          h('div', { className: '', style: 'min-width: 100%; max-height: 600px; display: flex; overflow-x: auto;' },
+          h('div', { className: 'row1', style: 'min-width: 100%; max-height: 600px; display: flex; overflow-x: auto; flex-wrap; no-wrap;' },
             lastTenScreenshots.map(screenshot =>
-              h('div', { className: '', style: 'width: 250px; margin: 1em' }, [
+              h('div', { className: 'col1', style: 'min-width: 250px; margin: 1em' }, [
                 h('a', { href: `/screenshots/${screenshot}`, target: '_blank' }, [
                   h('img', { style: 'width: 250px;', src: `/screenshots/${screenshot}` })
                 ])
@@ -119,7 +119,7 @@ export default class App extends Component {
             )
           )
         ]) : null
-      ])
+      ].filter(Boolean))
     ])
   }
 }
