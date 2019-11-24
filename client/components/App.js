@@ -26,8 +26,8 @@ export default class App extends Component {
 
     console.log(data.start, data)
 
-    const lastTenScrapedReviews = JSON.parse(data.lastTenScrapedReviews)
-    const lastTenScreenshots = JSON.parse(data.lastTenScreenshots)
+    const lastTenScrapedReviews = safeJSONparse(data.lastTenScrapedReviews, [])
+    const lastTenScreenshots = safeJSONparse(data.lastTenScreenshots, [])
 
     return h('div', null, [
       h('div', { className: 'container' }, [
@@ -122,4 +122,10 @@ export default class App extends Component {
       ].filter(Boolean))
     ])
   }
+}
+
+function safeJSONparse (str, fallback = []) {
+  try {
+    return JSON.parse(str)
+  } catch (err) { return fallback }
 }
