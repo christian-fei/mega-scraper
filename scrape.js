@@ -50,7 +50,7 @@ async function scrape (url, options = {}) {
     await statsCache.hset('elapsed', Date.now() - +new Date(stats.start))
     stats = await statsCache.toJSON()
     httpInstance.update(stats)
-  }, 1000)
+  }, 250)
   const updateLogIntervalHandle = setInterval(async () => {
     stats = await statsCache.toJSON()
     delete stats.lastTenScrapedReviews
