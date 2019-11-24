@@ -7,7 +7,7 @@ export default class App extends Component {
     this.state = {
       data: {}
     }
-    const eventSource = new EventSource('/sse')
+    const eventSource = new window.EventSource('/sse')
 
     eventSource.onmessage = (message) => {
       if (!message || !message.data) return console.error('skipping empty message')
