@@ -3,7 +3,7 @@ const debug = require('debug')
 const log = debug('mega-scraper:scrape')
 const EventEmitter = require('events')
 const { execSync } = require('child_process')
-const { cache, createQueue, getQueueName, createBrowser, createServer, scraperFor, options } = require('./')
+const { cache, createQueue, getQueueName, createBrowser, createServer, scraperFor, options, initStatsCache } = require('./')
 
 scrape(options._[0], options)
 
@@ -25,7 +25,7 @@ async function scrape (url, options = {}) {
   const browser = await createBrowser(options)
   const statsCacheName = `stats/${queueName}`
   const statsCache = cache(statsCacheName)
-  await initCache(statsCache, { url, ...options })
+  await initStatsCache(statsCache, { url, ...options })
   let stats = await statsCache.toJSON()
   log(`created stats ${statsCacheName} ${JSON.stringify(stats, null, 2)}`)
 
@@ -75,32 +75,6 @@ async function scrape (url, options = {}) {
 
   process.on('unhandledRejection', (err) => log('unhandled rejection', err.message, err))
   process.on('uncaughtException', (err) => log('uncaught exception', err.message, err))
-}
-
-async function initCache (cache, { url, ...options } = {}) {
-  cache.hset('start', +new Date())
-  cache.hset('url', url)
-  cache.hset('lastTenScrapedReviews', '[]')
-  cache.hset('lastTenScreenshots', '[]')
-  cache.hset('totalPages', 0)
-  cache.hset('scrapedReviewsCount', 0)
-  cache.hset('accuracy', 0)
-  cache.hset('scrapedPages', 0)
-  cache.hset('productReviewsCount', 0)
-  cache.hset('pageSize', 0)
-  cache.hset('totalPages', 0)
-  cache.hset('elapsed', 0)
-  cache.hset('finish', 0)
-  options.timeout && cache.hset('timeout', options.timeout)
-  options.headless && cache.hset('headless', options.headless)
-  options.screenshot && cache.hset('screenshot', options.screenshot)
-  options.proxy && cache.hset('proxy', options.proxy)
-  options.images && cache.hset('images', options.images)
-  options.stylesheets && cache.hset('stylesheets', options.stylesheets)
-  options.javascript && cache.hset('javascript', options.javascript)
-  options.blocker && cache.hset('blocker', options.blocker)
-  options.exit && cache.hset('exit', options.exit)
-  options.cookie && cache.hset('cookie', options.cookie)
 }
 
 function handleScreenshot (statsCache) {
