@@ -110,9 +110,9 @@ e.g.
 mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --blocker false
 ```
 
-### `--exit` [default: true]
+### `--exit` [default: false]
 
-set to `false` to avoid exiting the program with success or failure status code once done scraping.
+set to `true` to exit the program with success or failure status code once done scraping.
 
 e.g.
 
