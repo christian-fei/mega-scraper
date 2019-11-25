@@ -25,17 +25,11 @@ async function createBackend () {
     monitor: true
   })
   // cluster.on('queue', data => log('event "queue"', data))
-  cluster.task(async ({ page, data: { url, job } }) => {
+  cluster.task(async ({ page, data: { url } }) => {
     await preparePage(page, { blocker: true, proxy: true })
     const scraper = scraperFor(url)
     if (!scraper) throw new Error('Unsupported')
     const result = await scraper({ url, page })
-    await queue.getJob(job.id).then(async j => {
-      log('got job', job.id)
-      await j.takeLock()
-      await j.moveToCompleted(JSON.stringify(result))
-      log('moved to completed', job.id)
-    })
     return result
   })
 
@@ -43,7 +37,7 @@ async function createBackend () {
   queue.process(async (job, done) => {
     log('received job', job.id, 'url', job.data && job.data.url, 'data', job.data)
     if (!job.data.url) throw new Error('Missing url')
-    await cluster.queue({ url: job.data.url, job })
+    await cluster.queue({ url: job.data.url })
     done()
   })
 
