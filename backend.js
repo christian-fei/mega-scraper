@@ -26,7 +26,7 @@ async function createBackend () {
   })
   // cluster.on('queue', data => log('event "queue"', data))
   cluster.task(async ({ page, data: { url } }) => {
-    await preparePage(page, { blocker: true, proxy: true })
+    await preparePage(page, { blocker: true, proxy: true, images: false, javascript: false, stylesheets: false })
     const scraper = scraperFor(url)
     if (!scraper) throw new Error('Unsupported')
     const result = await scraper({ url, page })
