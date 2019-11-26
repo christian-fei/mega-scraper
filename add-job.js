@@ -15,9 +15,9 @@ if (require.main === module) {
   module.exports = { addJob }
 }
 
-async function addJob (url) {
+async function addJob (url, queue) {
   log('add job', url)
-  const queue = createQueue('scraper')
+  queue = queue || createQueue('scraper')
   const job = await queue.add({ url })
   return job
 }

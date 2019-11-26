@@ -3,6 +3,7 @@ const debug = require('debug')
 debug.enable('mega-scraper:*')
 const log = debug('mega-scraper:add-job')
 const { createQueue } = require('./lib/queue')
+const { addJob } = require('./add-job')
 
 if (require.main === module) {
   addJobs()
@@ -35,5 +36,5 @@ async function addJobs () {
   ]
   log('add jobs', urls)
   const queue = createQueue('scraper')
-  return Promise.all(urls.map(url => queue.add({ url }, { jobId: url })))
+  return Promise.all(urls.map(url => addJob(url, queue)))
 }
