@@ -19,20 +19,5 @@ async function addJob (url) {
   log('add job', url)
   const queue = createQueue('scraper')
   const job = await queue.add({ url })
-
-  log(job.id)
-  return new Promise((resolve, reject) => {
-    const handle = setInterval(async () => {
-      const completed = await queue.getCompleted()
-      if (completed.some(a => a.id === job.id)) {
-        clearInterval(handle)
-        resolve()
-      }
-      const failed = await queue.getFailed()
-      if (failed.some(a => a.id === job.id)) {
-        clearInterval(handle)
-        reject(job.id)
-      }
-    }, 1000)
-  })
+  return job
 }

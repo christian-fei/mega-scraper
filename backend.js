@@ -5,7 +5,6 @@ const log = debug('mega-scraper:backend')
 const amazonItScraper = require('./lib/scrapers/amazon.it')
 const preparePage = require('./lib/browser/prepare-page')
 const { createQueue } = require('./lib/queue')
-
 const { Cluster } = require('puppeteer-cluster')
 
 if (require.main === module) {
@@ -24,7 +23,6 @@ async function createBackend () {
     maxConcurrency: 4,
     monitor: true
   })
-  // cluster.on('queue', data => log('event "queue"', data))
   cluster.task(async ({ page, data: { url } }) => {
     await preparePage(page, { blocker: true, proxy: true, images: false, javascript: false, stylesheets: false })
     const scraper = scraperFor(url)
@@ -40,10 +38,6 @@ async function createBackend () {
     await cluster.queue({ url: job.data.url })
     done()
   })
-
-  // await cluster.idle()
-  // await cluster.close()
-
   return cluster
 }
 
