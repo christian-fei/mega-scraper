@@ -3,7 +3,7 @@ const debug = require('debug')
 const log = debug('mega-scraper:scrape')
 const EventEmitter = require('events')
 const { execSync } = require('child_process')
-const { cache, createQueue, getQueueName, createBrowser, createServer, scraperFor, options, initStatsCache } = require('./')
+const { cache, queue: { createQueue, getQueueName }, browser: { createBrowser }, createServer, scraperFor, options, initStatsCache } = require('./')
 
 scrape(options._[0], options)
 
