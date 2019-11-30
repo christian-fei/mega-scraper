@@ -31,11 +31,16 @@ async function scrape (url, options = {}) {
   let stats = await statsCache.toJSON()
   log(`created stats ${statsCacheName} ${JSON.stringify(stats, null, 2)}`)
 
+  addMessage(statsCache, `starting scraping ${url}`)
+
   scraper({ url, queue, events, browser, ...options })
 
   events.on('nextUrl', async nextUrl => {
     log({ nextUrl })
-    if (nextUrl) await queue.add({ url: nextUrl }, { priority: 1 })
+    if (nextUrl) {
+      await queue.add({ url: nextUrl }, { priority: 1 })
+      addMessage(statsCache, `nextUrl ${nextUrl}`)
+    }
   })
 
   const updateIntervalHandle = setInterval(async () => {
@@ -49,7 +54,11 @@ async function scrape (url, options = {}) {
     log({ stats })
   }, 3000)
 
-  events.on('captcha', ({ url }) => log('found captcha', url))
+  events.on('captcha', ({ url }) => {
+    log('found captcha', url)
+    addMessage(statsCache, `captcha ${url}`)
+  })
+
   events.on('review', handleReview(statsCache))
   events.on('content', handleContent(statsCache))
   events.on('screenshot', handleScreenshot(statsCache))
@@ -59,8 +68,10 @@ async function scrape (url, options = {}) {
     clearInterval(updateIntervalHandle)
     clearInterval(updateLogIntervalHandle)
     await browser.instance.close()
+    await addMessage(statsCache, `done`)
     stats = await statsCache.toJSON()
     httpInstance && httpInstance.update(stats)
+
     setTimeout(() => {
       options.exit && process.exit(err ? 1 : 0)
     }, 5000)
@@ -98,4 +109,11 @@ function handleContent (statsCache) {
     log('scraped content', (content || '').substring(0, 500))
     await statsCache.hincrby('scrapedPages', 1)
   }
+}
+
+async function addMessage (statsCache, message) {
+  let messages = await statsCache.hget('messages') || '[]'
+  try { messages = JSON.parse(messages) } catch (err) { messages = [] }
+  messages.push(message)
+  await statsCache.hset('messages', JSON.stringify(messages))
 }

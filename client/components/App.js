@@ -28,6 +28,7 @@ export default class App extends Component {
 
     const lastTenScrapedReviews = safeJSONparse(data.lastTenScrapedReviews, [])
     const lastTenScreenshots = safeJSONparse(data.lastTenScreenshots, [])
+    const messages = safeJSONparse(data.messages, [])
 
     return h('div', null, [
       h('div', { className: 'container' }, [
@@ -78,6 +79,17 @@ export default class App extends Component {
             h('h6', null, 'scrapedPages'),
             h('h1', null, data.scrapedPages)
           ])
+        ]) : null,
+        h('div', { className: 'w-100' }, []),
+        messages.length > 0 ? h('div', { className: 'container1' }, [
+          h('h6', null, 'messages'),
+          h('div', { className: 'row' },
+            messages.map(message =>
+              h('div', { className: `alert  w-100 ${message === 'done' ? 'alert-success' : 'alert-secondary'}` }, [
+                message
+              ])
+            )
+          )
         ]) : null,
         h('div', { className: 'w-100' }, []),
         lastTenScrapedReviews.length > 0 ? h('div', { className: 'row' }, [
