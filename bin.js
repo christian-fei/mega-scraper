@@ -12,7 +12,7 @@ async function scrape (url, options = {}) {
   log(' ⚡️  version', require('./package.json').version, 'options', JSON.stringify(options))
   const scraper = await scraperFor(url, options)
   if (!scraper) throw new Error('unsupported url')
-  log(`scraping ${url} using`, scraper)
+  log(`scraping ${url} using`, scraper.name)
 
   let httpInstance
   if (options.monitor) {
