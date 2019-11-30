@@ -81,19 +81,17 @@ export default class App extends Component {
           ])
         ]) : null,
         h('div', { className: 'w-100' }, []),
-        messages.length > 0 ? h('div', { className: 'container1' }, [
-          h('h6', null, 'messages'),
-          h('div', { className: 'row' },
+        messages.length > 0 ? h('div', { className: 'mt-1' }, [
+          h('div', { className: 'list-group', style: `max-height: 300px; overflow: scroll;` },
             messages.map(message =>
-              h('div', { className: `alert  w-100 ${message === 'done' ? 'alert-success' : 'alert-secondary'}` }, [
+              h('li', { className: `list-group-item` }, [
                 message
               ])
             )
           )
         ]) : null,
         h('div', { className: 'w-100' }, []),
-        lastTenScrapedReviews.length > 0 ? h('div', { className: 'row' }, [
-          h('h6', null, 'reviews'),
+        lastTenScrapedReviews.length > 0 ? h('div', { className: 'mt-1' }, [
           h('div', { className: '', style: 'min-width: 100%; min-height: 300px; display: flex; overflow-x: auto; ' },
             lastTenScrapedReviews.map(r =>
               h('div', { className: '', style: 'width: 600px; font-size: 0.8rem;; margin: 1em' }, [
@@ -119,8 +117,7 @@ export default class App extends Component {
           )
         ]) : null,
         h('div', { className: 'w-100' }, []),
-        lastTenScreenshots.length > 0 ? h('div', { className: 'container1' }, [
-          h('h6', null, 'screenshots'),
+        lastTenScreenshots.length > 0 ? h('div', { className: 'container' }, [
           h('div', { className: 'row1', style: 'min-width: 100%; max-height: 600px; display: flex; overflow-x: auto; flex-wrap; no-wrap;' },
             lastTenScreenshots.map(screenshot =>
               h('div', { className: 'col1', style: 'min-width: 250px; margin: 1em' }, [

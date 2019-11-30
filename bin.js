@@ -58,6 +58,10 @@ async function scrape (url, options = {}) {
     log('found captcha', url)
     addMessage(statsCache, `captcha ${url}`)
   })
+  events.on('processing', ({ url }) => {
+    log('processing', url)
+    addMessage(statsCache, `processing ${url}`)
+  })
 
   events.on('review', handleReview(statsCache))
   events.on('content', handleContent(statsCache))
