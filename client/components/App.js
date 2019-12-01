@@ -18,6 +18,15 @@ export default class App extends Component {
     }
   }
 
+  componentDidUpdate () {
+    // this.messagesEl.scrollTop = this.messagesEl.scrollHeight + 400
+    this.messagesEl.scrollBy({
+      top: 100,
+      left: 0,
+      behavior: 'smooth'
+    })
+  }
+
   render () {
     const data = this.state.data
     if (!data || Object.keys(data).length === 0) {
@@ -82,12 +91,11 @@ export default class App extends Component {
         ]) : null,
         h('div', { className: 'w-100' }, []),
         messages.length > 0 ? h('div', { className: 'mt-1' }, [
-          h('div', { className: 'list-group', style: `max-height: 300px; overflow: scroll;` },
+          h('div', { className: 'list-group', style: `max-height: 300px; overflow: scroll;`, ref: (el) => { this.messagesEl = el } },
             messages.map(message =>
               h('li', { className: `list-group-item` }, [
                 message
-              ])
-            )
+              ]))
           )
         ]) : null,
         h('div', { className: 'w-100' }, []),
