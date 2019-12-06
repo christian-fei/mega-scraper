@@ -15,12 +15,12 @@ jobs:
       - name: install
         run: |
           npm install
-      - name: test
-        run: |
-          npm t
-      - name: publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
-          npm publish
+      # - name: test
+      #   run: |
+      #     npm t
+      # - name: publish
+      #   env:
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #   run: |
+      #     npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+      #     npm publish
