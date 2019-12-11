@@ -183,5 +183,11 @@ used as internal api.
 
 creates a web server used as a small scraping monitor.
 
+
+```js
+const {createServer} = require('mega-scraper')
+createServer()
+```
+
 ### initStatsCache
 ### scraperFor
