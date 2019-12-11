@@ -190,4 +190,9 @@ createServer()
 ```
 
 ### initStatsCache
+
+used as internal api.
+
 ### scraperFor
+
+used as internal api.
