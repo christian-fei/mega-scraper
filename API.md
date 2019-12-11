@@ -68,8 +68,16 @@ const browser = createBrowser()
 const page = await browser.newPage('https://www.wikipedia.org/', {reusePage: true})
 ```
 
-#### getPuppeteerOptions
+#### getPuppeteerOptions(options = {headless: true, slowMo: undefined})
 
+returns puppeteer options ready to be passed to `puppeteer.launch` and `createBrowser`'s internal api
+
+```js
+const {browser: {getPuppeteerOptions}} = require('mega-scraper')
+
+const puppeteerOptions = getPuppeteerOptions()
+const instance = await puppeteer.launch(puppeteerOptions)
+```
 
 #### preparePage
 
