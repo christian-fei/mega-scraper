@@ -168,6 +168,16 @@ const statsCache = cache(statsCacheName)
 ```
 
 ### options
+
+used as internal api.
+
+parses the cli args.
+
+```js
+const {options} = require('mega-scraper')
+```
+
 ### createServer
+
 ### initStatsCache
 ### scraperFor
