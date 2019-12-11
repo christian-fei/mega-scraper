@@ -142,8 +142,19 @@ let page = await instance.page()
 page = setStealth(page)
 ```
 
-
 #### takeScreenshot
+
+used as internal api.
+
+takes a screenshots of a page and saves it in pwd / `screenshots`.
+
+```js
+const {browser: {takeScreenshot}} = require('mega-scraper')
+
+const instance = await puppeteer.launch(puppeteerOptions)
+let page = await instance.page()
+page = takeScreenshot(page, 'https://wikipedia.org')
+```
 
 
 
