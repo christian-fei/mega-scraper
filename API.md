@@ -130,6 +130,18 @@ page = setProxy(page)
 
 #### setStealth
 
+used as internal api.
+
+enhances a page with stealth functionality. sets some defaults to look less like a scraper.
+
+```js
+const {browser: {setStealth}} = require('mega-scraper')
+
+const instance = await puppeteer.launch(puppeteerOptions)
+let page = await instance.page()
+page = setStealth(page)
+```
+
 
 #### takeScreenshot
 
