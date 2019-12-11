@@ -114,6 +114,19 @@ page = setBlocker(page)
 
 #### setProxy
 
+used as internal api.
+
+enhances a page with proxy functionality. proxies each browser network request through a free proxy service.
+
+supports `url`, `timeout`, `stylesheets`, `javascript`, `images`, `cookie` options
+
+```js
+const {browser: {setProxy}} = require('mega-scraper')
+
+const instance = await puppeteer.launch(puppeteerOptions)
+let page = await instance.page()
+page = setProxy(page)
+```
 
 #### setStealth
 
