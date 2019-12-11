@@ -31,6 +31,62 @@ const queue = createQueue(queueName)
 ```
 
 ### browser
+
+browser + puppeteer + proxy + screenshot + blocker + stealth utilitlies
+
+#### createBrowser(options)
+
+create a new browser based on puppeteer, with the following options
+
+- proxy: pass each browser request through a free proxy service, defaults to true (can make you less detectable as a scraper)
+- headless: use puppeteer in headless mode, defaults to true
+- stylesheets: load css files, defaults to true (speeds up scraping)
+- javascript: load js files, defaults to true (speeds up scraping)
+- images: load images, defaults to true (speeds up scraping)
+- blocker: block common trackers and garbage requests, defaults to true (can speed up scraping)
+- cookie:  defaults to undefined (can make you less detectable as a scraper)
+- width: defaults to 1280
+- height: defaults to 800
+- slowMo: slow down browser interaction, defaults to undefined (useful when in headful mode)
+- timeout: timeout requests, defaults to 5000
+
+```js
+const {browser: {createBrowser}} = require('mega-scraper')
+
+const browser = createBrowser()
+
+const page = await browser.newPage('https://www.wikipedia.org/')
+```
+
+##### browser.createBrowser.newPage(url, options)
+
+opens a new page, reuses "free" pages by default to use less resources
+
+```js
+const browser = createBrowser()
+
+const page = await browser.newPage('https://www.wikipedia.org/', {reusePage: true})
+```
+
+#### getPuppeteerOptions
+
+
+#### preparePage
+
+
+#### setBlocker
+
+
+#### setProxy
+
+
+#### setStealth
+
+
+#### takeScreenshot
+
+
+
 ### cache
 ### options
 ### createServer
