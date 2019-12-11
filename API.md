@@ -179,5 +179,9 @@ const {options} = require('mega-scraper')
 
 ### createServer
 
+used as internal api.
+
+creates a web server used as a small scraping monitor.
+
 ### initStatsCache
 ### scraperFor
