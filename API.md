@@ -97,6 +97,20 @@ page = preparePage(page)
 
 #### setBlocker
 
+used as internal api.
+
+enhances a page with blocker functionality. blocks common trackers.
+
+supports `url`, `timeout`, `stylesheets`, `javascript`, `images` options
+
+```js
+const {browser: {setBlocker}} = require('mega-scraper')
+
+const instance = await puppeteer.launch(puppeteerOptions)
+let page = await instance.page()
+page = setBlocker(page)
+```
+
 
 #### setProxy
 
