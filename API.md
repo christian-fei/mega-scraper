@@ -158,7 +158,15 @@ page = takeScreenshot(page, 'https://wikipedia.org')
 
 
 
-### cache
+### cache(key)
+
+creates a cache for the scraper
+
+```js
+const {cache} = require('mega-scraper')
+const statsCache = cache(statsCacheName)
+```
+
 ### options
 ### createServer
 ### initStatsCache
