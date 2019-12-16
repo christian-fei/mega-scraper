@@ -18,6 +18,7 @@ create a new browser based on puppeteer, with the following options
 - width: defaults to 1280
 - height: defaults to 800
 - slowMo: slow down browser interaction, defaults to undefined (useful when in headful mode)
+- userAgent: a user agent string (e.g. "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3419.0 Safari/537.36")
 - timeout: timeout requests, defaults to 5000
 
 ```js
