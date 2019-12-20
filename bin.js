@@ -106,6 +106,7 @@ function handleScreenshot (statsCache) {
     lastTenScreenshots.length = 10
     lastTenScreenshots = lastTenScreenshots.filter(Boolean)
     await statsCache.hset('lastTenScreenshots', JSON.stringify(lastTenScreenshots))
+    addMessage(statsCache, `took screenshot ${screenshot}`)
   }
 }
 function handleContent (statsCache) {
