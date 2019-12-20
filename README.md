@@ -19,7 +19,30 @@ mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2
 
 ### api
 
-[see api.md](./API.md)
+[see api.md](./API.md) for more usage example and options.
+
+e.g.
+
+```js
+(async () => {
+  const {browser: {createBrowser, takeScreenshot}, queue: {createQueue}} = require('.')
+
+  const browser = await createBrowser()
+  const queue = createQueue('wikipedia')
+
+  const page = await browser.newPage('https://www.wikipedia.org/')
+
+  const url = 'https://www.wikipedia.org/'
+  const job = await queue.add({ url })
+
+  queue.process(async (job) => {
+    await page.goto(job.data.url)
+    await takeScreenshot(page, job.data)
+    const content = await page.content()
+    console.log('content', content.substring(0, 500))
+  })
+})()
+```
 
 ## cli options
 

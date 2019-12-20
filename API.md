@@ -24,7 +24,7 @@ create a new browser based on puppeteer, with the following options
 ```js
 const {browser: {createBrowser}} = require('mega-scraper')
 
-const browser = createBrowser()
+const browser = await createBrowser()
 
 const page = await browser.newPage('https://www.wikipedia.org/')
 ```
@@ -34,7 +34,7 @@ const page = await browser.newPage('https://www.wikipedia.org/')
 opens a new page, reuses "free" pages by default to use less resources
 
 ```js
-const browser = createBrowser()
+const browser = await createBrowser()
 
 const page = await browser.newPage('https://www.wikipedia.org/', {reusePage: true})
 ```
