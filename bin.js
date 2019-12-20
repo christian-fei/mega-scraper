@@ -38,7 +38,7 @@ async function scrape (url, options = {}) {
   events.on('nextUrl', async nextUrl => {
     log({ nextUrl })
     if (nextUrl) {
-      await queue.add({ url: nextUrl }, { priority: 1 })
+      await queue.add({ url: nextUrl }, { priority: 1, attempts: 3 })
       addMessage(statsCache, `nextUrl ${nextUrl}`)
     }
   })
