@@ -39,13 +39,13 @@
     "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.2",
     "get-port": "^5.1.0",
-    "got": "^10.1.0",
+    "got": "^10.2.2",
     "ioredis": "^4.14.1",
     "puppeteer-cluster": "^0.18.0",
-    "puppeteer-extra": "^3.1.7",
-    "puppeteer-extra-plugin-stealth": "^2.4.5",
-    "user-agents": "^1.0.476",
-    "yargs": "^15.0.2"
+    "puppeteer-extra": "^3.1.9",
+    "puppeteer-extra-plugin-stealth": "^2.4.9",
+    "user-agents": "^1.0.501",
+    "yargs": "^15.1.0"
   },
   "optionalDependencies": {
     "puppeteer": "^2.0.0"
