@@ -1,4 +1,4 @@
-module.exports = require('yargs')
+module.exports = () => require('yargs')
   .boolean('headless').default('headless', true)
   .boolean('screenshot').default('screenshot', true)
   .boolean('proxy').default('proxy', true)

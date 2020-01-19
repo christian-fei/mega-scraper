@@ -5,7 +5,8 @@ const EventEmitter = require('events')
 const { execSync } = require('child_process')
 const { cache, queue: { createQueue, getQueueName }, browser: { createBrowser }, createServer, scraperFor, options, initStatsCache } = require('./')
 
-scrape(options._[0], options)
+const opt = options()
+scrape(opt._[0], opt)
 
 async function scrape (url, options = {}) {
   !process.env.DEBUG && debug.enable('mega-scraper:scrape')
