@@ -10,10 +10,9 @@ create a new browser based on puppeteer, with the following options
 
 - proxy: pass each browser request through a free proxy service, defaults to true (can make you less detectable as a scraper)
 - headless: use puppeteer in headless mode, defaults to true
-- stylesheets: load css files, defaults to true (set to false to speeds up scraping)
-- javascript: load js files, defaults to true (set to false to speeds up scraping)
-- images: load images, defaults to true (set to false to speeds up scraping)
-- blocker: block common trackers and garbage requests, defaults to true (can speed up scraping)
+- stylesheets: load css files, defaults to false (set to true to load css)
+- javascript: load js files, defaults to false (set to true to load js)
+- images: load images, defaults to false (set to true to load images)
 - cookie:  defaults to undefined (can make you less detectable as a scraper)
 - width: defaults to 1280
 - height: defaults to 800
