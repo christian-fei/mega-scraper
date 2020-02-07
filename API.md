@@ -58,27 +58,12 @@ used as internal api.
 enhances a puppeteer browser page. supports same `createBrowser` options
 
 ```js
-const {browser: {preparePage}} = require('mega-scraper')
+const {browser: {getPuppeteerOptions, preparePage}} = require('mega-scraper')
 
+const puppeteerOptions = getPuppeteerOptions()
 const instance = await puppeteer.launch(puppeteerOptions)
 let page = await instance.page()
 page = preparePage(page)
-```
-
-#### setBlocker
-
-used as internal api.
-
-enhances a page with blocker functionality. blocks common trackers.
-
-supports `url`, `timeout`, `stylesheets`, `javascript`, `images` options
-
-```js
-const {browser: {setBlocker}} = require('mega-scraper')
-
-const instance = await puppeteer.launch(puppeteerOptions)
-let page = await instance.page()
-page = setBlocker(page)
 ```
 
 
@@ -91,8 +76,9 @@ enhances a page with proxy functionality. proxies each browser network request t
 supports `url`, `timeout`, `stylesheets`, `javascript`, `images`, `cookie` options
 
 ```js
-const {browser: {setProxy}} = require('mega-scraper')
+const {browser: {getPuppeteerOptions, setProxy}} = require('mega-scraper')
 
+const puppeteerOptions = getPuppeteerOptions()
 const instance = await puppeteer.launch(puppeteerOptions)
 let page = await instance.page()
 page = setProxy(page)
@@ -105,8 +91,9 @@ used as internal api.
 enhances a page with stealth functionality. sets some defaults to look less like a scraper.
 
 ```js
-const {browser: {setStealth}} = require('mega-scraper')
+const {browser: {getPuppeteerOptions, setStealth}} = require('mega-scraper')
 
+const puppeteerOptions = getPuppeteerOptions()
 const instance = await puppeteer.launch(puppeteerOptions)
 let page = await instance.page()
 page = setStealth(page)
@@ -119,8 +106,9 @@ used as internal api.
 takes a screenshots of a page and saves it in pwd / `screenshots`.
 
 ```js
-const {browser: {takeScreenshot}} = require('mega-scraper')
+const {browser: {getPuppeteerOptions, takeScreenshot}} = require('mega-scraper')
 
+const puppeteerOptions = getPuppeteerOptions()
 const instance = await puppeteer.launch(puppeteerOptions)
 let page = await instance.page()
 page = takeScreenshot(page, 'https://wikipedia.org')
