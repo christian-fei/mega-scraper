@@ -41,7 +41,6 @@
     "get-port": "^5.1.0",
     "got": "^10.2.2",
     "ioredis": "^4.14.1",
-    "puppeteer-cluster": "^0.18.0",
     "puppeteer-extra": "^3.1.9",
     "puppeteer-extra-plugin-stealth": "^2.4.9",
     "user-agents": "^1.0.501",
