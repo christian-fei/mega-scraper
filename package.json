@@ -28,22 +28,22 @@
   },
   "homepage": "https://github.com/christian-fei/mega-scraper#readme",
   "devDependencies": {
-    "@types/bull": "^3.10.6",
-    "ava": "^2.4.0"
+    "@types/bull": "^3.12.1",
+    "ava": "^3.5.0"
   },
   "dependencies": {
-    "bull": "^3.12.1",
-    "bull-dashboard": "^4.2.0",
+    "bull": "^3.13.0",
+    "bull-dashboard": "^5.1.0",
     "cheerio": "^1.0.0-rc.3",
     "connect": "^3.7.0",
     "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.2",
-    "get-port": "^5.1.0",
-    "got": "^10.2.2",
-    "ioredis": "^4.14.1",
+    "get-port": "^5.1.1",
+    "got": "^10.6.0",
+    "ioredis": "^4.16.0",
     "puppeteer-extra": "^3.1.9",
     "puppeteer-extra-plugin-stealth": "^2.4.9",
-    "user-agents": "^1.0.501",
+    "user-agents": "^1.0.554",
     "yargs": "^15.1.0"
   },
   "optionalDependencies": {
