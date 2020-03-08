@@ -116,28 +116,6 @@ e.g.
 mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --javascript false
 ```
 
-
-### `--blocker` [default: true]
-
-set to `false` to avoid blocking requests like images, stylesheets, javascript, fonts, etc.
-
-e.g.
-
-```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --blocker false
-```
-
-
-### `--blocker` [default: true]
-
-set to `false` to avoid blocking useless resources
-
-e.g.
-
-```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --blocker false
-```
-
 ### `--monitor` [default: true]
 
 set to `false` to avoid opening the web dashboard on localhost:4000
