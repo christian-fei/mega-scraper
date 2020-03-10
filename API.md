@@ -177,11 +177,3 @@ creates a web server used as a small scraping monitor.
 const {createServer} = require('mega-scraper')
 createServer()
 ```
-
-### initStatsCache
-
-used as internal api.
-
-### scraperFor
-
-used as internal api.

@@ -3,7 +3,8 @@ const debug = require('debug')
 const log = debug('mega-scraper:scrape')
 const EventEmitter = require('events')
 const { execSync } = require('child_process')
-const { cache, queue: { createQueue, getQueueName }, browser: { createBrowser }, createServer, scraperFor, options, initStatsCache } = require('./')
+const { cache, queue: { createQueue, getQueueName }, browser: { createBrowser }, createServer, options, initStatsCache } = require('./')
+const scraper = require('./lib/scrapers/page')
 
 const opt = options()
 scrape(opt._[0], opt)
@@ -11,7 +12,6 @@ scrape(opt._[0], opt)
 async function scrape (url, options = {}) {
   !process.env.DEBUG && debug.enable('mega-scraper:scrape')
   log(' ⚡️  version', require('./package.json').version, 'options', JSON.stringify(options))
-  const scraper = await scraperFor(url, options)
   if (!scraper) throw new Error('unsupported url')
   log(`scraping ${url} using`, scraper.name)
 

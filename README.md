@@ -2,12 +2,10 @@
 
 scrape a website's content.
 
-> built-in support for amazon product reviews.
-
 ```
 npm i -g mega-scraper
 
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/
+mega-scraper https://www.wikipedia.org
 ```
 
 ## requirements
@@ -53,7 +51,7 @@ set to `false` to run the scraper in "headful" mode (non-headless)
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --headless false
+mega-scraper https://www.wikipedia.org --headless false
 ```
 
 ### `--screenshot` [default: true]
@@ -63,7 +61,7 @@ set to `false` to avoid taking a screenshot of each scraped page
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --headless false
+mega-scraper https://www.wikipedia.org --headless false
 ```
 
 ### `--proxy` [default: true]
@@ -73,7 +71,7 @@ set to `false` to avoid proxying each request through a free proxy service (curr
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --proxy false
+mega-scraper https://www.wikipedia.org --proxy false
 ```
 
 ### `--timeout` [default: 5000]
@@ -83,7 +81,7 @@ set the timeout to a desired number in milliseconds (5000 = 5 seconds)
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --timeout 10000
+mega-scraper https://www.wikipedia.org --timeout 10000
 ```
 
 ### `--images` [default: true]
@@ -93,7 +91,7 @@ set to `false` to avoid loading images
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --images false
+mega-scraper https://www.wikipedia.org --images false
 ```
 
 ### `--stylesheets` [default: true]
@@ -103,7 +101,7 @@ set to `false` to avoid loading stylesheets
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --stylesheets false
+mega-scraper https://www.wikipedia.org --stylesheets false
 ```
 
 ### `--javascript` [default: true]
@@ -113,7 +111,7 @@ set to `false` to avoid loading javascript
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --javascript false
+mega-scraper https://www.wikipedia.org --javascript false
 ```
 
 ### `--monitor` [default: true]
@@ -123,7 +121,7 @@ set to `false` to avoid opening the web dashboard on localhost:4000
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --monitor false
+mega-scraper https://www.wikipedia.org --monitor false
 ```
 
 ### `--exit` [default: false]
@@ -133,7 +131,7 @@ set to `true` to exit the program with success or failure status code once done 
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --exit
+mega-scraper https://www.wikipedia.org --exit
 ```
 
 ### `--cookie` [default: none]
@@ -143,5 +141,5 @@ set to a desired cookie to further prevent detection
 e.g.
 
 ```
-mega-scraper https://www.amazon.com/PlayStation-4-Slim-1TB-Console/dp/B071CV8CG2/ --cookie 'my=cookie'
+mega-scraper https://www.wikipedia.org --cookie 'my=cookie'
 ```
