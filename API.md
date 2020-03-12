@@ -120,7 +120,7 @@ page = takeScreenshot(page, 'https://wikipedia.org')
 
 utilities for managing the scraper queue
 
-#### createQueue(queueNameOrUrl, options = {redis_port: 6379, redis_host: '0.0.0.0'})
+#### createQueue(queueNameOrUrl, options = {redis_port: 6379, redis_host: '0.0.0.0', redis_password})
 
 creates a queue based on redis (bull api) to handle the scraping jobs
 
