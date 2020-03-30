@@ -2,14 +2,15 @@ const puppeteer = require('puppeteer')
 const getFreeProxies = require('get-free-https-proxy')
 
 ;(async () => {
-  const [proxy1] = await getFreeProxies()
+  const proxies = await getFreeProxies()
+  const proxy1 = proxies[Math.max(0, parseInt(proxies.length * Math.random()) - 1)]
   console.log('using proxy', proxy1)
   const browser = await puppeteer.launch({
     args: [
       '--no-sandbox',
       `--proxy-server=${proxy1.host}:${proxy1.port}`
     ],
-    headless: false,
+    headless: true,
     ignoreHTTPSErrors: true
   })
   const page = await browser.newPage()
@@ -19,7 +20,7 @@ const getFreeProxies = require('get-free-https-proxy')
 
   console.log(JSON.parse(serialized))
 
-  await page.waitFor(5000)
+  await page.waitFor(1000)
   await page.close()
   await browser.close()
 
