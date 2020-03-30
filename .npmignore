@@ -12,3 +12,5 @@ client/html/*
 client/json/*
 client/screenshot/*
 client/screenshots/*
+playground.js
+
