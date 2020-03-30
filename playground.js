@@ -1,18 +1,8 @@
-const puppeteer = require('puppeteer')
-const getFreeProxies = require('get-free-https-proxy')
+const { browser: { createBrowser } } = require('.')
 
 ;(async () => {
-  const proxies = await getFreeProxies()
-  const proxy1 = proxies[Math.max(0, parseInt(proxies.length * Math.random()) - 1)]
-  console.log('using proxy', proxy1)
-  const browser = await puppeteer.launch({
-    args: [
-      '--no-sandbox',
-      `--proxy-server=${proxy1.host}:${proxy1.port}`
-    ],
-    headless: true,
-    ignoreHTTPSErrors: true
-  })
+  const browser = await createBrowser({ proxy: true })
+
   const page = await browser.newPage()
   await page.goto('https://ipinfo.io/json')
   const content = await page.content()
