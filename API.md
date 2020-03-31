@@ -66,24 +66,6 @@ let page = await instance.page()
 page = preparePage(page)
 ```
 
-
-#### setProxy
-
-used as internal api.
-
-enhances a page with proxy functionality. proxies each browser network request through a free proxy service.
-
-supports `url`, `timeout`, `stylesheets`, `javascript`, `images`, `cookie` options
-
-```js
-const {browser: {getPuppeteerOptions, setProxy}} = require('mega-scraper')
-
-const puppeteerOptions = getPuppeteerOptions()
-const instance = await puppeteer.launch(puppeteerOptions)
-let page = await instance.page()
-page = setProxy(page)
-```
-
 #### setStealth
 
 used as internal api.
