@@ -40,8 +40,6 @@
     "get-free-https-proxy": "^2.0.2",
     "get-port": "^5.1.1",
     "ioredis": "^4.16.0",
-    "puppeteer-extra": "^3.1.9",
-    "puppeteer-extra-plugin-stealth": "^2.4.9",
     "user-agents": "^1.0.554",
     "yargs": "^15.1.0"
   },
