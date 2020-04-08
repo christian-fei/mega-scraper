@@ -42,7 +42,6 @@
     "https-proxy-agent": "^5.0.0",
     "ioredis": "^4.16.0",
     "puppeteer-page-proxy": "https://github.com/christian-fei/puppeteer-page-proxy",
-    "puppeteer-proxy": "^2.1.0",
     "user-agents": "^1.0.554",
     "yargs": "^15.1.0"
   },
