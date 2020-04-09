@@ -1,6 +1,6 @@
 {
   "name": "mega-scraper",
-  "version": "16.5.1",
+  "version": "16.5.2",
   "description": "",
   "main": "index.js",
   "bin": "bin.js",
