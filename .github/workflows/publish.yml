@@ -1,4 +1,4 @@
-name: mega-scraper build
+name: mega-scraper publish
 on:
   push:
     branches:
