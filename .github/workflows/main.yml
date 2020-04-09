@@ -10,6 +10,6 @@ jobs:
       - name: install
         run: |
           npm install
-      # - name: test
-      #   run: |
-      #     npm t
+      - name: test
+        run: |
+          npm t
