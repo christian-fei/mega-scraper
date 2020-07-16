@@ -33,13 +33,10 @@
   },
   "dependencies": {
     "bull": "^3.13.0",
-    "bull-dashboard": "^5.1.0",
-    "cheerio": "^1.0.0-rc.3",
     "connect": "^3.7.0",
     "debug": "^4.1.1",
     "get-free-https-proxy": "^2.0.2",
     "get-port": "^5.1.1",
-    "https-proxy-agent": "^5.0.0",
     "ioredis": "^4.16.3",
     "puppeteer-page-proxy": "https://github.com/christian-fei/puppeteer-page-proxy",
     "user-agents": "^1.0.554",
