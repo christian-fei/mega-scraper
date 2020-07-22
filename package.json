@@ -38,6 +38,9 @@
     "get-free-https-proxy": "^2.0.2",
     "get-port": "^5.1.1",
     "ioredis": "^4.16.3",
+    "puppeteer-extra": "^3.1.12",
+    "puppeteer-extra-plugin-adblocker": "^2.11.5",
+    "puppeteer-extra-plugin-stealth": "^2.4.13",
     "puppeteer-page-proxy": "https://github.com/christian-fei/puppeteer-page-proxy",
     "user-agents": "^1.0.554",
     "yargs": "^15.1.0"
